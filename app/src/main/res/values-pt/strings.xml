@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Presidente do Racha</string>
+    <string name="action_settings">Configuração</string>
+    <string name="drawer_settings">Configuração</string>
+    <string name="navigation_drawer_close">Fechar Menu</string>
+    <string name="navigation_drawer_open">Abrir Menu</string>
+    <string name="drawer_home">Meu menu</string>
+</resources>
