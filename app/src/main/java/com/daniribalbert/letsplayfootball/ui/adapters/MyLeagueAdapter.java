@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.fragments;
+package com.daniribalbert.letsplayfootball.ui.adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment.OnListFragmentInteractionListener;
+import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment.OnListFragmentInteractionListener;
 import com.daniribalbert.letsplayfootball.model.League;
 
 import java.util.List;

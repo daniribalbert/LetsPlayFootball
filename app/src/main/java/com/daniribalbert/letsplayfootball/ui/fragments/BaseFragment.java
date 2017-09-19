@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.fragments;
+package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.Fragment;
 

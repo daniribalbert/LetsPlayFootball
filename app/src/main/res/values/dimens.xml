@@ -6,8 +6,14 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-    <dimen name="login_bt_height">48dp</dimen>
 
+    <dimen name="margin_small">5dp</dimen>
+    <dimen name="margin_medium">10dp</dimen>
+    <dimen name="margin_large">15dp</dimen>
+
+    <dimen name="login_bt_height">48dp</dimen>
     <dimen name="recycler_view_horizontal_margin">16dp</dimen>
     <dimen name="card_margin">10dp</dimen>
+
+    <dimen name="profile_pic_size">150dp</dimen>
 </resources>

@@ -23,6 +23,11 @@ public class League {
     private String description;
 
     /**
+     * League description.
+     */
+    private String image;
+
+    /**
      * List of matches in this league.
      */
     private List<Match> matches;

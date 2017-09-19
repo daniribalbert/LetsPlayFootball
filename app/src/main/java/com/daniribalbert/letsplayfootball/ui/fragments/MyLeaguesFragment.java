@@ -1,7 +1,8 @@
-package com.daniribalbert.letsplayfootball.fragments;
+package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.model.League;
+import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +65,13 @@ public class MyLeaguesFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_league_list, container, false);
         ButterKnife.bind(this, view);
-        // Set the adapter
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         final Context context = view.getContext();
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -79,10 +86,7 @@ public class MyLeaguesFragment extends BaseFragment {
         }
         mAdapter = new MyLeagueAdapter(leagues, mListener);
         mRecyclerView.setAdapter(mAdapter);
-
-        return view;
     }
-
 
     @Override
     public void onAttach(Context context) {

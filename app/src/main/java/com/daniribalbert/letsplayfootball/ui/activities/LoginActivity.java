@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.activities;
+package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -170,7 +170,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     }
 
     private void initFacebookLogin() {
-
         // Set Button Attrs
         final Resources res = getResources();
 
@@ -200,6 +199,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
                 final AccessToken accessToken = loginResult.getAccessToken();
                 final String token = accessToken.getToken();
                 final AuthCredential credential = FacebookAuthProvider.getCredential(token);
+                loginResult.getAccessToken();
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(LoginActivity.this, ON_COMPLETE_LISTENER);
             }

@@ -1,6 +1,8 @@
-package com.daniribalbert.letsplayfootball.activities;
+package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment;
+import com.daniribalbert.letsplayfootball.model.Player;
+import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.SettingsFragment;
+import com.facebook.login.LoginManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +45,7 @@ public class MainActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +64,13 @@ public class MainActivity extends BaseActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_home);
         mSelectedDrawerItemId = R.id.nav_home;
+
+        // Add first fragment.
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, MyLeaguesFragment.newInstance(), MyLeaguesFragment.TAG)
+                    .commit();
+        }
     }
 
     @Override
@@ -75,6 +89,8 @@ public class MainActivity extends BaseActivity
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
         }
@@ -96,10 +112,12 @@ public class MainActivity extends BaseActivity
 
                 break;
             case R.id.nav_profile:
-                // TODO: Add Profile fragment.
+                frag = ProfileFragment.newInstance(Player.fromFirebase(mAuth.getCurrentUser()));
+                tag = ProfileFragment.TAG;
                 break;
             case R.id.nav_settings:
-                // TODO: Add Settings fragment.
+                frag = SettingsFragment.newInstance();
+                tag = SettingsFragment.TAG;
                 break;
             case R.id.nav_logout:
                 mAuth.signOut();
@@ -109,19 +127,10 @@ public class MainActivity extends BaseActivity
                 break;
         }
 
-        if (frag != null) {
-            Fragment previousFrag = getFragmentManager().findFragmentByTag(tag);
-            if (previousFrag == null) {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, frag, tag)
-                        .addToBackStack(tag)
-                        .commit();
-            } else {
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, frag, tag)
-                        .commit();
-            }
-        }
+        final FragmentManager fManager = getFragmentManager();
+        FragmentTransaction fTransaction = fManager.beginTransaction();
+        fTransaction.replace(R.id.fragment_container, frag, tag);
+        fTransaction.commit();
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;

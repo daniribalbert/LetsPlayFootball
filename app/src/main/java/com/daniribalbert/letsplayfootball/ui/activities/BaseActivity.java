@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.activities;
+package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
