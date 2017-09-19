@@ -40,8 +40,8 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:lines="1" />
+                    android:lines="1"
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -58,24 +58,51 @@
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:lines="1" />
+                    android:lines="1"
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+                style="@style/LoginButtonTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:background="@drawable/login_button_bg_light"
                 android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                android:textAllCaps="false"
+                android:textColor="@color/common_google_signin_btn_text_light" />
 
-            <com.google.android.gms.common.SignInButton
+            <Button
                 android:id="@+id/google_sign_in_button"
+                style="@style/LoginButtonTheme"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/login_button_bg_light"
+                android:drawableStart="@drawable/common_google_signin_btn_icon_light"
+                android:text="@string/common_signin_button_text_long"
+                android:textAllCaps="false"
+                android:textColor="@color/common_google_signin_btn_text_light" />
+
+            <Button
+                android:id="@+id/facebook_login_button"
+                style="@style/LoginButtonTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/com_facebook_button_background"
+                android:textAllCaps="false"
+                android:textColor="@color/com_facebook_button_text_color"
+                tools:drawableStart="@drawable/com_facebook_button_icon"
+                tools:text="@string/common_signin_button_text_long" />
+
+            <com.twitter.sdk.android.core.identity.TwitterLoginButton
+                android:id="@+id/twitter_login_button"
+                style="@style/LoginButtonTheme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/common_signin_button_text_long"
+                android:textAllCaps="false" />
 
         </LinearLayout>
     </ScrollView>

@@ -1,6 +1,5 @@
 package com.daniribalbert.letsplayfootball.model;
 
-import java.util.Date;
 import java.util.List;
 
 /**

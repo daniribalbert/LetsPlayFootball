@@ -43,6 +43,12 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
+    // Facebook SDK
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+
+    // Twitter Kit
+    compile 'com.twitter.sdk.android:twitter-core:3.1.1'
+
     // Test Libs | ref: Nobody cares.
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
