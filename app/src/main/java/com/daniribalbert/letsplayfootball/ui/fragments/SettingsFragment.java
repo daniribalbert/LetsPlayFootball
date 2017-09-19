@@ -2,6 +2,7 @@ package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,8 @@ public class SettingsFragment extends BaseFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         TextView textView = new TextView(container.getContext());
-        textView.setText("Settings");
+        textView.setGravity(Gravity.CENTER);
+        textView.setText("Coming Soon!");
         return textView;
     }
 }

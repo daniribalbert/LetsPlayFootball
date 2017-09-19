@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment.OnListFragmentInteractionListener;
 import com.daniribalbert.letsplayfootball.model.League;
 
 import java.util.List;
@@ -18,16 +17,13 @@ import butterknife.ButterKnife;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.model.League}
- * and makes a call to the specified {@link OnListFragmentInteractionListener}.
  */
 public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHolder> {
 
     private final List<League> mValues;
-    private final OnListFragmentInteractionListener mListener;
 
-    public MyLeagueAdapter(List<League> items, OnListFragmentInteractionListener listener) {
+    public MyLeagueAdapter(List<League> items) {
         mValues = items;
-        mListener = listener;
     }
 
     @Override
@@ -41,22 +37,23 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
     public void onBindViewHolder(final ViewHolder holder, int position) {
         League league = mValues.get(position);
         holder.setLeague(league);
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mLeague);
-                }
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void addItem(League league){
+        int itemCount = getItemCount();
+        mValues.add(league);
+        notifyItemInserted(itemCount);
+    }
+
+    public void addItems(List<League> leagues){
+        int itemCount = getItemCount();
+        mValues.addAll(leagues);
+        notifyItemRangeInserted(itemCount, leagues.size());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

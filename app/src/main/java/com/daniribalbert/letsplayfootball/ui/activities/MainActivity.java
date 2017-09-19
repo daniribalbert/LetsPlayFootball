@@ -17,23 +17,30 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.model.Player;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.SettingsFragment;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.facebook.login.LoginManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private static final String DRAWER_ITEM = "DRAWER_ITEM";
 
 
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
+
+    @BindView(R.id.fab)
+    FloatingActionButton mFab;
 
     private int mSelectedDrawerItemId;
 
@@ -46,14 +53,7 @@ public class MainActivity extends BaseActivity
         setSupportActionBar(toolbar);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        mFab.setOnClickListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -114,6 +114,7 @@ public class MainActivity extends BaseActivity
             case R.id.nav_profile:
                 frag = ProfileFragment.newInstance(Player.fromFirebase(mAuth.getCurrentUser()));
                 tag = ProfileFragment.TAG;
+                mFab.setImageResource(android.R.drawable.ic_menu_edit);
                 break;
             case R.id.nav_settings:
                 frag = SettingsFragment.newInstance();
@@ -134,5 +135,16 @@ public class MainActivity extends BaseActivity
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.fab:
+                EventBus.getDefault().post(new FabClickedEvent(mFab));
+                break;
+            default:
+                LogUtils.w("Button not found!");
+        }
     }
 }

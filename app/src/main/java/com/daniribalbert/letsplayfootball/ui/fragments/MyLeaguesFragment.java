@@ -10,8 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.model.League;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * A fragment representing a list of League Items.
  */
 public class MyLeaguesFragment extends BaseFragment {
 
@@ -31,9 +32,8 @@ public class MyLeaguesFragment extends BaseFragment {
 
     @BindView(R.id.my_league_recyclerview)
     RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private MyLeagueAdapter mAdapter;
 
-    private OnListFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,46 +76,26 @@ public class MyLeaguesFragment extends BaseFragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        //TODO: Add league items.
-        List<League> leagues = new ArrayList<League>();
-        for (int i = 0; i < 5; i++){
-            League league = new League();
-            league.setTitle("TITLE: " + i);
-            league.setDescription("DESC DESC DESC " + i);
-            leagues.add(league);
-        }
-        mAdapter = new MyLeagueAdapter(leagues, mListener);
+        mAdapter = new MyLeagueAdapter(new ArrayList<League>());
         mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            //throw new RuntimeException(context.toString()
-            //        + " must implement OnListFragmentInteractionListener");
-        }
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        EventBus.getDefault().unregister(this);
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(League item);
+
+
+    @Subscribe
+    public void onFabClicked(FabClickedEvent event) {
+        mAdapter.addItem(new League());
     }
 }
