@@ -6,10 +6,33 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/drawer_home" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_menu_profile"
+            android:title="@string/drawer_profile" />
+
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/drawer_settings" />
+
+
+    </group>
+
+    <group
+        android:id="@+id/nav_group_logout"
+        android:checkableBehavior="single">
+
+        <item android:enabled="false"
+            android:title=""
+
+            android:checkable="false"/>
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_logout"
+            android:title="@string/com_facebook_loginview_log_out_action" />
     </group>
 
 </menu>

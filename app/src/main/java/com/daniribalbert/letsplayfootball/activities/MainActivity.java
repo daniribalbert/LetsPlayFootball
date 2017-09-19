@@ -1,7 +1,9 @@
 package com.daniribalbert.letsplayfootball.activities;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -15,13 +17,25 @@ import android.view.View;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String DRAWER_ITEM = "DRAWER_ITEM";
+
+
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    private int mSelectedDrawerItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -34,21 +48,33 @@ public class MainActivity extends BaseActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_home);
+        mSelectedDrawerItemId = R.id.nav_home;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(DRAWER_ITEM, mSelectedDrawerItemId);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSelectedDrawerItemId = savedInstanceState.getInt(DRAWER_ITEM);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -56,21 +82,48 @@ public class MainActivity extends BaseActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        mSelectedDrawerItemId = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            final Fragment frag = MyLeaguesFragment.newInstance();
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
-            .commit();
-        } else if (id == R.id.nav_settings) {
-            // Settings
+        Fragment frag = null;
+        String tag = "";
+
+        switch (mSelectedDrawerItemId) {
+            case R.id.nav_home:
+                frag = MyLeaguesFragment.newInstance();
+                tag = MyLeaguesFragment.TAG;
+
+                break;
+            case R.id.nav_profile:
+                // TODO: Add Profile fragment.
+                break;
+            case R.id.nav_settings:
+                // TODO: Add Settings fragment.
+                break;
+            case R.id.nav_logout:
+                mAuth.signOut();
+                final Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (frag != null) {
+            Fragment previousFrag = getFragmentManager().findFragmentByTag(tag);
+            if (previousFrag == null) {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, frag, tag)
+                        .addToBackStack(tag)
+                        .commit();
+            } else {
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, frag, tag)
+                        .commit();
+            }
+        }
+
+        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }
