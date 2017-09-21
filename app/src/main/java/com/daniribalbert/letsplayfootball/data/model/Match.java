@@ -11,15 +11,25 @@ public class Match {
     /**
      * Match ID.
      */
-    private String id;
+    public String id;
 
     /**
      * Time when this match is gonna happen.
      */
-    private Date time;
+    public Date time;
 
     /**
      * List of players participating in this match.
      */
-    private List<Player> players;
+    public List<Player> players;
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Match){
+            Match match = (Match) obj;
+            return match.id.equalsIgnoreCase(this.id);
+        }
+        return super.equals(obj);
+    }
 }

@@ -11,10 +11,6 @@ import java.util.HashMap;
  */
 public class Player {
 
-    public Player() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
-    }
-
     /**
      * Player ID.
      */
@@ -38,19 +34,27 @@ public class Player {
     /**
      * Leagues where this player is registered.
      */
-    public HashMap<String, Boolean> leagues = new HashMap<>();
+    public HashMap<String, SimpleLeague> leagues = new HashMap<>();
+
+    public float rating;
 
     // Skills set used to rank this player.
-    public float stamina;
-    public float pass;
-    public float kick;
-    public float speed;
-    public float skill;
-    public float defense;
+    // TODO: For future releases add skills.
+//    public float stamina;
+//    public float pass;
+//    public float kick;
+//    public float speed;
+//    public float skill;
+//    public float defense;
+
+    public Player() {
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
 
     /**
      * Get the name the player is usually called, usually the name in the shirt
      * Ex: Ronaldinho.
+     *
      * @return nickname if available, else return name.
      */
     public String getDisplayName() {
@@ -78,5 +82,14 @@ public class Player {
             builder.append(')');
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Player){
+            Player player = (Player) obj;
+            return player.id.equalsIgnoreCase(this.id);
+        }
+        return super.equals(obj);
     }
 }

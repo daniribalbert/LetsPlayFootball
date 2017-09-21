@@ -11,6 +11,10 @@
     <dimen name="margin_medium">10dp</dimen>
     <dimen name="margin_large">15dp</dimen>
 
+    <dimen name="padding_small">3dp</dimen>
+    <dimen name="padding_medium">5dp</dimen>
+    <dimen name="padding_large">10dp</dimen>
+
     <dimen name="login_bt_height">48dp</dimen>
     <dimen name="recycler_view_horizontal_margin">16dp</dimen>
     <dimen name="card_margin">10dp</dimen>

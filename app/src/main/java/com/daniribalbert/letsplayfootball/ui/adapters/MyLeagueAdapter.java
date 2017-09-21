@@ -8,8 +8,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -20,22 +24,31 @@ import butterknife.ButterKnife;
  */
 public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHolder> {
 
-    private final List<League> mValues;
+    private final List<SimpleLeague> mValues = new ArrayList<>();
 
-    public MyLeagueAdapter(List<League> items) {
-        mValues = items;
+    public MyLeagueAdapter() {
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.league_card, parent, false);
-        return new ViewHolder(view);
+                                  .inflate(R.layout.league_card, parent, false);
+
+        final ViewHolder viewHolder = new ViewHolder(view);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final int adapterPosition = viewHolder.getAdapterPosition();
+                EventBus.getDefault().post(new OpenLeagueEvent(mValues.get(adapterPosition)));
+            }
+        });
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        League league = mValues.get(position);
+        SimpleLeague league = mValues.get(position);
         holder.setLeague(league);
     }
 
@@ -44,33 +57,53 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
         return mValues.size();
     }
 
-    public void addItem(League league){
+    /**
+     * Check if league exists and adds it to the list or update the previous entry.
+     *
+     * @param league League to be updated on the list.
+     */
+    public void addItem(SimpleLeague league) {
         int itemCount = getItemCount();
         mValues.add(league);
         notifyItemInserted(itemCount);
     }
 
-    public void addItems(List<League> leagues){
+    /**
+     * Check if league exists and adds it to the list or update the previous entry.
+     *
+     * @param league League to be updated on the list.
+     */
+    public void updateItem(SimpleLeague league) {
+        int position = mValues.indexOf(league);
+        if (position >= 0 && position < mValues.size()) {
+            mValues.set(position, league);
+            notifyItemChanged(position);
+        }
+    }
+
+    public void addItems(List<SimpleLeague> leagues) {
         int itemCount = getItemCount();
         mValues.addAll(leagues);
         notifyItemRangeInserted(itemCount, leagues.size());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.league_card_view)  CardView mCardView;
-        @BindView(R.id.league_card_title) TextView mTitle;
-        public League mLeague;
+        @BindView(R.id.league_card_view)
+        CardView mCardView;
+        @BindView(R.id.league_card_title)
+        TextView mTitle;
+        public SimpleLeague mLeague;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
 
-        public void setLeague(League league){
+        public void setLeague(SimpleLeague league) {
             setTitle(league.toString());
         }
 
-        public void setTitle(String title){
+        public void setTitle(String title) {
             mTitle.setText(title);
         }
 

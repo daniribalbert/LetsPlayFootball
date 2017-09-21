@@ -10,14 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
+import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,19 +55,8 @@ public class MyLeaguesFragment extends BaseFragment {
     @SuppressWarnings("unused")
     public static MyLeaguesFragment newInstance() {
         MyLeaguesFragment fragment = new MyLeaguesFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         fragment.setRetainInstance(true);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -74,11 +74,6 @@ public class MyLeaguesFragment extends BaseFragment {
         final Context context = view.getContext();
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        if (mAdapter == null) {
-            mAdapter = new MyLeagueAdapter(new ArrayList<League>());
-        }
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -93,8 +88,69 @@ public class MyLeaguesFragment extends BaseFragment {
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdapter == null) {
+            mAdapter = new MyLeagueAdapter();
+            mRecyclerView.setAdapter(mAdapter);
+            loadData();
+        } else {
+            mRecyclerView.setAdapter(mAdapter);
+        }
+    }
+
+    private void loadData() {
+        PlayerDbUtils.getPlayer(getBaseActivity().getCurrentUser().getUid(),
+                                new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Player currentPlayer = dataSnapshot.getValue(Player.class);
+                                        if (currentPlayer == null) {
+                                            LogUtils.e("Failed to load user data!");
+                                            return;
+                                        }
+                                        ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
+                                        HashMap<String, SimpleLeague> leagues = currentPlayer.leagues;
+
+                                        if (leagues != null) {
+                                            myLeagues.addAll(leagues.values());
+                                        }
+                                        mAdapter.addItems(myLeagues);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+    }
+
     @Subscribe
     public void onFabClicked(FabClickedEvent event) {
-        mAdapter.addItem(new League());
+        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague.newInstance();
+        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
+            @Override
+            public void onLeagueSaved(League league) {
+                FirebaseUser currentUser = getBaseActivity().getCurrentUser();
+                String id = LeagueDbUtils.createLeague(league, currentUser.getUid());
+                mAdapter.addItem(new SimpleLeague(league));
+            }
+        });
+        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
     }
+
+    @Subscribe
+    public void OnLeagueSelectedEvent(OpenLeagueEvent event) {
+        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague.newInstance(event.getLeague().id);
+        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
+            @Override
+            public void onLeagueSaved(League league) {
+                LeagueDbUtils.updateLeague(league);
+                mAdapter.updateItem(new SimpleLeague(league));
+            }
+        });
+        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
+    }
+
 }

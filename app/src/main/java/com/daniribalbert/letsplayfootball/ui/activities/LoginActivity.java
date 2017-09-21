@@ -254,7 +254,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
         }
         if (requestCode == RC_FACEBOOK_SIGN_IN) {
             mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-            LogUtils.i("PEGOU FACEBOOK CARALHO!");
         } else if (requestCode == RC_TWITTER_SIGN_IN) {
             mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
         }

@@ -1,5 +1,7 @@
 package com.daniribalbert.letsplayfootball.data.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,71 +12,54 @@ public class League {
     /**
      * League ID.
      */
-    private String id;
+    public String id;
+
+    /**
+     * List with the Ids of owners.
+     * Using list just in case in the future we add leagues with multiple owners.
+     */
+    public HashMap<String, Boolean> ownersId = new HashMap<>();
 
     /**
      * League title. Example: Premier League.
      */
-    private String title;
+    public String title;
 
     /**
      * League description.
      */
-    private String description;
+    public String description;
 
     /**
      * League description.
      */
-    private String image;
+    public String image;
 
     /**
      * List of matches in this league.
      */
-    private List<Match> matches;
+    public List<Match> matches = new ArrayList<>();
 
     /**
      * List of player who participate in this league.
      */
-    private List<Player> players;
+    public List<Player> players = new ArrayList<>();
 
-    public String getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Match> getMatches() {
-        return matches;
-    }
-
-    public void setMatches(List<Match> matches) {
-        this.matches = matches;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
+    public League() {
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
     @Override
     public String toString() {
         return title + "\n" + description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof League){
+            League league = (League) obj;
+            return league.id.equalsIgnoreCase(this.id);
+        }
+        return super.equals(obj);
     }
 }

@@ -28,7 +28,8 @@ import org.greenrobot.eventbus.Subscribe;
  * User profile fragment class.
  * Provides extra management functionality to the ProfileViewFragment.
  */
-public class ProfileFragment extends ProfileViewFragment implements TextWatcher, ValueEventListener {
+public class ProfileFragment extends ProfileViewFragment
+        implements TextWatcher, ValueEventListener {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
@@ -131,7 +132,7 @@ public class ProfileFragment extends ProfileViewFragment implements TextWatcher,
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         mPlayer = dataSnapshot.getValue(Player.class);
-        mPlayerName .setText(mPlayer.name);
+        mPlayerName.setText(mPlayer.name);
         mPlayerNickname.setText(mPlayer.getDisplayName());
 
     }

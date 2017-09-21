@@ -9,3 +9,4 @@
 .externalNativeBuild
 /.idea/markdown-navigator/
 /.idea/markdown-navigator.xml
+/app/src/main/res/values/strings_not_share.xml
