@@ -1,17 +1,15 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.daniribalbert.letsplayfootball.R;
 
 /**
  * App/User Settings Fragment.
  */
-public class SettingsFragment extends BaseFragment{
+public class SettingsFragment extends PreferenceFragment {
 
     public static final String TAG = SettingsFragment.class.getSimpleName();
 
@@ -24,12 +22,16 @@ public class SettingsFragment extends BaseFragment{
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        TextView textView = new TextView(container.getContext());
-        textView.setGravity(Gravity.CENTER);
-        textView.setText("Coming Soon!");
-        return textView;
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.preferences);
+        Bundle args = getArguments();
+        if (args != null) {
+            // Do something!
+        }
     }
+
+
 }

@@ -29,8 +29,8 @@
 -keepattributes *Annotation*
 
 # This rule will properly ProGuard all the model classes in
-# the package com.daniribalbert.letsplayfootball.model. Modify to fit the structure
+# the package com.daniribalbert.letsplayfootball.data.model. Modify to fit the structure
 # of your app.
--keepclassmembers class com.daniribalbert.letsplayfootball.model.** {
+-keepclassmembers class com.daniribalbert.letsplayfootball.data.model.** {
   *;
 }

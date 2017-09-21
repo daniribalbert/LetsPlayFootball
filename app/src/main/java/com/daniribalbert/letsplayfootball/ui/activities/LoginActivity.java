@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -23,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.facebook.AccessToken;
@@ -127,7 +128,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
         showProgress(true);
 
         // Check for authenticated user.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = getCurrentUser();
         if (currentUser != null) {
             LogUtils.i("User is logged in!");
             loginCompleted();
@@ -275,6 +276,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     }
 
     private void loginCompleted() {
+        PlayerDbUtils.createUser(Player.fromFirebase(getCurrentUser()));
         final Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

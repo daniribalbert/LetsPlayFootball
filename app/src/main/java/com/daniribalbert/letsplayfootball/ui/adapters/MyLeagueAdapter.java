@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.model.League;
+import com.daniribalbert.letsplayfootball.data.model.League;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.model.League}
+ * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.data.model.League}
  */
 public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHolder> {
 

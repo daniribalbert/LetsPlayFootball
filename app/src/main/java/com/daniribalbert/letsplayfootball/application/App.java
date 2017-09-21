@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.application;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -10,6 +11,7 @@ import com.twitter.sdk.android.core.Twitter;
  */
 public class App extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static Context sContext;
 
     @Override

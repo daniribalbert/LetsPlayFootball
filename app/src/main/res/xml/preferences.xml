@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen>
+    <!--
+    <PreferenceCategory android:title="@string/settings_category_social">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:summaryOff="@string/settings_social_not_connected"
+            android:summaryOn="@string/settings_social_connected"
+            android:title="@string/facebook"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:summaryOff="@string/settings_social_not_connected"
+            android:summaryOn="@string/settings_social_connected"
+            android:title="@string/twitter" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:summaryOff="@string/settings_social_not_connected"
+            android:summaryOn="@string/settings_social_connected"
+            android:title="@string/google" />
+    </PreferenceCategory>
+    -->
+</PreferenceScreen>

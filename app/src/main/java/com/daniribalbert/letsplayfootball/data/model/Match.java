@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.model;
+package com.daniribalbert.letsplayfootball.data.model;
 
 import java.util.Date;
 import java.util.List;

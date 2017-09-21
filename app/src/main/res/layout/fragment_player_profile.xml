@@ -13,22 +13,38 @@
         android:layout_margin="@dimen/margin_medium"
         tools:src="@mipmap/ic_launcher" />
 
-    <EditText
-        android:id="@+id/profile_nickname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:gravity="center"
-        style="@style/ProfileTextTheme"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        tools:text="Doe" />
 
-    <EditText
-        android:id="@+id/profile_name"
-        style="@style/ProfileTextTheme"
+        <EditText
+            android:id="@+id/profile_nickname"
+            style="@style/ProfileTextTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            tools:text="Doe" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:enabled="false"
-        tools:text="Name: John Doe" />
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/margin_small">
+
+        <TextView
+            style="@style/ProfileTextTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/profile_full_name"/>
+
+        <EditText
+            android:id="@+id/profile_name"
+            style="@style/ProfileTextTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            tools:text="John Doe"
+            android:gravity="end"/>
+    </LinearLayout>
 
 </LinearLayout>

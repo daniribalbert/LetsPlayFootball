@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.events;
+package com.daniribalbert.letsplayfootball.ui.events;
 
 import android.support.design.widget.FloatingActionButton;
 

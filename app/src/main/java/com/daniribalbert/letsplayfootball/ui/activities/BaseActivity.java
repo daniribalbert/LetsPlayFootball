@@ -55,4 +55,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         };
     }
+
+    public FirebaseUser getCurrentUser(){
+        return mAuth.getCurrentUser();
+    }
 }

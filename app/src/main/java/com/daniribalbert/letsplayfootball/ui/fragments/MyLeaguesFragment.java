@@ -10,15 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.events.FabClickedEvent;
-import com.daniribalbert.letsplayfootball.model.League;
+import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
+import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,12 +41,12 @@ public class MyLeaguesFragment extends BaseFragment {
     public MyLeaguesFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static MyLeaguesFragment newInstance() {
         MyLeaguesFragment fragment = new MyLeaguesFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
@@ -76,7 +75,9 @@ public class MyLeaguesFragment extends BaseFragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        mAdapter = new MyLeagueAdapter(new ArrayList<League>());
+        if (mAdapter == null) {
+            mAdapter = new MyLeagueAdapter(new ArrayList<League>());
+        }
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -91,8 +92,6 @@ public class MyLeaguesFragment extends BaseFragment {
         super.onDetach();
         EventBus.getDefault().unregister(this);
     }
-
-
 
     @Subscribe
     public void onFabClicked(FabClickedEvent event) {

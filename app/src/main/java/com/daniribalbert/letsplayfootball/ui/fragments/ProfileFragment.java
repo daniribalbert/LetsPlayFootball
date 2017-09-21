@@ -4,60 +4,66 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.events.FabClickedEvent;
-import com.daniribalbert.letsplayfootball.model.Player;
+import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
+import com.daniribalbert.letsplayfootball.utils.GsonUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 /**
  * User profile fragment class.
+ * Provides extra management functionality to the ProfileViewFragment.
  */
-public class ProfileFragment extends BaseFragment {
+public class ProfileFragment extends ProfileViewFragment implements TextWatcher, ValueEventListener {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
 
-    @BindView(R.id.profile_pic)
-    ImageView mProfilePic;
-    @BindView(R.id.profile_nickname)
-    EditText mPlayerNickname;
-    @BindView(R.id.profile_name)
-    EditText mPlayerName;
+    /**
+     * Indicates whether or not the user has changed his profile info.
+     */
+    private boolean mDataChanged;
 
-    private Player mPlayer;
+    public static ProfileFragment newInstance(@NonNull FirebaseUser user) {
+        Bundle args = new Bundle();
 
-    public static ProfileFragment newInstance(@NonNull Player player) {
+        String playerJson = GsonUtils.toJson(Player.fromFirebase(user));
+        args.putString(ARGS_PLAYER, playerJson);
+
         ProfileFragment fragment = new ProfileFragment();
-        fragment.mPlayer = player;
+        fragment.setArguments(args);
         return fragment;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_player_profile, container, false);
-        ButterKnife.bind(this, rootView);
-        return rootView;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            String playerJsonStr = args.getString(ARGS_PLAYER);
+            this.mPlayer = GsonUtils.fromJson(playerJsonStr, Player.class);
+        }
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Glide.with(this).load(mPlayer.getImage()).apply(RequestOptions.circleCropTransform()).into(mProfilePic);
-        mPlayerName.setText(getString(R.string.profile_full_name, mPlayer.getName()));
-        mPlayerNickname.setText(mPlayer.getNickname());
+        mPlayerName.addTextChangedListener(this);
+        mPlayerNickname.addTextChangedListener(this);
     }
 
     @Override
@@ -72,15 +78,33 @@ public class ProfileFragment extends BaseFragment {
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        PlayerDbUtils.getPlayer(mPlayer.id, this);
+    }
+
     @Subscribe
     public void onFabClicked(FabClickedEvent event) {
         toggleEditMode();
         if (mPlayerName.isEnabled()) {
             event.fab.setImageResource(R.drawable.ic_check);
+            mDataChanged = false;
         } else {
             event.fab.setImageResource(android.R.drawable.ic_menu_edit);
-            // TODO: Save new profile info.
+            if (mDataChanged) {
+                savePlayerInfo();
+            }
         }
+    }
+
+    private void savePlayerInfo() {
+        mPlayer.nickname = mPlayerNickname.getText().toString();
+        mPlayer.name = mPlayerName.getText().toString();
+        LogUtils.i("Player info updated! " + mPlayer);
+        PlayerDbUtils.updatePlayer(mPlayer);
     }
 
     public void toggleEditMode() {
@@ -88,5 +112,32 @@ public class ProfileFragment extends BaseFragment {
 
         mPlayerName.setEnabled(toggle);
         mPlayerNickname.setEnabled(toggle);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        mDataChanged = true;
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        mPlayer = dataSnapshot.getValue(Player.class);
+        mPlayerName .setText(mPlayer.name);
+        mPlayerNickname.setText(mPlayer.getDisplayName());
+
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
     }
 }

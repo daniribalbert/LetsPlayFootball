@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,13 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.events.FabClickedEvent;
-import com.daniribalbert.letsplayfootball.model.Player;
+import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.SettingsFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.facebook.login.LoginManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -112,7 +109,7 @@ public class MainActivity extends BaseActivity
 
                 break;
             case R.id.nav_profile:
-                frag = ProfileFragment.newInstance(Player.fromFirebase(mAuth.getCurrentUser()));
+                frag = ProfileFragment.newInstance(getCurrentUser());
                 tag = ProfileFragment.TAG;
                 mFab.setImageResource(android.R.drawable.ic_menu_edit);
                 break;
