@@ -9,10 +9,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
 import butterknife.BindView;
@@ -69,7 +68,7 @@ public class ProfileViewFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Glide.with(this).load(mPlayer.image).apply(RequestOptions.circleCropTransform()).into(mProfilePic);
+        GlideUtils.loadCircularImage(mPlayer.image, mProfilePic);
         mPlayerName.setText(mPlayer.name);
         mPlayerNickname.setText(mPlayer.getDisplayName());
     }

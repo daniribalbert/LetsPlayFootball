@@ -1,5 +1,7 @@
 package com.daniribalbert.letsplayfootball.data.model;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,5 +63,9 @@ public class League {
             return league.id.equalsIgnoreCase(this.id);
         }
         return super.equals(obj);
+    }
+
+    public boolean hasImage() {
+        return !TextUtils.isEmpty(image);
     }
 }

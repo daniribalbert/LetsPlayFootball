@@ -1,7 +1,6 @@
 package com.daniribalbert.letsplayfootball.data.database;
 
 import com.daniribalbert.letsplayfootball.data.model.League;
-import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;

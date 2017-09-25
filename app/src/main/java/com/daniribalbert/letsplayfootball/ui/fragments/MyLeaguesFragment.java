@@ -1,6 +1,7 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.activities.LeagueActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
@@ -43,7 +45,6 @@ public class MyLeaguesFragment extends BaseFragment {
     @BindView(R.id.my_league_recyclerview)
     RecyclerView mRecyclerView;
     private MyLeagueAdapter mAdapter;
-
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -101,6 +102,7 @@ public class MyLeaguesFragment extends BaseFragment {
     }
 
     private void loadData() {
+        showProgress(true);
         PlayerDbUtils.getPlayer(getBaseActivity().getCurrentUser().getUid(),
                                 new ValueEventListener() {
                                     @Override
@@ -117,11 +119,12 @@ public class MyLeaguesFragment extends BaseFragment {
                                             myLeagues.addAll(leagues.values());
                                         }
                                         mAdapter.addItems(myLeagues);
+                                        showProgress(false);
                                     }
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
-
+                                        showProgress(false);
                                     }
                                 });
     }
@@ -133,7 +136,7 @@ public class MyLeaguesFragment extends BaseFragment {
             @Override
             public void onLeagueSaved(League league) {
                 FirebaseUser currentUser = getBaseActivity().getCurrentUser();
-                String id = LeagueDbUtils.createLeague(league, currentUser.getUid());
+                LeagueDbUtils.createLeague(league, currentUser.getUid());
                 mAdapter.addItem(new SimpleLeague(league));
             }
         });
@@ -142,15 +145,19 @@ public class MyLeaguesFragment extends BaseFragment {
 
     @Subscribe
     public void OnLeagueSelectedEvent(OpenLeagueEvent event) {
-        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague.newInstance(event.getLeague().id);
-        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
-            @Override
-            public void onLeagueSaved(League league) {
-                LeagueDbUtils.updateLeague(league);
-                mAdapter.updateItem(new SimpleLeague(league));
-            }
-        });
-        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
+        Intent intent = new Intent(getActivity(), LeagueActivity.class);
+        intent.putExtra(LeagueActivity.LEAGUE_ID, event.getLeague().id);
+        intent.putExtra(LeagueActivity.LEAGUE_TITLE, event.getLeague().title);
+        startActivity(intent);
+//        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague.newInstance(event.getLeague().id);
+//        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
+//            @Override
+//            public void onLeagueSaved(League league) {
+//                LeagueDbUtils.updateLeague(league);
+//                mAdapter.updateItem(new SimpleLeague(league));
+//            }
+//        });
+//        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
     }
 
 }

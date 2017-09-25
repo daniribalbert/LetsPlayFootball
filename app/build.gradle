@@ -36,6 +36,7 @@ dependencies {
     // Firebase | ref: https://firebase.google.com/docs/android/setup
     compile 'com.google.firebase:firebase-auth:11.2.2' // Authentication
     compile 'com.google.firebase:firebase-database:11.2.2' // Database
+    compile 'com.google.firebase:firebase-storage:11.2.2' // Storage
 
     // EventBus | ref: https://github.com/greenrobot/EventBus
     compile 'org.greenrobot:eventbus:3.0.0'

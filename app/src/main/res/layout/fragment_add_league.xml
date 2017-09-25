@@ -15,7 +15,8 @@
             android:layout_width="@dimen/profile_pic_size"
             android:layout_height="@dimen/profile_pic_size"
             android:layout_gravity="center_horizontal"
-            android:src="@mipmap/ic_launcher_round"/>
+            android:src="@mipmap/ic_launcher_round"
+            android:alpha="0.5"/>
 
         <TextView
             android:layout_width="wrap_content"
