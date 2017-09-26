@@ -6,11 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
-import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
+import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,19 +23,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.data.model.League}
+ * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.data.model.Player}
  */
-public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHolder> {
+public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.ViewHolder> {
 
-    private final List<SimpleLeague> mValues = new ArrayList<>();
+    private final List<Player> mValues = new ArrayList<>();
 
-    public MyLeagueAdapter() {
+    public PlayerListAdapter() {
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.league_card, parent, false);
+                                  .inflate(R.layout.player_card, parent, false);
 
         final ViewHolder viewHolder = new ViewHolder(view);
 
@@ -42,7 +43,7 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 final int adapterPosition = viewHolder.getAdapterPosition();
-                EventBus.getDefault().post(new OpenLeagueEvent(mValues.get(adapterPosition)));
+                EventBus.getDefault().post(new OpenPlayerEvent(mValues.get(adapterPosition).id));
             }
         });
         return viewHolder;
@@ -50,8 +51,8 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        SimpleLeague league = mValues.get(position);
-        holder.setLeague(league);
+        Player player = mValues.get(position);
+        holder.setLeague(player);
     }
 
     @Override
@@ -62,50 +63,52 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
     /**
      * Check if league exists and adds it to the list or update the previous entry.
      *
-     * @param league League to be updated on the list.
+     * @param player League to be updated on the list.
      */
-    public void addItem(SimpleLeague league) {
+    public void addItem(Player player) {
         int itemCount = getItemCount();
-        mValues.add(league);
+        mValues.add(player);
         notifyItemInserted(itemCount);
     }
 
     /**
-     * Check if league exists and adds it to the list or update the previous entry.
+     * Check if player exists and adds it to the list or update the previous entry.
      *
-     * @param league League to be updated on the list.
+     * @param player Player to be updated on the list.
      */
-    public void updateItem(SimpleLeague league) {
-        int position = mValues.indexOf(league);
+    public void updateItem(Player player) {
+        int position = mValues.indexOf(player);
         if (position >= 0 && position < mValues.size()) {
-            mValues.set(position, league);
+            mValues.set(position, player);
             notifyItemChanged(position);
         }
     }
 
-    public void addItems(List<SimpleLeague> leagues) {
+    public void addItems(List<Player> players) {
         int itemCount = getItemCount();
-        mValues.addAll(leagues);
-        notifyItemRangeInserted(itemCount, leagues.size());
+        mValues.addAll(players);
+        notifyItemRangeInserted(itemCount, players.size());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.league_card_view)
+        @BindView(R.id.player_card_view)
         CardView mCardView;
-        @BindView(R.id.league_card_title)
+        @BindView(R.id.player_card_title)
         TextView mTitle;
-        @BindView(R.id.league_card_image)
+        @BindView(R.id.player_card_image)
         ImageView mImage;
-        public SimpleLeague mLeague;
+        @BindView(R.id.player_rating)
+        RatingBar mRating;
 
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
 
-        public void setLeague(SimpleLeague league) {
-            setTitle(league.toString());
-            setImage(league.image);
+        public void setLeague(Player player) {
+            setTitle(player.toString());
+            setImage(player.image);
+            setRating(player.rating);
         }
 
         public void setTitle(String title) {
@@ -119,6 +122,10 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
 
         public void setImage(String image) {
             GlideUtils.loadCircularImage(image, mImage);
+        }
+
+        public void setRating(float rating) {
+            mRating.setRating(rating);
         }
     }
 }

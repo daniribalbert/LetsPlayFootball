@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/my_league_recyclerview"
+    android:id="@+id/players_recyclerview"
     android:name="com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,4 +11,4 @@
     android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.fragments.MyLeaguesFragment"
-    tools:listitem="@layout/league_card" />
+    tools:listitem="@layout/player_card" />

@@ -4,7 +4,7 @@ package com.daniribalbert.letsplayfootball.data.model;
  * League object nested withing the Player.
  */
 public class SimpleLeague {
-    public String id;
+    public String league_id;
     public String title;
     public String description;
     public String image;
@@ -14,7 +14,7 @@ public class SimpleLeague {
     }
 
     public SimpleLeague(League league) {
-        this.id = league.id;
+        this.league_id = league.id;
         this.title = league.title;
         this.description = league.description;
         this.image = league.image;
@@ -30,11 +30,11 @@ public class SimpleLeague {
     public boolean equals(Object obj) {
         if (obj instanceof SimpleLeague){
             SimpleLeague league = (SimpleLeague) obj;
-            return league.id.equalsIgnoreCase(this.id);
+            return league.league_id.equalsIgnoreCase(this.league_id);
         }
         if (obj instanceof League){
             League league = (League) obj;
-            return league.id.equalsIgnoreCase(this.id);
+            return league.id.equalsIgnoreCase(this.league_id);
         }
         return super.equals(obj);
     }

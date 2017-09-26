@@ -18,6 +18,8 @@
     <dimen name="login_bt_height">48dp</dimen>
     <dimen name="recycler_view_horizontal_margin">16dp</dimen>
     <dimen name="card_margin">10dp</dimen>
+    <dimen name="card_image_size">125dp</dimen>
+
 
     <dimen name="profile_pic_size">150dp</dimen>
 </resources>

@@ -19,12 +19,15 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
 import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
@@ -48,43 +51,46 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Dialog fragment used to add/edit a new league.
  */
-public class DialogFragmentEditLeague extends DialogFragment implements View.OnClickListener {
+public class DialogFragmentEditPlayer extends DialogFragment implements View.OnClickListener {
 
-    public static final String TAG = DialogFragmentEditLeague.class.getSimpleName();
+    public static final String TAG = DialogFragmentEditPlayer.class.getSimpleName();
 
-    public static final String ARGS_LEAGUE = "ARGS_LEAGUE";
+    public static final String ARGS_PLAYER = "ARGS_PLAYER";
 
     public static final int ARGS_IMAGE_SELECT = 201;
 
-    @BindView(R.id.edit_league_pic)
-    ImageView mLeagueImage;
+    @BindView(R.id.edit_player_pic)
+    ImageView mPlayerImage;
 
-    @BindView(R.id.edit_league_title)
-    EditText mLeagueTitle;
+    @BindView(R.id.edit_player_name)
+    EditText mPlayerName;
 
-    @BindView(R.id.edit_league_description)
-    EditText mLeagueDescription;
+    @BindView(R.id.edit_player_nickname)
+    EditText mPlayerNickname;
 
-    @BindView(R.id.bt_save_league)
-    View mSaveLeague;
+    @BindView(R.id.player_rating)
+    RatingBar mRating;
 
-    private EditLeagueListener mListener;
-    private League mLeague;
+    @BindView(R.id.bt_save_player)
+    View mSavePlayer;
+
+    private EditPlayerListener mListener;
+    private Player mPlayer;
 
     private Uri mImageUri;
 
     private ProgressBar mProgressBar;
 
-    public static DialogFragmentEditLeague newInstance() {
-        DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
+    public static DialogFragmentEditPlayer newInstance() {
+        DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
         dFrag.setRetainInstance(true);
         return dFrag;
     }
 
-    public static DialogFragmentEditLeague newInstance(String leagueId) {
+    public static DialogFragmentEditPlayer newInstance(String playerId) {
         Bundle bundle = new Bundle();
-        DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
-        bundle.putString(ARGS_LEAGUE, leagueId);
+        DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
+        bundle.putString(ARGS_PLAYER, playerId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -94,7 +100,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_league, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_edit_player, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
@@ -102,39 +108,40 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSaveLeague.setOnClickListener(this);
-        mLeagueImage.setOnClickListener(this);
+        mSavePlayer.setOnClickListener(this);
+        mPlayerImage.setOnClickListener(this);
         Bundle args = getArguments();
         if (savedInstanceState == null) {
             if (args != null) {
-                if (!args.containsKey(ARGS_LEAGUE)) {
+                if (!args.containsKey(ARGS_PLAYER)) {
                     return;
                 }
-                String leagueId = args.getString(ARGS_LEAGUE);
+                String leagueId = args.getString(ARGS_PLAYER);
                 loadLeagueData(leagueId);
             } else {
-                mLeague = new League();
+                mPlayer = new Player();
             }
         } else {
             if (mImageUri != null) {
-                GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
-            } else if (mLeague != null && mLeague.hasImage()) {
-                GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
+                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
+            } else if (mPlayer != null && mPlayer.hasImage()) {
+                GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
             }
         }
     }
 
-    private void loadLeagueData(String leagueId) {
-        LeagueDbUtils.getLeague(leagueId, new ValueEventListener() {
+    private void loadLeagueData(String playerId) {
+        PlayerDbUtils.getPlayer(playerId, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mLeague = dataSnapshot.getValue(League.class);
+                mPlayer = dataSnapshot.getValue(Player.class);
 
-                if (mLeague != null) {
-                    mLeagueTitle.setText(mLeague.title);
-                    mLeagueDescription.setText(mLeague.description);
-                    if (mLeague.hasImage()) {
-                        GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
+                if (mPlayer != null) {
+                    mPlayerName.setText(mPlayer.name);
+                    mPlayerNickname.setText(mPlayer.nickname);
+                    mRating.setRating(mPlayer.rating);
+                    if (mPlayer.hasImage()) {
+                        GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
                     }
                 }
             }
@@ -160,12 +167,13 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.bt_save_league:
-                mLeague.title = mLeagueTitle.getText().toString();
-                mLeague.description = mLeagueDescription.getText().toString();
+            case R.id.bt_save_player:
+                mPlayer.name = mPlayerName.getText().toString();
+                mPlayer.nickname = mPlayerNickname.getText().toString();
+                mPlayer.rating = mRating.getRating();
 
                 if (mImageUri == null) {
-                    mListener.onLeagueSaved(mLeague);
+                    mListener.onPlayerSaved(mPlayer);
                     if (getDialog() != null) {
                         dismiss();
                     }
@@ -173,7 +181,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     uploadImage();
                 }
                 break;
-            case R.id.edit_league_pic:
+            case R.id.edit_player_pic:
                 promptSelectImage();
         }
     }
@@ -197,13 +205,17 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                mLeague.image = downloadUrl.toString();
-                mListener.onLeagueSaved(mLeague);
-                if (getDialog() != null) {
-                    dismiss();
+                if (downloadUrl != null) {
+                    mPlayer.image = downloadUrl.toString();
+                    mListener.onPlayerSaved(mPlayer);
+                    if (getDialog() != null) {
+                        dismiss();
+                    }
+                    ToastUtils.show(R.string.toast_profile_saved, Toast.LENGTH_SHORT);
+                } else {
+                    ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
                 }
                 showProgress(false);
-                ToastUtils.show(R.string.toast_profile_saved, Toast.LENGTH_SHORT);
             }
         });
     }
@@ -212,7 +224,6 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-
             File imageFile = FileUtils.getTempFile(getActivity());
             if (requestCode == ARGS_IMAGE_SELECT) {
                 final boolean isCamera;
@@ -223,7 +234,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     if (action == null) {
                         isCamera = false;
                     } else {
-                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
                     }
                 }
 
@@ -233,18 +244,20 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     mImageUri = data == null ? null : data.getData();
                 }
 
-                GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
+                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
             }
         }
     }
 
-    public void setListener(EditLeagueListener listener) {
+    public void setListener(EditPlayerListener listener) {
         mListener = listener;
     }
 
-    public void setProgressBar(ProgressBar progress) { mProgressBar = progress; }
+    public void setProgressBar(ProgressBar progress) {
+        mProgressBar = progress;
+    }
 
-    private void showProgress(boolean show){
+    private void showProgress(boolean show) {
         if (mProgressBar != null) {
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         }
@@ -255,7 +268,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
         final File tempFile = FileUtils.getTempFile(getActivity());
 
         final PackageManager pManager = getActivity().getPackageManager();
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         final List<Intent> cameraIntents = new ArrayList<Intent>();
         List<ResolveInfo> listCam = pManager.queryIntentActivities(captureIntent, 0);
@@ -288,7 +301,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
         super.onDestroyView();
     }
 
-    public interface EditLeagueListener {
-        void onLeagueSaved(League league);
+    public interface EditPlayerListener {
+        void onPlayerSaved(Player player);
     }
 }

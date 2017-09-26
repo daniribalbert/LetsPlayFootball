@@ -10,11 +10,11 @@ public class OpenLeagueEvent {
 
     SimpleLeague league;
 
-    public OpenLeagueEvent(SimpleLeague league){
+    public OpenLeagueEvent(SimpleLeague league) {
         this.league = league;
     }
 
-    public OpenLeagueEvent(League league){
+    public OpenLeagueEvent(League league) {
         this.league = new SimpleLeague(league);
     }
 

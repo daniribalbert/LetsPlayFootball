@@ -92,4 +92,8 @@ public class Player {
         }
         return super.equals(obj);
     }
+
+    public boolean hasImage() {
+        return !TextUtils.isEmpty(image);
+    }
 }

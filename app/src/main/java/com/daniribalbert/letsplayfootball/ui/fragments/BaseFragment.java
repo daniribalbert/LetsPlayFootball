@@ -11,7 +11,7 @@ import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
  */
 public abstract class BaseFragment extends Fragment {
 
-    private ProgressBar mProgressBar;
+    protected ProgressBar mProgressBar;
 
     public BaseActivity getBaseActivity(){
         return (BaseActivity) getActivity();
@@ -19,7 +19,7 @@ public abstract class BaseFragment extends Fragment {
 
     public void setProgress(ProgressBar progressBar){ mProgressBar = progressBar; }
 
-    protected void showProgress(boolean show){
+    public void showProgress(boolean show){
         if (mProgressBar != null) {
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
 

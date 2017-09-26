@@ -275,7 +275,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     }
 
     private void loginCompleted() {
-        PlayerDbUtils.createUser(Player.fromFirebase(getCurrentUser()));
+        PlayerDbUtils.createUser(getCurrentUser());
         final Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();
