@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
-import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.facebook.AccessToken;
@@ -275,7 +274,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     }
 
     private void loginCompleted() {
-        PlayerDbUtils.createUser(getCurrentUser());
+        PlayerDbUtils.createPlayer(getCurrentUser());
         final Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
         finish();

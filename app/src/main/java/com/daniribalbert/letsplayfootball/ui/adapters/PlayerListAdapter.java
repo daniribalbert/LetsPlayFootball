@@ -29,7 +29,10 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
     private final List<Player> mValues = new ArrayList<>();
 
-    public PlayerListAdapter() {
+    String mLeagueId;
+
+    public PlayerListAdapter(String leagueId) {
+        mLeagueId = leagueId;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Player player = mValues.get(position);
-        holder.setLeague(player);
+        holder.setPlayer(player, mLeagueId);
     }
 
     @Override
@@ -105,10 +108,10 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
             ButterKnife.bind(this, view);
         }
 
-        public void setLeague(Player player) {
+        public void setPlayer(Player player, String leagueId) {
             setTitle(player.toString());
             setImage(player.image);
-            setRating(player.rating);
+            setRating(player.getRating(leagueId));
         }
 
         public void setTitle(String title) {

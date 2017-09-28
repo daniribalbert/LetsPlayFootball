@@ -13,6 +13,15 @@ public class SimpleLeague {
     public SimpleLeague() {//Firebase constructor
     }
 
+    /**
+     * Simple league for Guest players which are not registered within the app and only
+     * available for a specific league.
+     * @param id league id.
+     */
+    public SimpleLeague(String id) {
+        this.league_id = id;
+    }
+
     public SimpleLeague(League league) {
         this.league_id = league.id;
         this.title = league.title;

@@ -9,6 +9,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -30,7 +31,7 @@ public class PlayerDbUtils {
      * @param firebaseUser new player to be added to the database with info gathered from the
      *                     Firebase login info.
      */
-    public static void createUser(final FirebaseUser firebaseUser) {
+    public static void createPlayer(final FirebaseUser firebaseUser) {
         final Player player = Player.fromFirebase(firebaseUser);
         final DatabaseReference dbRef = getRef();
         dbRef.child(player.id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -53,7 +54,7 @@ public class PlayerDbUtils {
      *
      * @param player new player to be added to the database.
      */
-    public static Player createUser(final Player player) {
+    public static Player createGuestPlayer(final Player player) {
         final DatabaseReference dbRef = getRef();
         DatabaseReference push = dbRef.push();
         player.id = push.getKey();
@@ -69,8 +70,9 @@ public class PlayerDbUtils {
     public static void getPlayersFromLeague(String leagueId,
                                             ValueEventListener valueEventListener) {
         DatabaseReference dbRef = getRef();
-        dbRef.orderByChild("league_id").equalTo(leagueId)
-             .addListenerForSingleValueEvent(valueEventListener);
+        Query query = dbRef.orderByChild("leagues/" + leagueId + "/league_id").equalTo(leagueId);
+
+        query.addListenerForSingleValueEvent(valueEventListener);
     }
 
     public static void updatePlayer(Player player) {

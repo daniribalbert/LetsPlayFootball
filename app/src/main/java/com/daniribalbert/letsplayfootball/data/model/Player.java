@@ -36,7 +36,12 @@ public class Player {
      */
     public HashMap<String, SimpleLeague> leagues = new HashMap<>();
 
-    public float rating;
+    /**
+     * Player rating, organized per league.
+     * The player should have a different rating based on the league his playing.
+     * He can be the best in a league with amateur players but only average in a professional league.
+     */
+    public HashMap<String, Float> rating = new HashMap<>();;
 
     // Skills set used to rank this player.
     // TODO: For future releases add skills.
@@ -86,7 +91,7 @@ public class Player {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Player){
+        if (obj instanceof Player) {
             Player player = (Player) obj;
             return player.id.equalsIgnoreCase(this.id);
         }
@@ -95,5 +100,14 @@ public class Player {
 
     public boolean hasImage() {
         return !TextUtils.isEmpty(image);
+    }
+
+    public float getRating(String leagueId){
+        Float rating = this.rating.get(leagueId);
+        return rating == null ? 0f : rating;
+    }
+
+    public void setRating(String leagueId, float rating){
+        this.rating.put(leagueId, rating);
     }
 }

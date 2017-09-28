@@ -12,6 +12,8 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +25,12 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
-import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,6 +56,7 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
 
     public static final String TAG = DialogFragmentEditPlayer.class.getSimpleName();
 
+    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
     public static final String ARGS_PLAYER = "ARGS_PLAYER";
 
     public static final int ARGS_IMAGE_SELECT = 201;
@@ -79,21 +81,39 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
 
     private Uri mImageUri;
 
-    private ProgressBar mProgressBar;
+    @BindView(R.id.dialog_progress)
+    ProgressBar mProgressBar;
 
-    public static DialogFragmentEditPlayer newInstance() {
+    private String mLeagueId;
+    private String mPlayerId;
+
+    public static DialogFragmentEditPlayer newInstance(String leagueId) {
+        Bundle bundle = new Bundle();
         DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
+        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
     }
 
-    public static DialogFragmentEditPlayer newInstance(String playerId) {
+    public static DialogFragmentEditPlayer newInstance(String leagueId, String playerId) {
         Bundle bundle = new Bundle();
         DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
+        bundle.putString(ARGS_LEAGUE_ID, leagueId);
         bundle.putString(ARGS_PLAYER, playerId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            mLeagueId = args.getString(ARGS_LEAGUE_ID);
+            mPlayerId = args.getString(ARGS_PLAYER);
+        }
     }
 
     @Nullable
@@ -110,16 +130,11 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
         super.onViewCreated(view, savedInstanceState);
         mSavePlayer.setOnClickListener(this);
         mPlayerImage.setOnClickListener(this);
-        Bundle args = getArguments();
         if (savedInstanceState == null) {
-            if (args != null) {
-                if (!args.containsKey(ARGS_PLAYER)) {
-                    return;
-                }
-                String leagueId = args.getString(ARGS_PLAYER);
-                loadLeagueData(leagueId);
-            } else {
+            if (TextUtils.isEmpty(mPlayerId)) {
                 mPlayer = new Player();
+            } else {
+                loadPlayerData(mPlayerId);
             }
         } else {
             if (mImageUri != null) {
@@ -130,7 +145,8 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
         }
     }
 
-    private void loadLeagueData(String playerId) {
+    private void loadPlayerData(String playerId) {
+        showProgress(true);
         PlayerDbUtils.getPlayer(playerId, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,16 +155,17 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
                 if (mPlayer != null) {
                     mPlayerName.setText(mPlayer.name);
                     mPlayerNickname.setText(mPlayer.nickname);
-                    mRating.setRating(mPlayer.rating);
+                    mRating.setRating(mPlayer.getRating(mLeagueId));
                     if (mPlayer.hasImage()) {
                         GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
                     }
                 }
+                showProgress(false);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                showProgress(false);
             }
         });
 
@@ -168,9 +185,11 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_player:
+                showProgress(true);
+
                 mPlayer.name = mPlayerName.getText().toString();
                 mPlayer.nickname = mPlayerNickname.getText().toString();
-                mPlayer.rating = mRating.getRating();
+                mPlayer.setRating(mLeagueId, mRating.getRating());
 
                 if (mImageUri == null) {
                     mListener.onPlayerSaved(mPlayer);
@@ -251,10 +270,6 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
 
     public void setListener(EditPlayerListener listener) {
         mListener = listener;
-    }
-
-    public void setProgressBar(ProgressBar progress) {
-        mProgressBar = progress;
     }
 
     private void showProgress(boolean show) {

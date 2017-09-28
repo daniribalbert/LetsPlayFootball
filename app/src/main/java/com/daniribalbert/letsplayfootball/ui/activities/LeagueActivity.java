@@ -14,6 +14,7 @@ import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 

@@ -73,7 +73,8 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
 
     private Uri mImageUri;
 
-    private ProgressBar mProgressBar;
+    @BindView(R.id.dialog_progress)
+    ProgressBar mProgressBar;
 
     public static DialogFragmentEditLeague newInstance() {
         DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
@@ -241,8 +242,6 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     public void setListener(EditLeagueListener listener) {
         mListener = listener;
     }
-
-    public void setProgressBar(ProgressBar progress) { mProgressBar = progress; }
 
     private void showProgress(boolean show){
         if (mProgressBar != null) {
