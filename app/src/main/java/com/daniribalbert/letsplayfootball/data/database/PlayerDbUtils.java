@@ -12,6 +12,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Utility class for Player database operations.
  */
@@ -88,5 +91,30 @@ public class PlayerDbUtils {
     public static void updatePlayerLeague(String playerId, League league) {
         DatabaseReference ref = getRef();
         ref.child(playerId).child("leagues").child(league.id).setValue(new SimpleLeague(league));
+    }
+
+    public static void removePlayer(Player player, String leagueId) {
+        boolean isGuest = player.leagues.size() < 3;
+        if (isGuest) {
+            removeGuestPlayer(player.id);
+        } else{
+            removePlayerFromLeague(player, leagueId);
+        }
+    }
+
+    private static void removeGuestPlayer(String playerId) {
+        DatabaseReference ref = getRef();
+        ref.child(playerId).removeValue();
+    }
+
+    private static void removePlayerFromLeague(Player player, String leagueId) {
+        player.leagues.remove(leagueId);
+        player.rating.remove(leagueId);
+
+        DatabaseReference ref = getRef();
+        Map<String, Object> updateMap = new HashMap<String, Object>();
+        updateMap.put("rating", player.rating);
+        updateMap.put("leagues", player.leagues);
+        ref.child(player.id).updateChildren(updateMap);
     }
 }

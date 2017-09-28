@@ -12,7 +12,9 @@ import android.widget.TextView;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -42,13 +44,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
         final ViewHolder viewHolder = new ViewHolder(view);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final int adapterPosition = viewHolder.getAdapterPosition();
-                EventBus.getDefault().post(new OpenPlayerEvent(mValues.get(adapterPosition).id));
-            }
-        });
+
         return viewHolder;
     }
 
@@ -93,7 +89,14 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         notifyItemRangeInserted(itemCount, players.size());
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public void removeItem(Player player) {
+        int index = mValues.indexOf(player);
+        mValues.remove(index);
+        notifyItemRemoved(index);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+                                                                       View.OnLongClickListener {
         @BindView(R.id.player_card_view)
         CardView mCardView;
         @BindView(R.id.player_card_title)
@@ -106,6 +109,9 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         public ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
         }
 
         public void setPlayer(Player player, String leagueId) {
@@ -129,6 +135,19 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
         public void setRating(float rating) {
             mRating.setRating(rating);
+        }
+
+        @Override
+        public void onClick(View view) {
+            final int adapterPosition = getAdapterPosition();
+            EventBus.getDefault().post(new OpenPlayerEvent(mValues.get(adapterPosition).id));
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            final int adapterPosition = getAdapterPosition();
+            EventBus.getDefault().post(new RemovePlayerEvent(mValues.get(adapterPosition)));
+            return true;
         }
     }
 }

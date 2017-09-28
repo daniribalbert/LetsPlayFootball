@@ -1,6 +1,8 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +18,7 @@ import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.adapters.PlayerListAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -179,6 +182,24 @@ public class PlayerListFragment extends BaseFragment {
             }
         });
         dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
+    }
+
+    @Subscribe
+    public void OnPlayerRemoveEvent(final RemovePlayerEvent event) {
+        String name = event.player.getDisplayName();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_remove_player_title);
+        builder.setMessage(getString(R.string.dialog_remove_player_message, name));
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mAdapter.removeItem(event.player);
+                PlayerDbUtils.removePlayer(event.player, mLeagueId);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.create().show();
     }
 
 }

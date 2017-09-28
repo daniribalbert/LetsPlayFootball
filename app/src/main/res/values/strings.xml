@@ -17,6 +17,9 @@
     <string name="league_name_hint">Major League</string>
     <string name="optional">Optional</string>
     <string name="save">Save</string>
+    <string name="remove">Remove</string>
+    <string name="dialog_remove_player_title">Remove Player?</string>
+    <string name="dialog_remove_player_message">Are you sure you want to remove %1$s from the league?</string>
 
 
     <!-- Strings related to user Profile -->
