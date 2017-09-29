@@ -14,7 +14,7 @@ import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,6 +36,18 @@ public class LeagueActivity extends BaseActivity
     @BindView(R.id.fab)
     FloatingActionButton mFab;
 
+    @BindView(R.id.fab_menu_layout)
+    View mFabLayout;
+
+    @BindView(R.id.fab_menu_1)
+    FloatingActionButton mFabMenu1;
+
+    @BindView(R.id.fab_menu_2)
+    FloatingActionButton mFabMenu2;
+
+    @BindView(R.id.fab_menu_3)
+    FloatingActionButton mFabMenu3;
+
     private String mLeagueId;
 
     @BindView(R.id.app_progress)
@@ -51,6 +63,9 @@ public class LeagueActivity extends BaseActivity
         setSupportActionBar(mToolbar);
 
         mFab.setOnClickListener(this);
+        mFabMenu1.setOnClickListener(this);
+        mFabMenu2.setOnClickListener(this);
+        mFabMenu3.setOnClickListener(this);
 
         if (savedInstanceState == null) {
             PlayerListFragment frag = PlayerListFragment.newInstance(mLeagueId);
@@ -79,8 +94,47 @@ public class LeagueActivity extends BaseActivity
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
+                toggleFabMenu();
+                break;
+            case R.id.fab_menu_1:
+                mFab.setImageResource(R.drawable.ic_add);
+                mFab.setVisibility(View.GONE);
+                mFabLayout.setVisibility(View.GONE);
+                PlayerSearchFragment playerSearchFragment = PlayerSearchFragment
+                        .newInstance(mLeagueId);
+                playerSearchFragment.setProgress(mProgressBar);
+                getFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, playerSearchFragment,
+                                             PlayerSearchFragment.TAG)
+                                    .addToBackStack(PlayerSearchFragment.TAG).commit();
+                break;
+            case R.id.fab_menu_2:
                 EventBus.getDefault().post(new FabClickedEvent(mFab));
                 break;
+            case R.id.fab_menu_3:
+                // TODO: Add Match
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mFabLayout.getVisibility() == View.VISIBLE) {
+            toggleFabMenu();
+        } else {
+            mFab.setVisibility(View.VISIBLE);
+            super.onBackPressed();
+        }
+    }
+
+    private void toggleFabMenu() {
+        boolean isVisible = mFabLayout.getVisibility() == View.VISIBLE;
+        if (isVisible) {
+            mFabLayout.setVisibility(View.GONE);
+            mFab.setImageResource(R.drawable.ic_add);
+        } else {
+            mFabLayout.setVisibility(View.VISIBLE);
+            mFab.setImageResource(R.drawable.ic_close);
         }
     }
 }

@@ -6,4 +6,26 @@
     <string name="navigation_drawer_close">Fechar Menu</string>
     <string name="navigation_drawer_open">Abrir Menu</string>
     <string name="drawer_home">Meu menu</string>
+    <string name="hint_search_players">Procurar Jogador</string>
+    <string name="name">Nome</string>
+    <string name="action_sign_in_short">Logar</string>
+    <string name="action_sign_in">Logar ou Registrar</string>
+    <string name="back">Voltar</string>
+    <string name="drawer_profile">Perfil</string>
+    <string name="nickname">Apelido</string>
+    <string name="optional">Opcional</string>
+    <string name="profile_full_name">Nome Completo:</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Senha</string>
+    <string name="remove">Remover</string>
+    <string name="save">Salvar</string>
+    <string name="settings_social_connected">Conectado</string>
+    <string name="settings_social_not_connected">Desconectado</string>
+    <string name="title_activity_login">Login</string>
+    <string name="toast_profile_saved">Perfil Salvo!</string>
+    <string name="toast_error_generic">Ops, alguma coisa deu errado!</string>
+    <string name="settings_category_social"></string>
+    <string name="auth_failed">Falha de autenticação!</string>
+    <string name="hint_add_player">Adicionar novo jogador</string>
+    <string name="hint_add_upcoming_match">Adicionar próxima partida</string>
 </resources>

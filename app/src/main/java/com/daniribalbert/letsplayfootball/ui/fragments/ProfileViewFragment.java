@@ -69,7 +69,7 @@ public class ProfileViewFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         GlideUtils.loadCircularImage(mPlayer.image, mProfilePic);
-        mPlayerName.setText(mPlayer.name);
+        mPlayerName.setText(mPlayer.getName());
         mPlayerNickname.setText(mPlayer.getDisplayName());
     }
 }

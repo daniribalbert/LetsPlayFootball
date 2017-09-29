@@ -38,6 +38,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getFragmentManager().getBackStackEntryCount() > 0) {
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void initFirebase() {
         mAuth = FirebaseAuth.getInstance();
 
@@ -56,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         };
     }
 
-    public FirebaseUser getCurrentUser(){
+    public FirebaseUser getCurrentUser() {
         return mAuth.getCurrentUser();
     }
 }

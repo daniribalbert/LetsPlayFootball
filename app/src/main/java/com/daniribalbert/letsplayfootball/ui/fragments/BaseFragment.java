@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 /**
  * That BaseFragment that starts every other Fragment.

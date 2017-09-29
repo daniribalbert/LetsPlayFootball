@@ -68,4 +68,9 @@ public class League {
     public boolean hasImage() {
         return !TextUtils.isEmpty(image);
     }
+
+    @Override
+    public int hashCode() {
+        return ownersId.size() + players.size(); // Java... -_-
+    }
 }

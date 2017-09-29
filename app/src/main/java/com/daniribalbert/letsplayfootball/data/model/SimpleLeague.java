@@ -8,7 +8,6 @@ public class SimpleLeague {
     public String title;
     public String description;
     public String image;
-    public int nPlayers;
 
     public SimpleLeague() {//Firebase constructor
     }
@@ -27,7 +26,6 @@ public class SimpleLeague {
         this.title = league.title;
         this.description = league.description;
         this.image = league.image;
-        this.nPlayers = league.players.size();
     }
 
     @Override
@@ -46,6 +44,18 @@ public class SimpleLeague {
             return league.id.equalsIgnoreCase(this.league_id);
         }
         return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        // Java... -_-
+        if (title == null){
+            return 0;
+        }
+        if (description == null){
+            return title.length();
+        }
+        return title.length() + description.length();
     }
 }
 

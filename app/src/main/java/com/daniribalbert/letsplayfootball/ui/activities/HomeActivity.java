@@ -92,8 +92,6 @@ public class HomeActivity extends BaseActivity
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
         }

@@ -35,7 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * A fragment representing a list of League Items.
+ * A fragment representing a list of Player Items.
  */
 public class PlayerListFragment extends BaseFragment {
 
@@ -45,9 +45,9 @@ public class PlayerListFragment extends BaseFragment {
 
     @BindView(R.id.players_recyclerview)
     RecyclerView mRecyclerView;
-    private PlayerListAdapter mAdapter;
+    PlayerListAdapter mAdapter;
 
-    private String mLeagueId;
+    String mLeagueId;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -124,36 +124,37 @@ public class PlayerListFragment extends BaseFragment {
         }
     }
 
-    private void loadData() {
+    protected void loadData() {
         showProgress(true);
-        PlayerDbUtils.getPlayersFromLeague(mLeagueId,
-                                           new ValueEventListener() {
-                                               @Override
-                                               public void onDataChange(DataSnapshot dataSnapshot) {
-                                                   LogUtils.w(dataSnapshot.toString());
-                                                   Iterator<DataSnapshot> iterator = dataSnapshot
-                                                           .getChildren()
-                                                           .iterator();
+        PlayerDbUtils
+                .getPlayersFromLeague(mLeagueId,
+                                      new ValueEventListener() {
+                                          @Override
+                                          public void onDataChange(DataSnapshot dataSnapshot) {
+                                              LogUtils.w(dataSnapshot.toString());
+                                              Iterator<DataSnapshot> iterator = dataSnapshot
+                                                      .getChildren()
+                                                      .iterator();
 
-                                                   List<Player> players = new ArrayList<Player>();
-                                                   while (iterator.hasNext()) {
-                                                       DataSnapshot next = iterator.next();
-                                                       Player player = next.getValue(Player.class);
-                                                       if (player != null) {
-                                                           players.add(player);
-                                                       }
-                                                   }
+                                              List<Player> players = new ArrayList<Player>();
+                                              while (iterator.hasNext()) {
+                                                  DataSnapshot next = iterator.next();
+                                                  Player player = next.getValue(Player.class);
+                                                  if (player != null) {
+                                                      players.add(player);
+                                                  }
+                                              }
 
-                                                   mAdapter.addItems(players);
-                                                   showProgress(false);
-                                               }
+                                              mAdapter.addItems(players);
+                                              showProgress(false);
+                                          }
 
-                                               @Override
-                                               public void onCancelled(
-                                                       DatabaseError databaseError) {
-                                                   showProgress(false);
-                                               }
-                                           });
+                                          @Override
+                                          public void onCancelled(
+                                                  DatabaseError databaseError) {
+                                              showProgress(false);
+                                          }
+                                      });
     }
 
     @Subscribe

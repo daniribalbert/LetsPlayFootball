@@ -14,11 +14,11 @@ import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -83,7 +83,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         }
     }
 
-    public void addItems(List<Player> players) {
+    public void addItems(Collection<Player> players) {
         int itemCount = getItemCount();
         mValues.addAll(players);
         notifyItemRangeInserted(itemCount, players.size());
@@ -93,6 +93,11 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         int index = mValues.indexOf(player);
         mValues.remove(index);
         notifyItemRemoved(index);
+    }
+
+    public void clear() {
+        mValues.clear();
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,

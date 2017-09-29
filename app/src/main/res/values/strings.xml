@@ -29,6 +29,7 @@
     <string name="toast_error_generic">Something went wrong!</string>
     <string name="hint_player_name">Pavel Nedvěd</string>
     <string name="hint_player_nickname">Nedved</string>
+    <string name="hint_player_search">Del Piero</string>
 
     <!-- Strings related to login -->
     <string name="dialog_login_failed">Login Failed</string>
@@ -46,5 +47,11 @@
     <string name="settings_category_social">Social</string>
     <string name="settings_social_connected">Connected</string>
     <string name="settings_social_not_connected">Not connected</string>
+
+    <!-- Strings related to League -->
+    <string name="hint_search_players">Search Players</string>
+    <string name="hint_add_player">Add new player</string>
+    <string name="hint_add_upcoming_match">Add upcoming match</string>
+
 
 </resources>

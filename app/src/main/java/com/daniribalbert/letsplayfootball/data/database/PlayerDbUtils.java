@@ -13,7 +13,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Utility class for Player database operations.
@@ -22,7 +25,7 @@ public class PlayerDbUtils {
 
     private static final String PATH = "players";
 
-    public static DatabaseReference getRef() {
+    private static DatabaseReference getRef() {
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         return dbRef.child(DbUtils.getRoot()).child(PATH);
     }
@@ -61,6 +64,8 @@ public class PlayerDbUtils {
         final DatabaseReference dbRef = getRef();
         DatabaseReference push = dbRef.push();
         player.id = push.getKey();
+        player.guestify();
+
         push.setValue(player);
         return player;
     }
@@ -78,8 +83,51 @@ public class PlayerDbUtils {
         query.addListenerForSingleValueEvent(valueEventListener);
     }
 
+    public static void searchPlayers(final String searchQuery,
+                                     final SearchListener<Player> listener) {
+        final int MAX_RESULTS = 50;
+        DatabaseReference dbRef = getRef();
+        Query nameQuery = dbRef.orderByChild("name").startAt(searchQuery).limitToFirst(MAX_RESULTS);
+        Query nicknameQuery = dbRef.orderByChild("nickname").startAt(searchQuery)
+                                   .limitToFirst(MAX_RESULTS);
+        final AtomicInteger nQuery = new AtomicInteger(2);
+        final Set<Player> result = new HashSet<Player>();
+
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                LogUtils.w(dataSnapshot.toString());
+                for (DataSnapshot next : dataSnapshot.getChildren()) {
+                    Player player = next.getValue(Player.class);
+                    if (player != null
+                            && (player.name.startsWith(searchQuery)
+                            || player.nickname.startsWith(searchQuery))) {
+                        result.add(player);
+                    }
+                }
+                if (nQuery.decrementAndGet() <= 0) {
+                    listener.onDataReceived(result);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if (nQuery.decrementAndGet() <= 0) {
+                    listener.onDataReceived(result);
+                }
+            }
+        };
+
+        nameQuery.addValueEventListener(eventListener);
+        nicknameQuery.addValueEventListener(eventListener);
+    }
+
     public static void updatePlayer(Player player) {
         DatabaseReference dbRef = getRef();
+        if (player.isGuest()) {
+            player.guestify();
+        }
         dbRef.child(player.id).setValue(player);
     }
 
@@ -97,7 +145,7 @@ public class PlayerDbUtils {
         boolean isGuest = player.leagues.size() < 3;
         if (isGuest) {
             removeGuestPlayer(player.id);
-        } else{
+        } else {
             removePlayerFromLeague(player, leagueId);
         }
     }
@@ -116,5 +164,9 @@ public class PlayerDbUtils {
         updateMap.put("rating", player.rating);
         updateMap.put("leagues", player.leagues);
         ref.child(player.id).updateChildren(updateMap);
+    }
+
+    public interface SearchListener<T> {
+        void onDataReceived(Set<T> results);
     }
 }

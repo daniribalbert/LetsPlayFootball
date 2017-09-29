@@ -26,10 +26,15 @@ public class Match {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Match){
+        if (obj instanceof Match) {
             Match match = (Match) obj;
             return match.id.equalsIgnoreCase(this.id);
         }
         return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) time.getTime(); // Java... -_-
     }
 }

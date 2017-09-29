@@ -132,9 +132,10 @@ public class ProfileFragment extends ProfileViewFragment
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         mPlayer = dataSnapshot.getValue(Player.class);
-        mPlayerName.setText(mPlayer.name);
-        mPlayerNickname.setText(mPlayer.getDisplayName());
-
+        if (mPlayer != null) {
+            mPlayerName.setText(mPlayer.getName());
+            mPlayerNickname.setText(mPlayer.getDisplayName());
+        }
     }
 
     @Override

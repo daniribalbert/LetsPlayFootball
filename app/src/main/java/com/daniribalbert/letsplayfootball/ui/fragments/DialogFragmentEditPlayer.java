@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -153,8 +151,8 @@ public class DialogFragmentEditPlayer extends DialogFragment implements View.OnC
                 mPlayer = dataSnapshot.getValue(Player.class);
 
                 if (mPlayer != null) {
-                    mPlayerName.setText(mPlayer.name);
-                    mPlayerNickname.setText(mPlayer.nickname);
+                    mPlayerName.setText(mPlayer.getName());
+                    mPlayerNickname.setText(mPlayer.getNickname());
                     mRating.setRating(mPlayer.getRating(mLeagueId));
                     if (mPlayer.hasImage()) {
                         GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
