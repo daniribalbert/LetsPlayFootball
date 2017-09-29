@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listener.CompletionListener;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.facebook.AccessToken;
@@ -63,13 +64,16 @@ import butterknife.ButterKnife;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends BaseActivity implements OnClickListener,
-        GoogleApiClient.OnConnectionFailedListener {
+                                                           GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_GOOGLE_SIGN_IN = 2;
-    private static final int RC_FACEBOOK_SIGN_IN = CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode();
-    private static final int RC_TWITTER_SIGN_IN = Twitter.getInstance().getTwitterAuthConfig().getRequestCode();
+    private static final int RC_FACEBOOK_SIGN_IN = CallbackManagerImpl.RequestCodeOffset.Login
+            .toRequestCode();
+    private static final int RC_TWITTER_SIGN_IN = Twitter.getInstance().getTwitterAuthConfig()
+                                                         .getRequestCode();
 
-    private static final List<String> FACEBOOK_PERMISSIONS = Arrays.asList("email", "public_profile");
+    private static final List<String> FACEBOOK_PERMISSIONS = Arrays
+            .asList("email", "public_profile");
 
     // UI references.
     @BindView(R.id.email)
@@ -130,7 +134,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
         FirebaseUser currentUser = getCurrentUser();
         if (currentUser != null) {
             LogUtils.i("User is logged in!");
-            loginCompleted();
+            showUserHome();
         }
 
         initGoogleLogin();
@@ -156,14 +160,16 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     private void initGoogleLogin() {
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
 
         // Build a GoogleApiClient with access to the Google Sign-In API and the
         // options specified by gso.
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage(this /* FragmentActivity */,
+                                  this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -182,40 +188,56 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
                 null,
                 null);
         mFacebookLoginButton.setCompoundDrawablePadding(
-                res.getDimensionPixelSize(com.twitter.sdk.android.core.R.dimen.tw__login_btn_drawable_padding));
+                res.getDimensionPixelSize(
+                        com.twitter.sdk.android.core.R.dimen.tw__login_btn_drawable_padding));
         mFacebookLoginButton.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                res.getDimensionPixelSize(com.twitter.sdk.android.core.R.dimen.tw__login_btn_text_size));
-        mFacebookLoginButton.setPadding(res.getDimensionPixelSize(com.twitter.sdk.android.core.R.dimen.tw__login_btn_left_padding), 0,
-                res.getDimensionPixelSize(com.twitter.sdk.android.core.R.dimen.tw__login_btn_right_padding), 0);
+                                         res.getDimensionPixelSize(
+                                                 com.twitter.sdk.android.core.R.dimen.tw__login_btn_text_size));
+        mFacebookLoginButton.setPadding(res.getDimensionPixelSize(
+                com.twitter.sdk.android.core.R.dimen.tw__login_btn_left_padding), 0,
+                                        res.getDimensionPixelSize(
+                                                com.twitter.sdk.android.core.R.dimen.tw__login_btn_right_padding),
+                                        0);
 
 
         mFacebookCallbackManager = CallbackManager.Factory.create();
         mFacebookLoginButton.setOnClickListener(this);
 
-        LoginManager.getInstance().registerCallback(mFacebookCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                LogUtils.i("Facebook Login: SUCCESS!");
-                showProgress(true);
-                final AccessToken accessToken = loginResult.getAccessToken();
-                final String token = accessToken.getToken();
-                final AuthCredential credential = FacebookAuthProvider.getCredential(token);
-                loginResult.getAccessToken();
-                mAuth.signInWithCredential(credential)
-                        .addOnCompleteListener(LoginActivity.this, ON_COMPLETE_LISTENER);
-            }
+        LoginManager.getInstance().registerCallback(mFacebookCallbackManager,
+                                                    new FacebookCallback<LoginResult>() {
+                                                        @Override
+                                                        public void onSuccess(
+                                                                LoginResult loginResult) {
+                                                            LogUtils.i("Facebook Login: SUCCESS!");
+                                                            showProgress(true);
+                                                            final AccessToken accessToken = loginResult
+                                                                    .getAccessToken();
+                                                            final String token = accessToken
+                                                                    .getToken();
+                                                            final AuthCredential credential = FacebookAuthProvider
+                                                                    .getCredential(token);
+                                                            loginResult.getAccessToken();
+                                                            mAuth.signInWithCredential(credential)
+                                                                 .addOnCompleteListener(
+                                                                         LoginActivity.this,
+                                                                         ON_COMPLETE_LISTENER);
+                                                        }
 
-            @Override
-            public void onCancel() {
-                LogUtils.d("Facebook Login: Cancelled!");
-            }
+                                                        @Override
+                                                        public void onCancel() {
+                                                            LogUtils.d(
+                                                                    "Facebook Login: Cancelled!");
+                                                        }
 
-            @Override
-            public void onError(FacebookException exception) {
-                LogUtils.w("Facebook Login: ERROR!", exception);
-                ToastUtils.show(R.string.auth_failed, Toast.LENGTH_SHORT);
-            }
-        });
+                                                        @Override
+                                                        public void onError(
+                                                                FacebookException exception) {
+                                                            LogUtils.w("Facebook Login: ERROR!",
+                                                                       exception);
+                                                            ToastUtils.show(R.string.auth_failed,
+                                                                            Toast.LENGTH_SHORT);
+                                                        }
+                                                    });
     }
 
     private void initTwitterLogin() {
@@ -230,7 +252,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
                         twitterSession.getAuthToken().token,
                         twitterSession.getAuthToken().secret);
                 mAuth.signInWithCredential(credential)
-                        .addOnCompleteListener(LoginActivity.this, ON_COMPLETE_LISTENER);
+                     .addOnCompleteListener(LoginActivity.this, ON_COMPLETE_LISTENER);
             }
 
             @Override
@@ -266,7 +288,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
             GoogleSignInAccount acct = result.getSignInAccount();
             AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
 
-            mAuth.signInWithCredential(credential).addOnCompleteListener(this, ON_COMPLETE_LISTENER);
+            mAuth.signInWithCredential(credential)
+                 .addOnCompleteListener(this, ON_COMPLETE_LISTENER);
         } else {
             // Signed out, show unauthenticated UI.
             ToastUtils.show(R.string.auth_failed, Toast.LENGTH_SHORT);
@@ -274,8 +297,18 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
     }
 
     private void loginCompleted() {
-        PlayerDbUtils.createPlayer(getCurrentUser());
-        final Intent intent = new Intent(this, HomeActivity.class);
+        showProgress(true);
+        PlayerDbUtils.createPlayer(getCurrentUser(), new CompletionListener() {
+            @Override
+            public void onComplete(boolean success) {
+                showProgress(false);
+                showUserHome();
+            }
+        });
+    }
+
+    private void showUserHome() {
+        final Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }
@@ -326,46 +359,50 @@ public class LoginActivity extends BaseActivity implements OnClickListener,
 
     private void signIn(final String email, final String password) {
         showProgress(true);
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                showProgress(false);
-                if (task.isSuccessful()) {
-                    LogUtils.i("Login successful!");
-                    loginCompleted();
-                } else {
-                    LogUtils.d("Login Failed. Should create new account?");
-                    new AlertDialog.Builder(LoginActivity.this)
-                            .setTitle(R.string.dialog_login_failed)
-                            .setMessage(getString(R.string.error_sign_in_try_register))
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    signUp(email, password);
-                                }
-                            })
-                            .setNegativeButton(R.string.back, null)
-                            .show();
-                }
-            }
-        });
+        mAuth.signInWithEmailAndPassword(email, password)
+             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                 @Override
+                 public void onComplete(@NonNull Task<AuthResult> task) {
+                     showProgress(false);
+                     if (task.isSuccessful()) {
+                         LogUtils.i("Login successful!");
+                         showUserHome();
+                     } else {
+                         LogUtils.d("Login Failed. Should create new account?");
+                         new AlertDialog.Builder(LoginActivity.this)
+                                 .setTitle(R.string.dialog_login_failed)
+                                 .setMessage(getString(R.string.error_sign_in_try_register))
+                                 .setIcon(android.R.drawable.ic_dialog_alert)
+                                 .setPositiveButton(R.string.create,
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int whichButton) {
+                                                            signUp(email, password);
+                                                        }
+                                                    })
+                                 .setNegativeButton(R.string.back, null)
+                                 .show();
+                     }
+                 }
+             });
     }
 
     private void signUp(final String email, final String password) {
         showProgress(true);
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                showProgress(false);
-                if (task.isSuccessful()) {
-                    LogUtils.i("New account created successfully!");
-                    loginCompleted();
-                } else {
-                    LogUtils.w("Could not create a new account!");
-                    ToastUtils.show(R.string.auth_failed, Toast.LENGTH_SHORT);
-                }
-            }
-        });
+        mAuth.createUserWithEmailAndPassword(email, password)
+             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                 @Override
+                 public void onComplete(@NonNull Task<AuthResult> task) {
+                     showProgress(false);
+                     if (task.isSuccessful()) {
+                         LogUtils.i("New account created successfully!");
+                         loginCompleted();
+                     } else {
+                         LogUtils.e("Could not create a new account!", task.getException());
+                         ToastUtils.show(R.string.auth_failed, Toast.LENGTH_SHORT);
+                     }
+                 }
+             });
     }
 
     private boolean isEmailValid(String email) {

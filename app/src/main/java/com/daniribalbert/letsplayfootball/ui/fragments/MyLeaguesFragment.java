@@ -107,6 +107,7 @@ public class MyLeaguesFragment extends BaseFragment {
                                 new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
+                                        showProgress(false);
                                         Player currentPlayer = dataSnapshot.getValue(Player.class);
                                         if (currentPlayer == null) {
                                             LogUtils.e("Failed to load user data!");
@@ -119,7 +120,6 @@ public class MyLeaguesFragment extends BaseFragment {
                                             myLeagues.addAll(leagues.values());
                                         }
                                         mAdapter.addItems(myLeagues);
-                                        showProgress(false);
                                     }
 
                                     @Override

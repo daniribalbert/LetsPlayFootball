@@ -1,5 +1,9 @@
 package com.daniribalbert.letsplayfootball.data.database;
 
+import android.util.Log;
+
+import com.daniribalbert.letsplayfootball.data.database.listener.CompletionListener;
+import com.daniribalbert.letsplayfootball.data.database.listener.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
@@ -37,7 +41,7 @@ public class PlayerDbUtils {
      * @param firebaseUser new player to be added to the database with info gathered from the
      *                     Firebase login info.
      */
-    public static void createPlayer(final FirebaseUser firebaseUser) {
+    public static void createPlayer(final FirebaseUser firebaseUser, final CompletionListener listener) {
         final Player player = Player.fromFirebase(firebaseUser);
         final DatabaseReference dbRef = getRef();
         dbRef.child(player.id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -47,10 +51,12 @@ public class PlayerDbUtils {
                     LogUtils.i("Creating user!");
                     dbRef.child(player.id).setValue(player);
                 }
+                listener.onComplete(true);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                listener.onComplete(false);
             }
         });
     }
@@ -113,14 +119,15 @@ public class PlayerDbUtils {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                LogUtils.e("Search Cancelled?" + databaseError.toString());
                 if (nQuery.decrementAndGet() <= 0) {
                     listener.onDataReceived(result);
                 }
             }
         };
 
-        nameQuery.addValueEventListener(eventListener);
-        nicknameQuery.addValueEventListener(eventListener);
+        nameQuery.addListenerForSingleValueEvent(eventListener);
+        nicknameQuery.addListenerForSingleValueEvent(eventListener);
     }
 
     public static void updatePlayer(Player player) {
@@ -136,14 +143,30 @@ public class PlayerDbUtils {
         ref.child(playerId).child("leagues").child(league.id).setValue(new SimpleLeague(league));
     }
 
+    public static void addLeague(final String playerId, final String leagueId) {
+        LeagueDbUtils.getLeague(leagueId, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DatabaseReference ref = getRef();
+                League league = dataSnapshot.getValue(League.class);
+                SimpleLeague playerLeague = new SimpleLeague(league);
+                ref.child(playerId).child("leagues").child(leagueId).setValue(playerLeague);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public static void updatePlayerLeague(String playerId, League league) {
         DatabaseReference ref = getRef();
         ref.child(playerId).child("leagues").child(league.id).setValue(new SimpleLeague(league));
     }
 
     public static void removePlayer(Player player, String leagueId) {
-        boolean isGuest = player.leagues.size() < 3;
-        if (isGuest) {
+        if (player.isGuest()) {
             removeGuestPlayer(player.id);
         } else {
             removePlayerFromLeague(player, leagueId);
@@ -166,7 +189,4 @@ public class PlayerDbUtils {
         ref.child(player.id).updateChildren(updateMap);
     }
 
-    public interface SearchListener<T> {
-        void onDataReceived(Set<T> results);
-    }
 }

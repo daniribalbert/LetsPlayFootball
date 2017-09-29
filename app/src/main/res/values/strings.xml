@@ -20,6 +20,8 @@
     <string name="remove">Remove</string>
     <string name="dialog_remove_player_title">Remove Player?</string>
     <string name="dialog_remove_player_message">Are you sure you want to remove %1$s from the league?</string>
+    <string name="dialog_add_player_title">Add Player</string>
+    <string name="dialog_add_player_message">Are you sure you want to add %1$s to the league?</string>
 
 
     <!-- Strings related to user Profile -->

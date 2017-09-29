@@ -83,8 +83,12 @@ public class Player {
         } catch (NullPointerException npe) {
             player.image = "";
         }
-        player.name = user.getDisplayName();
-        return player;
+        if (user.getDisplayName() == null) {
+            String email = user.getEmail();
+            player.name = email.substring(0, email.indexOf("@"));
+        } else {
+            player.name = user.getDisplayName();
+        }return player;
     }
 
     @Override
@@ -121,6 +125,9 @@ public class Player {
 
     @Exclude
     public String getNickname() {
+        if (TextUtils.isEmpty(nickname)){
+            return "";
+        }
         if (nickname.startsWith(GUEST_NAME_PREFIX)) {
             return nickname.replaceFirst(GUEST_NAME_PREFIX, "");
         }

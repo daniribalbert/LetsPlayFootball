@@ -1,5 +1,7 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.KeyEvent;
@@ -9,12 +11,16 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.database.DbUtils;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listener.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -33,7 +39,6 @@ public class PlayerSearchFragment extends PlayerListFragment
 
     @BindView(R.id.search_edit_text)
     EditText mSearchText;
-
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -85,7 +90,7 @@ public class PlayerSearchFragment extends PlayerListFragment
         String searchQuery = mSearchText.getText().toString();
         mAdapter.clear();
         LogUtils.i("Searching for players with name/nickname: " + searchQuery);
-        PlayerDbUtils.searchPlayers(searchQuery, new PlayerDbUtils.SearchListener<Player>() {
+        PlayerDbUtils.searchPlayers(searchQuery, new SearchListener<Player>() {
             @Override
             public void onDataReceived(Set<Player> results) {
                 for (Player player : results) {
@@ -101,8 +106,21 @@ public class PlayerSearchFragment extends PlayerListFragment
     }
 
     @Subscribe
-    public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
-        //TODO: Add Player to League.
+    @Override
+    public void OnPlayerSelectedEvent(final OpenPlayerEvent event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_add_player_title);
+        builder.setMessage(getString(R.string.dialog_add_player_message, event.playerName));
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                PlayerDbUtils.addLeague(event.playerId, mLeagueId);
+                mAdapter.removeItem(event.playerId);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        builder.show();
     }
 
     @Override

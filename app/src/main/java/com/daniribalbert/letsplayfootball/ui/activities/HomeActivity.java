@@ -131,10 +131,12 @@ public class HomeActivity extends BaseActivity
                 break;
         }
 
-        final FragmentManager fManager = getFragmentManager();
-        FragmentTransaction fTransaction = fManager.beginTransaction();
-        fTransaction.replace(R.id.fragment_container, frag, tag);
-        fTransaction.commit();
+        if (frag != null) {
+            final FragmentManager fManager = getFragmentManager();
+            FragmentTransaction fTransaction = fManager.beginTransaction();
+            fTransaction.replace(R.id.fragment_container, frag, tag);
+            fTransaction.commit();
+        }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;

@@ -6,8 +6,13 @@ package com.daniribalbert.letsplayfootball.ui.events;
 public class OpenPlayerEvent {
 
     public String playerId;
+    public String playerName;
 
     public OpenPlayerEvent(String playerId) {
         this.playerId = playerId;
+    }
+    public OpenPlayerEvent(String playerId, String playerName) {
+        this.playerId = playerId;
+        this.playerName = playerName;
     }
 }

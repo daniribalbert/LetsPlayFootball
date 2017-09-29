@@ -101,20 +101,9 @@ public class PlayerListFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
+        EventBus.getDefault().register(this);
         if (mAdapter == null) {
             mAdapter = new PlayerListAdapter(mLeagueId);
             mRecyclerView.setAdapter(mAdapter);
@@ -122,6 +111,19 @@ public class PlayerListFragment extends BaseFragment {
         } else {
             mRecyclerView.setAdapter(mAdapter);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mRecyclerView.setAdapter(null);
+        mAdapter = null;
     }
 
     protected void loadData() {
@@ -145,7 +147,9 @@ public class PlayerListFragment extends BaseFragment {
                                                   }
                                               }
 
-                                              mAdapter.addItems(players);
+                                              if (mAdapter != null) {
+                                                  mAdapter.addItems(players);
+                                              }
                                               showProgress(false);
                                           }
 

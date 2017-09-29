@@ -95,6 +95,20 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         notifyItemRemoved(index);
     }
 
+    public void removeItem(String playerId) {
+        int index = -1;
+        for (int i = 0; i < mValues.size(); i++){
+            if (mValues.get(i).id.equalsIgnoreCase(playerId)){
+                index = i;
+                break;
+            }
+        }
+        if (index >= 0) {
+            mValues.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
+
     public void clear() {
         mValues.clear();
         notifyDataSetChanged();
@@ -144,8 +158,8 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
         @Override
         public void onClick(View view) {
-            final int adapterPosition = getAdapterPosition();
-            EventBus.getDefault().post(new OpenPlayerEvent(mValues.get(adapterPosition).id));
+            Player player = mValues.get(getAdapterPosition());
+            EventBus.getDefault().post(new OpenPlayerEvent(player.id, player.getName()));
         }
 
         @Override
