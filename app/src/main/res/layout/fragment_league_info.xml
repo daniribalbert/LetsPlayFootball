@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.RecyclerView
-    android:id="@+id/my_league_recyclerview"
-    android:name="com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/league_items_recyclerview"
+    android:name="com.daniribalbert.letsplayfootball.fragments.LeagueInfoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
     android:layout_marginStart="@dimen/recycler_view_horizontal_margin"
-    android:paddingBottom="@dimen/padding_medium"
-    android:paddingTop="@dimen/padding_small"
+    android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.fragments.MyLeaguesFragment"
-    tools:listitem="@layout/card_league"/>
+    tools:listitem="@layout/card_player" />

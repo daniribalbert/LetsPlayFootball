@@ -154,7 +154,7 @@ public class MyLeaguesFragment extends BaseFragment {
 //            @Override
 //            public void onLeagueSaved(League league) {
 //                LeagueDbUtils.updateLeague(league);
-//                mAdapter.updateItem(new SimpleLeague(league));
+//                mAdapter.updatePlayer(new SimpleLeague(league));
 //            }
 //        });
 //        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);

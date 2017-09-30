@@ -22,12 +22,15 @@
     <string name="dialog_remove_player_message">Are you sure you want to remove %1$s from the league?</string>
     <string name="dialog_add_player_title">Add Player</string>
     <string name="dialog_add_player_message">Are you sure you want to add %1$s to the league?</string>
+    <string name="dialog_remove_match_title">Remove Match?</string>
+    <string name="dialog_remove_match_message">Are you sure you want to cancel upcoming match?</string>
 
 
     <!-- Strings related to user Profile -->
     <string name="profile_full_name">Full Name: </string>
     <string name="nickname">Nickname</string>
     <string name="toast_profile_saved">Profile Saved!</string>
+    <string name="toast_generic_saved">Saved!</string>
     <string name="toast_error_generic">Something went wrong!</string>
     <string name="hint_player_name">Pavel Nedvěd</string>
     <string name="hint_player_nickname">Nedved</string>

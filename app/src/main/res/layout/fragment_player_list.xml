@@ -11,4 +11,4 @@
     android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.fragments.MyLeaguesFragment"
-    tools:listitem="@layout/player_card" />
+    tools:listitem="@layout/card_player" />

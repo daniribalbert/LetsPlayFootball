@@ -13,6 +13,7 @@ import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
+import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 
@@ -68,7 +69,7 @@ public class LeagueActivity extends BaseActivity
         mFabMenu3.setOnClickListener(this);
 
         if (savedInstanceState == null) {
-            PlayerListFragment frag = PlayerListFragment.newInstance(mLeagueId);
+            LeagueInfoFragment frag = LeagueInfoFragment.newInstance(mLeagueId);
             frag.setProgress(mProgressBar);
             getFragmentManager().beginTransaction()
                                 .add(R.id.fragment_container, frag, PlayerListFragment.TAG)
@@ -97,9 +98,8 @@ public class LeagueActivity extends BaseActivity
                 toggleFabMenu();
                 break;
             case R.id.fab_menu_1:
-                mFab.setImageResource(R.drawable.ic_add);
+                resetFab();
                 mFab.setVisibility(View.GONE);
-                mFabLayout.setVisibility(View.GONE);
                 PlayerSearchFragment playerSearchFragment = PlayerSearchFragment
                         .newInstance(mLeagueId);
                 playerSearchFragment.setProgress(mProgressBar);
@@ -109,10 +109,12 @@ public class LeagueActivity extends BaseActivity
                                     .addToBackStack(PlayerSearchFragment.TAG).commit();
                 break;
             case R.id.fab_menu_2:
-                EventBus.getDefault().post(new FabClickedEvent(mFab));
+                resetFab();
+                EventBus.getDefault().post(new FabClickedEvent(mFabMenu2));
                 break;
             case R.id.fab_menu_3:
-                // TODO: Add Match
+                resetFab();
+                EventBus.getDefault().post(new FabClickedEvent(mFabMenu3));
                 break;
         }
     }
@@ -125,6 +127,11 @@ public class LeagueActivity extends BaseActivity
             mFab.setVisibility(View.VISIBLE);
             super.onBackPressed();
         }
+    }
+
+    private void resetFab(){
+        mFab.setImageResource(R.drawable.ic_add);
+        mFabLayout.setVisibility(View.GONE);
     }
 
     private void toggleFabMenu() {

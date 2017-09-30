@@ -34,7 +34,7 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.league_card, parent, false);
+                                  .inflate(R.layout.card_league, parent, false);
 
         final ViewHolder viewHolder = new ViewHolder(view);
 

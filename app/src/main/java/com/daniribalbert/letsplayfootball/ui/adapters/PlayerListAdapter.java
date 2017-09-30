@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
@@ -27,7 +28,7 @@ import butterknife.ButterKnife;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.data.model.Player}
  */
-public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.ViewHolder> {
+public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder> {
 
     private final List<Player> mValues = new ArrayList<>();
 
@@ -38,18 +39,18 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PlayerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.player_card, parent, false);
+                                  .inflate(R.layout.card_player, parent, false);
 
-        final ViewHolder viewHolder = new ViewHolder(view);
+        final PlayerViewHolder viewHolder = new PlayerViewHolder(view);
 
 
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final PlayerViewHolder holder, int position) {
         Player player = mValues.get(position);
         holder.setPlayer(player, mLeagueId);
     }
@@ -97,8 +98,8 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
 
     public void removeItem(String playerId) {
         int index = -1;
-        for (int i = 0; i < mValues.size(); i++){
-            if (mValues.get(i).id.equalsIgnoreCase(playerId)){
+        for (int i = 0; i < mValues.size(); i++) {
+            if (mValues.get(i).id.equalsIgnoreCase(playerId)) {
                 index = i;
                 break;
             }
@@ -114,46 +115,10 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Vi
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-                                                                       View.OnLongClickListener {
-        @BindView(R.id.player_card_view)
-        CardView mCardView;
-        @BindView(R.id.player_card_title)
-        TextView mTitle;
-        @BindView(R.id.player_card_image)
-        ImageView mImage;
-        @BindView(R.id.player_rating)
-        RatingBar mRating;
+    public class PlayerViewHolder extends PlayerCardViewHolder {
 
-        public ViewHolder(View view) {
+        public PlayerViewHolder(View view) {
             super(view);
-            ButterKnife.bind(this, view);
-
-            view.setOnClickListener(this);
-            view.setOnLongClickListener(this);
-        }
-
-        public void setPlayer(Player player, String leagueId) {
-            setTitle(player.toString());
-            setImage(player.image);
-            setRating(player.getRating(leagueId));
-        }
-
-        public void setTitle(String title) {
-            mTitle.setText(title);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mTitle.getText() + "'";
-        }
-
-        public void setImage(String image) {
-            GlideUtils.loadCircularImage(image, mImage);
-        }
-
-        public void setRating(float rating) {
-            mRating.setRating(rating);
         }
 
         @Override

@@ -1,7 +1,9 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,22 +11,26 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
-import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
@@ -38,6 +44,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,46 +54,53 @@ import butterknife.ButterKnife;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Dialog fragment used to add/edit a new league.
+ * Dialog fragment used to add/edit the next match.
  */
-public class DialogFragmentEditLeague extends DialogFragment implements View.OnClickListener {
+public class DialogFragmentEditMatch extends DialogFragment implements View.OnClickListener,
+                                                                       DatePickerDialog.OnDateSetListener,
+                                                                       TimePickerDialog.OnTimeSetListener {
 
-    public static final String TAG = DialogFragmentEditLeague.class.getSimpleName();
+    public static final String TAG = DialogFragmentEditMatch.class.getSimpleName();
 
-    public static final String ARGS_LEAGUE = "ARGS_LEAGUE";
+    public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
 
     public static final int ARGS_IMAGE_SELECT = 201;
 
-    @BindView(R.id.edit_league_pic)
-    ImageView mLeagueImage;
+    @BindView(R.id.edit_match_pic)
+    ImageView mMatchImage;
 
-    @BindView(R.id.edit_league_title)
-    EditText mLeagueTitle;
+    @BindView(R.id.edit_match_time_day)
+    TextView mMatchDay;
 
-    @BindView(R.id.edit_league_description)
-    EditText mLeagueDescription;
+    @BindView(R.id.edit_match_time_hour)
+    TextView mMatchHour;
 
-    @BindView(R.id.bt_save_league)
-    View mSaveLeague;
+    @BindView(R.id.edit_match_time_layout)
+    View mTimeLayout;
 
-    private EditLeagueListener mListener;
-    private League mLeague;
+    @BindView(R.id.bt_save_match)
+    View mSaveMatch;
+
+    private EditMatchListener mListener;
 
     private Uri mImageUri;
 
     @BindView(R.id.dialog_progress)
     ProgressBar mProgressBar;
 
-    public static DialogFragmentEditLeague newInstance() {
-        DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
+    private Match mMatch;
+    private Calendar mCalendar = Calendar.getInstance();
+
+    public static DialogFragmentEditMatch newInstance() {
+        DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
         dFrag.setRetainInstance(true);
         return dFrag;
     }
 
-    public static DialogFragmentEditLeague newInstance(String leagueId) {
+    public static DialogFragmentEditMatch newInstance(String matchId) {
         Bundle bundle = new Bundle();
-        DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
-        bundle.putString(ARGS_LEAGUE, leagueId);
+        DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
+        bundle.putString(ARGS_MATCH_ID, matchId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -95,7 +110,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_league, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_edit_match, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
@@ -103,39 +118,40 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSaveLeague.setOnClickListener(this);
-        mLeagueImage.setOnClickListener(this);
+        mSaveMatch.setOnClickListener(this);
+        mMatchImage.setOnClickListener(this);
+        mTimeLayout.setOnClickListener(this);
         Bundle args = getArguments();
         if (savedInstanceState == null) {
             if (args != null) {
-                if (!args.containsKey(ARGS_LEAGUE)) {
+                if (!args.containsKey(ARGS_MATCH_ID)) {
                     return;
                 }
-                String leagueId = args.getString(ARGS_LEAGUE);
-                loadLeagueData(leagueId);
+                String id = args.getString(ARGS_MATCH_ID);
+                loadMatchData(id);
             } else {
-                mLeague = new League();
+                mMatch = new Match();
+                updatedTimeText();
             }
         } else {
             if (mImageUri != null) {
-                GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
-            } else if (mLeague != null && mLeague.hasImage()) {
-                GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
+                GlideUtils.loadCircularImage(mImageUri, mMatchImage);
+            } else if (mMatch != null && mMatch.hasImage()) {
+                GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
             }
         }
     }
 
-    private void loadLeagueData(String leagueId) {
-        LeagueDbUtils.getLeague(leagueId, new ValueEventListener() {
+    private void loadMatchData(String matchId) {
+        MatchDbUtils.getMatch(matchId, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mLeague = dataSnapshot.getValue(League.class);
+                mMatch = dataSnapshot.getValue(Match.class);
 
-                if (mLeague != null) {
-                    mLeagueTitle.setText(mLeague.title);
-                    mLeagueDescription.setText(mLeague.description);
-                    if (mLeague.hasImage()) {
-                        GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
+                if (mMatch != null) {
+                    updatedTimeText();
+                    if (mMatch.hasImage()) {
+                        GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
                     }
                 }
             }
@@ -161,12 +177,9 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.bt_save_league:
-                mLeague.title = mLeagueTitle.getText().toString();
-                mLeague.description = mLeagueDescription.getText().toString();
-
+            case R.id.bt_save_match:
                 if (mImageUri == null) {
-                    mListener.onLeagueSaved(mLeague);
+                    mListener.onMatchSaved(mMatch);
                     if (getDialog() != null) {
                         dismiss();
                     }
@@ -174,9 +187,40 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     uploadImage();
                 }
                 break;
-            case R.id.edit_league_pic:
+            case R.id.edit_match_pic:
                 promptSelectImage();
+                break;
+            case R.id.edit_match_time_layout:
+                showDatePickerDialog();
         }
+    }
+
+    private void showTimePickerDialog() {
+        long matchTime = mMatch.time;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(matchTime);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        boolean isSystem24hMode = DateFormat.is24HourFormat(getActivity());
+
+        TimePickerDialog timePickerDialog;
+        timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute, isSystem24hMode);
+        timePickerDialog.setTitle("Select Time");
+        timePickerDialog.show();
+    }
+
+    private void showDatePickerDialog() {
+        long matchTime = mMatch.time;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(matchTime);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month,
+                                                                 day);
+        datePickerDialog.setTitle("Select Day");
+        datePickerDialog.show();
     }
 
     private void uploadImage() {
@@ -198,8 +242,8 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                mLeague.image = downloadUrl.toString();
-                mListener.onLeagueSaved(mLeague);
+                mMatch.image = downloadUrl.toString();
+                mListener.onMatchSaved(mMatch);
                 if (getDialog() != null) {
                     dismiss();
                 }
@@ -224,7 +268,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     if (action == null) {
                         isCamera = false;
                     } else {
-                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
                     }
                 }
 
@@ -234,16 +278,16 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
                     mImageUri = data == null ? null : data.getData();
                 }
 
-                GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
+                GlideUtils.loadCircularImage(mImageUri, mMatchImage);
             }
         }
     }
 
-    public void setListener(EditLeagueListener listener) {
+    public void setListener(EditMatchListener listener) {
         mListener = listener;
     }
 
-    private void showProgress(boolean show){
+    private void showProgress(boolean show) {
         if (mProgressBar != null) {
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         }
@@ -254,7 +298,7 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
         final File tempFile = FileUtils.getTempFile(getActivity());
 
         final PackageManager pManager = getActivity().getPackageManager();
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         final List<Intent> cameraIntents = new ArrayList<Intent>();
         List<ResolveInfo> listCam = pManager.queryIntentActivities(captureIntent, 0);
@@ -287,7 +331,29 @@ public class DialogFragmentEditLeague extends DialogFragment implements View.OnC
         super.onDestroyView();
     }
 
-    public interface EditLeagueListener {
-        void onLeagueSaved(League league);
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        mCalendar.set(Calendar.YEAR, year);
+        mCalendar.set(Calendar.MONTH, month);
+        mCalendar.set(Calendar.DAY_OF_MONTH, day);
+        showTimePickerDialog();
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+        mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        mCalendar.set(Calendar.MINUTE, minute);
+        mMatch.time = mCalendar.getTimeInMillis();
+        updatedTimeText();
+    }
+
+    private void updatedTimeText() {
+        mMatchDay.setText(mMatch.getDate());
+        mMatchHour.setText(mMatch.getTime());
+    }
+
+
+    public interface EditMatchListener {
+        void onMatchSaved(Match match);
     }
 }

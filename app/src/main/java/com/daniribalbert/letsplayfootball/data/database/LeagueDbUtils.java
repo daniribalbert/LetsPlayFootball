@@ -8,7 +8,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Set;
 
 /**
- * Utility class for Player database operations.
+ * Utility class for League database operations.
  */
 public class LeagueDbUtils {
 
