@@ -32,6 +32,7 @@
     <string name="toast_profile_saved">Profile Saved!</string>
     <string name="toast_generic_saved">Saved!</string>
     <string name="toast_error_generic">Something went wrong!</string>
+    <string name="toast_error_match_time">Error! Match time in the past</string>
     <string name="hint_player_name">Pavel Nedvěd</string>
     <string name="hint_player_nickname">Nedved</string>
     <string name="hint_player_search">Del Piero</string>

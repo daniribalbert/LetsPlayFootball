@@ -24,8 +24,14 @@
     <string name="title_activity_login">Login</string>
     <string name="toast_profile_saved">Perfil Salvo!</string>
     <string name="toast_error_generic">Ops, alguma coisa deu errado!</string>
-    <string name="settings_category_social"></string>
+    <string name="settings_category_social">Social</string>
     <string name="auth_failed">Falha de autenticação!</string>
     <string name="hint_add_player">Adicionar novo jogador</string>
     <string name="hint_add_upcoming_match">Adicionar próxima partida</string>
+    <string name="description">Descrição</string>
+    <string name="dialog_add_player_title">Adicionar Jogador</string>
+    <string name="dialog_login_failed">Login Falhou</string>
+    <string name="dialog_remove_match_title">Remover Partida?</string>
+    <string name="toast_error_match_time">Erro! Essa data já passou</string>
+    <string name="toast_generic_saved">Tá salvo!</string>
 </resources>

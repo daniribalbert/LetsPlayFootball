@@ -72,7 +72,7 @@ public class LeagueActivity extends BaseActivity
             LeagueInfoFragment frag = LeagueInfoFragment.newInstance(mLeagueId);
             frag.setProgress(mProgressBar);
             getFragmentManager().beginTransaction()
-                                .add(R.id.fragment_container, frag, PlayerListFragment.TAG)
+                                .add(R.id.fragment_container, frag, LeagueInfoFragment.TAG)
                                 .commit();
         }
     }

@@ -123,19 +123,6 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     /**
-     * Add Match to the list
-     *
-     * @param match match to be added to the list.
-     */
-    public void updateMatch(Match match) {
-        int position = mUpcomingMatches.indexOf(match);
-        if (position >= 0 && position < mUpcomingMatches.size()) {
-            mUpcomingMatches.set(position, match);
-            notifyItemChanged(position);
-        }
-    }
-
-    /**
      * Check if player exists and adds it to the list or update the previous entry.
      *
      * @param player Player to be updated on the list.
@@ -179,7 +166,7 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mUpcomingMatches.clear();
         notifyDataSetChanged();
     }
-    public void clearUpocmingMatches() {
+    public void clearUpcomingMatches() {
         int size = mUpcomingMatches.size();
         mUpcomingMatches.clear();
         notifyItemRangeRemoved(0, size);
@@ -189,6 +176,12 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         int size = mPlayers.size();
         mPlayers.clear();
         notifyItemRangeRemoved(mUpcomingMatches.size(), size);
+    }
+
+    public void removeMatch(Match match) {
+        int index = mUpcomingMatches.indexOf(match);
+        mUpcomingMatches.remove(index);
+        notifyItemRemoved(index);
     }
 
 

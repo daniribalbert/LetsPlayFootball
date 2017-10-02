@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.data.model;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 
@@ -13,12 +14,17 @@ import java.util.concurrent.TimeUnit;
 /**
  * Football match model class.
  */
-public class Match {
+public class Match implements Comparable {
 
     /**
      * Match ID.
      */
     public String id;
+
+    /**
+     * Id of the league where this match was played.
+     */
+    public String leagueId;
 
     /**
      * Match image (Maybe someone wants to add the winner team pic?)
@@ -30,17 +36,25 @@ public class Match {
      */
     public long time;
 
-    public Match() {
-        //Firebase constructor.
-        Date now = new Date();
-        now.setTime(now.getTime() + TimeUnit.DAYS.toMillis(1));
-        time = now.getTime();
-    }
-
     /**
      * List of players participating in this match.
      */
     public HashMap<String, Boolean> players;
+
+    public Match() {
+        //Firebase constructor.
+    }
+
+    public Match(String leagueId) {
+        init();
+        this.leagueId = leagueId;
+    }
+
+    private void init(){
+        Date now = new Date();
+        now.setTime(now.getTime() + TimeUnit.DAYS.toMillis(1));
+        this.time = now.getTime();
+    }
 
     @Exclude
     public String getDate() {
@@ -74,5 +88,13 @@ public class Match {
     @Override
     public int hashCode() {
         return (int) time; // Java... -_-
+    }
+
+    @Override
+    public int compareTo(@NonNull Object obj) {
+        if (obj instanceof Match){
+            return time > ((Match) obj).time ? 1 : -1;
+        }
+        return Integer.MIN_VALUE;
     }
 }

@@ -15,6 +15,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +64,7 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
     public static final String TAG = DialogFragmentEditMatch.class.getSimpleName();
 
     public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
+    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
 
     public static final int ARGS_IMAGE_SELECT = 201;
 
@@ -91,19 +93,42 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
     private Match mMatch;
     private Calendar mCalendar = Calendar.getInstance();
 
-    public static DialogFragmentEditMatch newInstance() {
+    private String mMatchId;
+    private String mLeagueId;
+
+    public static DialogFragmentEditMatch newInstance(String leagueId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+
         DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
+        dFrag.setRetainInstance(true);
+        dFrag.setArguments(bundle);
+        return dFrag;
+    }
+
+    public static DialogFragmentEditMatch newInstance(String leagueId, String matchId) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(ARGS_MATCH_ID, matchId);
+
+        DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
+        dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
     }
 
-    public static DialogFragmentEditMatch newInstance(String matchId) {
-        Bundle bundle = new Bundle();
-        DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
-        bundle.putString(ARGS_MATCH_ID, matchId);
-        dFrag.setArguments(bundle);
-        dFrag.setRetainInstance(true);
-        return dFrag;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        loadArgs();
+    }
+
+    private void loadArgs() {
+        Bundle args = getArguments();
+        if (args != null) {
+            mMatchId = args.getString(ARGS_MATCH_ID);
+            mLeagueId = args.getString(ARGS_LEAGUE_ID);
+        }
     }
 
     @Nullable
@@ -121,17 +146,12 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
         mSaveMatch.setOnClickListener(this);
         mMatchImage.setOnClickListener(this);
         mTimeLayout.setOnClickListener(this);
-        Bundle args = getArguments();
         if (savedInstanceState == null) {
-            if (args != null) {
-                if (!args.containsKey(ARGS_MATCH_ID)) {
-                    return;
-                }
-                String id = args.getString(ARGS_MATCH_ID);
-                loadMatchData(id);
-            } else {
-                mMatch = new Match();
+            if (TextUtils.isEmpty(mMatchId)) {
+                mMatch = new Match(mLeagueId);
                 updatedTimeText();
+            } else {
+                loadMatchData(mLeagueId, mMatchId);
             }
         } else {
             if (mImageUri != null) {
@@ -142,8 +162,8 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
         }
     }
 
-    private void loadMatchData(String matchId) {
-        MatchDbUtils.getMatch(matchId, new ValueEventListener() {
+    private void loadMatchData(String leagueId, String matchId) {
+        MatchDbUtils.getMatch(leagueId, matchId, new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mMatch = dataSnapshot.getValue(Match.class);
@@ -343,7 +363,13 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
     public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
         mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         mCalendar.set(Calendar.MINUTE, minute);
-        mMatch.time = mCalendar.getTimeInMillis();
+        long nextMatchTime = mCalendar.getTimeInMillis();
+        long currentTimeMillis = System.currentTimeMillis();
+        if (nextMatchTime < currentTimeMillis) {
+            ToastUtils.show(R.string.toast_error_match_time, Toast.LENGTH_SHORT);
+            return;
+        }
+        mMatch.time = nextMatchTime;
         updatedTimeText();
     }
 

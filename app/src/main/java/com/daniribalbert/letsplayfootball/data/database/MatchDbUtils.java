@@ -10,41 +10,61 @@ import java.util.Set;
 
 /**
  * Utility class for Player database operations.
+ * Matches follow the scheme:
+ * { matches : {league_id} : {match_id} : match_data }.
  */
 public class MatchDbUtils {
 
     private static final String PATH = "matches";
 
-    public static DatabaseReference getRef(){
+    public static DatabaseReference getRef() {
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
         return dbRef.child(DbUtils.getRoot()).child(PATH);
     }
 
     /**
-     * Creates a new League.
+     * Creates a new Match in the database.
+     *
      * @param match new match to be added to the database.
      */
     public static String createMatch(final Match match) {
         final DatabaseReference dbRef = getRef();
-        DatabaseReference pushRef = dbRef.push();
-
-        String matchId = pushRef.getKey();
+        String matchId = String.valueOf(match.time);
         match.id = matchId;
-        pushRef.setValue(match);
+        dbRef.child(match.leagueId).child(matchId).setValue(match);
         return matchId;
     }
 
-    public static void getMatch(String matchId, ValueEventListener valueEventListener) {
-        DatabaseReference dbRef = getRef();
-        dbRef.child(matchId).addListenerForSingleValueEvent(valueEventListener);
-    }
-
     public static void updateMatch(Match match) {
-        DatabaseReference dbRef = getRef();
-        dbRef.child(match.id).setValue(match);
+        if (match.id.equalsIgnoreCase(String.valueOf(match.time))) {
+            getRef().child(match.leagueId).child(match.id).setValue(match);
+        } else {
+            removeMatch(match);
+            createMatch(match);
+        }
     }
 
-    public static void getUpcomingMatches(String leagueId, String playerId) {
+    public static void getUpcomingMatches(String leagueId, ValueEventListener listener) {
+        final String now = String.valueOf(System.currentTimeMillis());
+        DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).orderByKey().startAt(now)
+             .addListenerForSingleValueEvent(listener);
+    }
 
+    public static void getUpcomingMatch(String leagueId, ValueEventListener listener) {
+        final String now = String.valueOf(System.currentTimeMillis());
+        DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).orderByKey().startAt(now).limitToFirst(1)
+             .addListenerForSingleValueEvent(listener);
+    }
+
+    public static void getMatch(String leagueId, String matchId, ValueEventListener listener) {
+        DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).child(matchId).addListenerForSingleValueEvent(listener);
+    }
+
+    public static void removeMatch(Match match) {
+        DatabaseReference ref = getRef();
+        ref.child(match.leagueId).child(match.id).removeValue();
     }
 }
