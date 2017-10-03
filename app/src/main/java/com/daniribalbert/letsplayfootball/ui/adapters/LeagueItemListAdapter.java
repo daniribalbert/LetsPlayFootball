@@ -227,8 +227,8 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
 
         public void setMatch(Match match) {
-            setTime(match.getTime());
-            setDay(match.getDate());
+            setTime(match.getTimeStr(match.time));
+            setDay(match.getDateString(match.time));
             setImage(match.image);
         }
 

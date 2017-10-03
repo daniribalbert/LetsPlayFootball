@@ -18,12 +18,7 @@
     <string name="optional">Optional</string>
     <string name="save">Save</string>
     <string name="remove">Remove</string>
-    <string name="dialog_remove_player_title">Remove Player?</string>
-    <string name="dialog_remove_player_message">Are you sure you want to remove %1$s from the league?</string>
-    <string name="dialog_add_player_title">Add Player</string>
-    <string name="dialog_add_player_message">Are you sure you want to add %1$s to the league?</string>
-    <string name="dialog_remove_match_title">Remove Match?</string>
-    <string name="dialog_remove_match_message">Are you sure you want to cancel upcoming match?</string>
+    <string name="close">Close</string>
 
 
     <!-- Strings related to user Profile -->
@@ -58,7 +53,22 @@
     <string name="hint_search_players">Search Players</string>
     <string name="hint_add_player">Add new player</string>
     <string name="hint_add_upcoming_match">Add upcoming match</string>
-    <string name="close">Close</string>
+
+
+    <!-- Strings related to Matches -->
+    <string name="check_in">Check-in</string>
+    <string name="check_in_closed_msg">Check-in is currently closed</string>
+    <string name="cant_go">Can\'t go</string>
+    <string name="match_time">Match Time</string>
+
+
+    <!-- Strings that goes with Dialogs -->
+    <string name="dialog_remove_player_title">Remove Player?</string>
+    <string name="dialog_remove_player_message">Are you sure you want to remove %1$s from the league?</string>
+    <string name="dialog_add_player_title">Add Player</string>
+    <string name="dialog_add_player_message">Are you sure you want to add %1$s to the league?</string>
+    <string name="dialog_remove_match_title">Remove Match?</string>
+    <string name="dialog_remove_match_message">Are you sure you want to cancel upcoming match?</string>
 
 
 </resources>

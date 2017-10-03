@@ -36,6 +36,9 @@ public class Match implements Comparable {
      */
     public long time;
 
+    public long checkInStart;
+    public long checkInEnds;
+
     /**
      * List of players participating in this match.
      */
@@ -50,30 +53,41 @@ public class Match implements Comparable {
         this.leagueId = leagueId;
     }
 
-    private void init(){
+    private void init() {
         Date now = new Date();
+        this.checkInStart = now.getTime();
         now.setTime(now.getTime() + TimeUnit.DAYS.toMillis(1));
         this.time = now.getTime();
+        now.setTime(now.getTime() - TimeUnit.HOURS.toMillis(4));
+        this.checkInEnds = now.getTime();
+
+
     }
 
     @Exclude
-    public String getDate() {
+    public String getDateString(long time) {
         java.text.DateFormat format = DateFormat.getDateFormat(App.getContext());
         return format.format(new Date(time));
     }
 
     @Exclude
-    public String getTime() {
+    public String getTimeStr(long time) {
         java.text.DateFormat format = DateFormat.getTimeFormat(App.getContext());
         return format.format(new Date(time));
     }
 
     public String toString() {
-        return getDate() + "\n" + getTime();
+        return getDateString(time) + "\n" + getTimeStr(time);
     }
 
     public boolean hasImage() {
         return !TextUtils.isEmpty(image);
+    }
+
+    @Exclude
+    public boolean isCheckInOpen(){
+        long now = System.currentTimeMillis();
+        return now >= checkInStart && now < checkInEnds;
     }
 
     @Override
@@ -92,7 +106,7 @@ public class Match implements Comparable {
 
     @Override
     public int compareTo(@NonNull Object obj) {
-        if (obj instanceof Match){
+        if (obj instanceof Match) {
             return time > ((Match) obj).time ? 1 : -1;
         }
         return Integer.MIN_VALUE;

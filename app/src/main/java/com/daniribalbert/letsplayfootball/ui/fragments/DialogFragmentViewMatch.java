@@ -1,8 +1,6 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -40,12 +38,27 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     @BindView(R.id.edit_match_time_day)
     TextView mMatchDay;
-
     @BindView(R.id.edit_match_time_hour)
     TextView mMatchHour;
 
-    @BindView(R.id.edit_match_time_layout)
-    View mTimeLayout;
+    @BindView(R.id.edit_match_check_in_start_day)
+    TextView mMatchCheckInStartDay;
+    @BindView(R.id.edit_match_check_in_start_hour)
+    TextView mMatchCheckInStartHour;
+
+    @BindView(R.id.edit_match_check_in_end_day)
+    TextView mMatchCheckInEndDay;
+    @BindView(R.id.edit_match_check_in_end_hour)
+    TextView mMatchCheckInEndHour;
+
+    @BindView(R.id.tv_check_in_closed)
+    TextView mTvCheckinClosed;
+
+    @BindView(R.id.bt_check_in)
+    Button mBtCheckIn;
+
+    @BindView(R.id.bt_not_going)
+    Button mBtNotGoing;
 
     @BindView(R.id.bt_save_match)
     Button mSaveMatch;
@@ -120,9 +133,11 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
         }
     }
 
-    protected void setupViewMode(){
+    protected void setupViewMode() {
         mSaveMatch.setText(R.string.close);
         mSaveMatch.setOnClickListener(this);
+        mBtCheckIn.setOnClickListener(this);
+        mBtNotGoing.setOnClickListener(this);
     }
 
     protected void loadMatchData(String leagueId, String matchId) {
@@ -133,6 +148,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
                 if (mMatch != null) {
                     updatedTimeText();
+                    updateCheckInLayout();
                     if (mMatch.hasImage()) {
                         GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
                     }
@@ -140,6 +156,18 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
             }
         });
 
+    }
+
+    private void updateCheckInLayout() {
+        if (mMatch.isCheckInOpen()){
+            mBtCheckIn.setVisibility(View.VISIBLE);
+            mBtNotGoing.setVisibility(View.VISIBLE);
+            mTvCheckinClosed.setVisibility(View.GONE);
+        } else {
+            mBtCheckIn.setVisibility(View.GONE);
+            mBtNotGoing.setVisibility(View.GONE);
+            mTvCheckinClosed.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -174,8 +202,14 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     }
 
     protected void updatedTimeText() {
-        mMatchDay.setText(mMatch.getDate());
-        mMatchHour.setText(mMatch.getTime());
+        mMatchDay.setText(mMatch.getDateString(mMatch.time));
+        mMatchHour.setText(mMatch.getTimeStr(mMatch.time));
+
+        mMatchCheckInStartDay.setText(mMatch.getDateString(mMatch.checkInStart));
+        mMatchCheckInStartHour.setText(mMatch.getTimeStr(mMatch.checkInStart));
+
+        mMatchCheckInEndDay.setText(mMatch.getDateString(mMatch.checkInEnds));
+        mMatchCheckInEndHour.setText(mMatch.getTimeStr(mMatch.checkInEnds));
     }
 
 }

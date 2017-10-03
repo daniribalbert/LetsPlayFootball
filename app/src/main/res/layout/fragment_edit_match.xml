@@ -28,11 +28,18 @@
                 android:layout_marginBottom="@dimen/margin_medium"
                 android:src="@mipmap/ic_launcher_round"/>
 
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/match_time"/>
+
             <LinearLayout
                 android:id="@+id/edit_match_time_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_medium"
                 android:orientation="vertical">
 
                 <TextView
@@ -53,6 +60,107 @@
                     android:gravity="center"
                     tools:text="13 Jul 2014"/>
             </LinearLayout>
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check_in"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/edit_match_check_in_start_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_medium"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/edit_match_check_in_start_hour"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elegantTextHeight="true"
+                        android:gravity="center"
+                        tools:text="16:00"/>
+
+                    <TextView
+                        android:id="@+id/edit_match_check_in_start_day"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elegantTextHeight="true"
+                        android:gravity="center"
+                        tools:text="13 Jul 2014"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/edit_match_check_in_end_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_medium"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/edit_match_check_in_end_hour"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elegantTextHeight="true"
+                        android:gravity="center"
+                        tools:text="16:00"/>
+
+                    <TextView
+                        android:id="@+id/edit_match_check_in_end_day"
+                        style="@style/TextAppearance.AppCompat.Headline"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elegantTextHeight="true"
+                        android:gravity="center"
+                        tools:text="13 Jul 2014"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_check_in_closed"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                android:layout_margin="@dimen/margin_medium"
+                android:text="@string/check_in_closed_msg"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:id="@+id/bt_check_in"
+                android:text="@string/check_in"
+                android:layout_marginEnd="@dimen/margin_medium"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/bt_not_going"
+                android:text="@string/cant_go"
+                android:layout_marginStart="@dimen/margin_medium"/>
+
+        </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

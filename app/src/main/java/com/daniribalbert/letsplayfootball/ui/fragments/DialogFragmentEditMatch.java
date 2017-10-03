@@ -49,9 +49,17 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
 
     public static final String TAG = DialogFragmentEditMatch.class.getSimpleName();
 
+    @BindView(R.id.edit_match_time_layout)
+    View mTimeLayout;
+    @BindView(R.id.edit_match_check_in_start_layout)
+    View mCheckInStartLayout;
+    @BindView(R.id.edit_match_check_in_end_layout)
+    View mCheckInEndLayout;
+
     private EditMatchListener mListener;
     private Uri mImageUri;
     private Calendar mCalendar = Calendar.getInstance();
+    private int currentTimeViewId;
 
     public static DialogFragmentEditMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
@@ -80,6 +88,8 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         mSaveMatch.setOnClickListener(this);
         mMatchImage.setOnClickListener(this);
         mTimeLayout.setOnClickListener(this);
+        mCheckInStartLayout.setOnClickListener(this);
+        mCheckInEndLayout.setOnClickListener(this);
     }
 
     @Override
@@ -99,7 +109,11 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
                 promptSelectImage();
                 break;
             case R.id.edit_match_time_layout:
+            case R.id.edit_match_check_in_start_layout:
+            case R.id.edit_match_check_in_end_layout:
+                currentTimeViewId = view.getId();
                 showDatePickerDialog();
+                break;
         }
     }
 
@@ -184,11 +198,23 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         mCalendar.set(Calendar.MINUTE, minute);
         long nextMatchTime = mCalendar.getTimeInMillis();
         long currentTimeMillis = System.currentTimeMillis();
-        if (nextMatchTime < currentTimeMillis) {
-            ToastUtils.show(R.string.toast_error_match_time, Toast.LENGTH_SHORT);
-            return;
+
+        switch (currentTimeViewId) {
+            case R.id.edit_match_time_layout:
+                if (nextMatchTime < currentTimeMillis) {
+                    ToastUtils.show(R.string.toast_error_match_time, Toast.LENGTH_SHORT);
+                    return;
+                }
+                mMatch.time = nextMatchTime;
+                break;
+            case R.id.edit_match_check_in_start_layout:
+                mMatch.checkInStart = nextMatchTime;
+                break;
+            case R.id.edit_match_check_in_end_layout:
+                mMatch.checkInEnds = nextMatchTime;
+                break;
+
         }
-        mMatch.time = nextMatchTime;
         updatedTimeText();
     }
 
