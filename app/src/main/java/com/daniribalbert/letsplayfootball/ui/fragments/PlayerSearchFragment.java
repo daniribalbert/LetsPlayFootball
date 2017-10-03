@@ -11,16 +11,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.DbUtils;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listener.SearchListener;
+import com.daniribalbert.letsplayfootball.data.database.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -110,12 +107,13 @@ public class PlayerSearchFragment extends PlayerListFragment
     public void OnPlayerSelectedEvent(final OpenPlayerEvent event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_add_player_title);
-        builder.setMessage(getString(R.string.dialog_add_player_message, event.playerName));
+        final Player player = event.player;
+        builder.setMessage(getString(R.string.dialog_add_player_message, player.name));
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                PlayerDbUtils.addLeague(event.playerId, mLeagueId);
-                mAdapter.removeItem(event.playerId);
+                PlayerDbUtils.addLeague(player.id, mLeagueId);
+                mAdapter.removeItem(player);
             }
         });
         builder.setNegativeButton(android.R.string.cancel, null);

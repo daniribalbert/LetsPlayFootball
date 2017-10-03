@@ -1,12 +1,9 @@
 package com.daniribalbert.letsplayfootball.data.database;
 
-import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Set;
 
 /**
  * Utility class for Player database operations.

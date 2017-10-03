@@ -18,12 +18,11 @@
             android:orientation="vertical"
             android:padding="@dimen/card_margin">
 
-            <ImageView
+            <com.daniribalbert.letsplayfootball.ui.views.EditableImageView
                 android:id="@+id/edit_league_pic"
                 android:layout_width="@dimen/profile_pic_size"
                 android:layout_height="@dimen/profile_pic_size"
                 android:layout_gravity="center_horizontal"
-                android:alpha="0.5"
                 android:src="@mipmap/ic_launcher_round"/>
 
             <TextView

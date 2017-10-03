@@ -9,11 +9,7 @@ import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
-import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

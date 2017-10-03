@@ -2,17 +2,10 @@ package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.TimePickerDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -30,24 +23,17 @@ import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +43,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Dialog fragment used to add/edit the next match.
  */
-public class DialogFragmentEditMatch extends DialogFragment implements View.OnClickListener,
+public class DialogFragmentEditMatch extends BaseDialogFragment implements View.OnClickListener,
                                                                        DatePickerDialog.OnDateSetListener,
                                                                        TimePickerDialog.OnTimeSetListener {
 
@@ -65,8 +51,6 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
 
     public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
     public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
-
-    public static final int ARGS_IMAGE_SELECT = 201;
 
     @BindView(R.id.edit_match_pic)
     ImageView mMatchImage;
@@ -163,7 +147,7 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
     }
 
     private void loadMatchData(String leagueId, String matchId) {
-        MatchDbUtils.getMatch(leagueId, matchId, new ValueEventListener() {
+        MatchDbUtils.getMatch(leagueId, matchId, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mMatch = dataSnapshot.getValue(Match.class);
@@ -174,11 +158,6 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
                         GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
                     }
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -245,19 +224,13 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
 
     private void uploadImage() {
         showProgress(true);
-        StorageReference ref = StorageUtils.getRef();
-        StorageReference fileRef = ref.child(mImageUri.getLastPathSegment());
-        UploadTask uploadTask = fileRef.putFile(mImageUri);
-
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
+            public void onFailure(@NonNull Exception e) {
+                super.onFailure(e);
                 showProgress(false);
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
@@ -277,27 +250,8 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-
-            File imageFile = FileUtils.getTempFile(getActivity());
             if (requestCode == ARGS_IMAGE_SELECT) {
-                final boolean isCamera;
-                if (data == null) {
-                    isCamera = true;
-                } else {
-                    final String action = data.getAction();
-                    if (action == null) {
-                        isCamera = false;
-                    } else {
-                        isCamera = action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
-                    }
-                }
-
-                if (isCamera) {
-                    mImageUri = Uri.fromFile(imageFile);
-                } else {
-                    mImageUri = data == null ? null : data.getData();
-                }
-
+                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
                 GlideUtils.loadCircularImage(mImageUri, mMatchImage);
             }
         }
@@ -311,34 +265,6 @@ public class DialogFragmentEditMatch extends DialogFragment implements View.OnCl
         if (mProgressBar != null) {
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         }
-    }
-
-    private void promptSelectImage() {
-        // Determine Uri of camera image to save.
-        final File tempFile = FileUtils.getTempFile(getActivity());
-
-        final PackageManager pManager = getActivity().getPackageManager();
-        final Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        final List<Intent> cameraIntents = new ArrayList<Intent>();
-        List<ResolveInfo> listCam = pManager.queryIntentActivities(captureIntent, 0);
-        for (ResolveInfo res : listCam) {
-            final Intent intent = new Intent(captureIntent);
-            intent.setComponent(
-                    new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
-            intent.setPackage(res.activityInfo.packageName);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-            cameraIntents.add(intent);
-        }
-
-        final Intent galleryIntent = new Intent();
-        galleryIntent.setType("image/*");
-        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-
-        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                               cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
-        startActivityForResult(chooserIntent, ARGS_IMAGE_SELECT);
     }
 
     @Override

@@ -1,29 +1,21 @@
 package com.daniribalbert.letsplayfootball.ui.adapters;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
 import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link com.daniribalbert.letsplayfootball.data.model.Player}
@@ -124,7 +116,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
         @Override
         public void onClick(View view) {
             Player player = mValues.get(getAdapterPosition());
-            EventBus.getDefault().post(new OpenPlayerEvent(player.id, player.getName()));
+            EventBus.getDefault().post(new OpenPlayerEvent(player));
         }
 
         @Override

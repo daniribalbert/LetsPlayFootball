@@ -1,37 +1,50 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
+import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
+import com.daniribalbert.letsplayfootball.utils.FileUtils;
+import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.UploadTask;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * User profile fragment class.
  * Provides extra management functionality to the ProfileViewFragment.
  */
 public class ProfileFragment extends ProfileViewFragment
-        implements TextWatcher, ValueEventListener {
+        implements TextWatcher, ValueEventListener, View.OnClickListener {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
+
+    private Uri mImageUri;
 
     /**
      * Indicates whether or not the user has changed his profile info.
@@ -65,6 +78,8 @@ public class ProfileFragment extends ProfileViewFragment
         super.onViewCreated(view, savedInstanceState);
         mPlayerName.addTextChangedListener(this);
         mPlayerNickname.addTextChangedListener(this);
+        mProfilePic.setOnClickListener(this);
+        mProfilePic.setClickable(false);
     }
 
     @Override
@@ -96,7 +111,11 @@ public class ProfileFragment extends ProfileViewFragment
         } else {
             event.fab.setImageResource(android.R.drawable.ic_menu_edit);
             if (mDataChanged) {
-                savePlayerInfo();
+                if (mImageUri != null) {
+                    uploadImage();
+                } else {
+                    savePlayerInfo();
+                }
             }
         }
     }
@@ -113,6 +132,7 @@ public class ProfileFragment extends ProfileViewFragment
 
         mPlayerName.setEnabled(toggle);
         mPlayerNickname.setEnabled(toggle);
+        mProfilePic.setClickable(toggle);
     }
 
     @Override
@@ -141,5 +161,46 @@ public class ProfileFragment extends ProfileViewFragment
     @Override
     public void onCancelled(DatabaseError databaseError) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        promptSelectImage();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ARGS_IMAGE_SELECT) {
+                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
+                GlideUtils.loadCircularImage(mImageUri, mProfilePic);
+            }
+        }
+    }
+
+    private void uploadImage() {
+        showProgress(true);
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                super.onFailure(e);
+                showProgress(false);
+            }
+
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                if (downloadUrl != null) {
+                    mPlayer.image = downloadUrl.toString();
+                    savePlayerInfo();
+                    ToastUtils.show(R.string.toast_profile_saved, Toast.LENGTH_SHORT);
+                } else {
+                    ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
+                }
+                showProgress(false);
+            }
+        });
     }
 }

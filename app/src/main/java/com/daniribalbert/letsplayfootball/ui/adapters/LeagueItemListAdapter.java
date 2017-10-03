@@ -194,7 +194,7 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @Override
         public void onClick(View view) {
             Player player = mPlayers.get(getAdapterPosition() - mUpcomingMatches.size());
-            EventBus.getDefault().post(new OpenPlayerEvent(player.id, player.getName()));
+            EventBus.getDefault().post(new OpenPlayerEvent(player));
         }
 
         @Override

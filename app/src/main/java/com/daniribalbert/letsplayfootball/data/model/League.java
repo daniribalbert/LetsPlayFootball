@@ -2,6 +2,8 @@ package com.daniribalbert.letsplayfootball.data.model;
 
 import android.text.TextUtils;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +51,11 @@ public class League {
 
     public League() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
+
+    @Exclude
+    public boolean isOwner(String userId){
+        return ownersId.containsKey(userId);
     }
 
     @Override

@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
@@ -27,7 +27,6 @@ import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,12 +46,14 @@ public class LeagueInfoFragment extends BaseFragment {
     public static final String TAG = LeagueInfoFragment.class.getSimpleName();
 
     public static final String LEAGUE_ID = "LEAGUE_ID";
+    public static final String ARGS_LEAGUE_VIEW_MODE = "ARGS_LEAGUE_VIEW_MODE";
 
     @BindView(R.id.league_items_recyclerview)
     RecyclerView mRecyclerView;
     LeagueItemListAdapter mAdapter;
 
     String mLeagueId;
+    private boolean mViewMode;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,9 +70,10 @@ public class LeagueInfoFragment extends BaseFragment {
      *
      * @return new instance of this Fragment.
      */
-    public static LeagueInfoFragment newInstance(String leagueId) {
+    public static LeagueInfoFragment newInstance(String leagueId, boolean viewMode) {
         Bundle args = new Bundle();
         args.putString(LEAGUE_ID, leagueId);
+        args.putBoolean(ARGS_LEAGUE_VIEW_MODE, viewMode);
         LeagueInfoFragment fragment = new LeagueInfoFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
@@ -85,6 +87,7 @@ public class LeagueInfoFragment extends BaseFragment {
         Bundle args = getArguments();
         if (args != null) {
             mLeagueId = args.getString(LEAGUE_ID);
+            mViewMode = args.getBoolean(ARGS_LEAGUE_VIEW_MODE, true);
         }
     }
 
@@ -139,7 +142,7 @@ public class LeagueInfoFragment extends BaseFragment {
     }
 
     private void loadNextMatch() {
-        MatchDbUtils.getUpcomingMatch(mLeagueId, new ValueEventListener() {
+        MatchDbUtils.getUpcomingMatch(mLeagueId, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 LogUtils.w("DATA: " + dataSnapshot);
@@ -161,18 +164,13 @@ public class LeagueInfoFragment extends BaseFragment {
 
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
         });
     }
 
     private void loadPlayers() {
         PlayerDbUtils
                 .getPlayersFromLeague(mLeagueId,
-                                      new ValueEventListener() {
+                                      new BaseValueEventListener() {
                                           @Override
                                           public void onDataChange(DataSnapshot dataSnapshot) {
                                               LogUtils.w(dataSnapshot.toString());
@@ -199,6 +197,7 @@ public class LeagueInfoFragment extends BaseFragment {
                                           @Override
                                           public void onCancelled(
                                                   DatabaseError databaseError) {
+                                              super.onCancelled(databaseError);
                                               showProgress(false);
                                           }
                                       });
@@ -236,13 +235,17 @@ public class LeagueInfoFragment extends BaseFragment {
 
     @Subscribe
     public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
+        final Player player = event.player;
+
         DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer
-                .newInstance(mLeagueId, event.playerId);
+                .newInstance(mLeagueId, player.id, mViewMode);
         dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
             @Override
             public void onPlayerSaved(Player player) {
-                PlayerDbUtils.updatePlayer(player);
-                mAdapter.updatePlayer(player);
+                if (!mViewMode) {
+                    PlayerDbUtils.updatePlayer(player);
+                    mAdapter.updatePlayer(player);
+                }
             }
         });
         dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);

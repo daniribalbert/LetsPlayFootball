@@ -1,9 +1,8 @@
 package com.daniribalbert.letsplayfootball.data.database;
 
-import android.util.Log;
-
-import com.daniribalbert.letsplayfootball.data.database.listener.CompletionListener;
-import com.daniribalbert.letsplayfootball.data.database.listener.SearchListener;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.database.listeners.CompletionListener;
+import com.daniribalbert.letsplayfootball.data.database.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
@@ -44,7 +43,7 @@ public class PlayerDbUtils {
     public static void createPlayer(final FirebaseUser firebaseUser, final CompletionListener listener) {
         final Player player = Player.fromFirebase(firebaseUser);
         final DatabaseReference dbRef = getRef();
-        dbRef.child(player.id).addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child(player.id).addListenerForSingleValueEvent(new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() == null) {
@@ -56,6 +55,7 @@ public class PlayerDbUtils {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                super.onCancelled(databaseError);
                 listener.onComplete(false);
             }
         });
@@ -100,7 +100,7 @@ public class PlayerDbUtils {
         final Set<Player> result = new HashSet<Player>();
 
 
-        ValueEventListener eventListener = new ValueEventListener() {
+        ValueEventListener eventListener = new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 LogUtils.w(dataSnapshot.toString());
@@ -119,7 +119,7 @@ public class PlayerDbUtils {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                LogUtils.e("Search Cancelled?" + databaseError.toString());
+                super.onCancelled(databaseError);
                 if (nQuery.decrementAndGet() <= 0) {
                     listener.onDataReceived(result);
                 }
@@ -144,18 +144,13 @@ public class PlayerDbUtils {
     }
 
     public static void addLeague(final String playerId, final String leagueId) {
-        LeagueDbUtils.getLeague(leagueId, new ValueEventListener() {
+        LeagueDbUtils.getLeague(leagueId, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DatabaseReference ref = getRef();
                 League league = dataSnapshot.getValue(League.class);
                 SimpleLeague playerLeague = new SimpleLeague(league);
                 ref.child(playerId).child("leagues").child(leagueId).setValue(playerLeague);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }

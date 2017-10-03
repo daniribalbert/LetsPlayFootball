@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.events.EditLeagueEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 
@@ -43,6 +44,14 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
             public void onClick(View view) {
                 final int adapterPosition = viewHolder.getAdapterPosition();
                 EventBus.getDefault().post(new OpenLeagueEvent(mValues.get(adapterPosition)));
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                final int adapterPosition = viewHolder.getAdapterPosition();
+                EventBus.getDefault().post(new EditLeagueEvent(mValues.get(adapterPosition)));
+                return true;
             }
         });
         return viewHolder;

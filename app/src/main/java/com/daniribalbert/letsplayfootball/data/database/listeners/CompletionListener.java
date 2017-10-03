@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.data.database.listener;
+package com.daniribalbert.letsplayfootball.data.database.listeners;
 
 /**
  * Interface to notify some Firebase operation has completed.

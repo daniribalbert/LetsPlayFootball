@@ -59,7 +59,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     LogUtils.d("onAuthStateChanged:signed_in:" + user.getUid());
                 } else {
                     // User is signed out
-                    LogUtils.d("onAuthStateChanged:signed_out");
+                    LogUtils.w("onAuthStateChanged:signed_out");
                 }
             }
         };

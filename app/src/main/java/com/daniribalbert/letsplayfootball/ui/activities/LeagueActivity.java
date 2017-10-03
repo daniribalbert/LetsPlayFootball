@@ -10,12 +10,13 @@ import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
+import com.google.firebase.database.DataSnapshot;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -49,10 +50,12 @@ public class LeagueActivity extends BaseActivity
     @BindView(R.id.fab_menu_3)
     FloatingActionButton mFabMenu3;
 
-    private String mLeagueId;
-
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
+
+
+    private String mLeagueId;
+    private League mLeague;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,18 +66,18 @@ public class LeagueActivity extends BaseActivity
         loadArgs(getIntent());
         setSupportActionBar(mToolbar);
 
+        setupFabListeners();
+        if (savedInstanceState == null) {
+            loadLeague();
+        }
+    }
+
+    private void setupFabListeners() {
+        mFab.setVisibility(View.GONE);
         mFab.setOnClickListener(this);
         mFabMenu1.setOnClickListener(this);
         mFabMenu2.setOnClickListener(this);
         mFabMenu3.setOnClickListener(this);
-
-        if (savedInstanceState == null) {
-            LeagueInfoFragment frag = LeagueInfoFragment.newInstance(mLeagueId);
-            frag.setProgress(mProgressBar);
-            getFragmentManager().beginTransaction()
-                                .add(R.id.fragment_container, frag, LeagueInfoFragment.TAG)
-                                .commit();
-        }
     }
 
     private void loadArgs(final Intent intent) {
@@ -84,6 +87,23 @@ public class LeagueActivity extends BaseActivity
 
         setTitle(intent.getStringExtra(LEAGUE_TITLE));
         mLeagueId = intent.getStringExtra(LEAGUE_ID);
+    }
+
+    private void loadLeague() {
+        LeagueDbUtils.getLeague(mLeagueId, new BaseValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mLeague = dataSnapshot.getValue(League.class);
+                String userId = mAuth.getCurrentUser().getUid();
+                boolean viewMode = !mLeague.isOwner(userId);
+                mFab.setVisibility(viewMode ? View.GONE : View.VISIBLE);
+                LeagueInfoFragment frag = LeagueInfoFragment.newInstance(mLeagueId, viewMode);
+                frag.setProgress(mProgressBar);
+                getFragmentManager().beginTransaction()
+                                    .add(R.id.fragment_container, frag, LeagueInfoFragment.TAG)
+                                    .commit();
+            }
+        });
     }
 
     @Override

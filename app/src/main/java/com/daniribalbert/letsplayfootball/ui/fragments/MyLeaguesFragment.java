@@ -13,18 +13,19 @@ import android.view.ViewGroup;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.activities.LeagueActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
+import com.daniribalbert.letsplayfootball.ui.events.EditLeagueEvent;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -104,7 +105,7 @@ public class MyLeaguesFragment extends BaseFragment {
     private void loadData() {
         showProgress(true);
         PlayerDbUtils.getPlayer(getBaseActivity().getCurrentUser().getUid(),
-                                new ValueEventListener() {
+                                new BaseValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         showProgress(false);
@@ -124,6 +125,7 @@ public class MyLeaguesFragment extends BaseFragment {
 
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {
+                                        super.onCancelled(databaseError);
                                         showProgress(false);
                                     }
                                 });
@@ -145,19 +147,25 @@ public class MyLeaguesFragment extends BaseFragment {
 
     @Subscribe
     public void OnLeagueSelectedEvent(OpenLeagueEvent event) {
+        SimpleLeague currentLeague = event.getLeague();
+
         Intent intent = new Intent(getActivity(), LeagueActivity.class);
-        intent.putExtra(LeagueActivity.LEAGUE_ID, event.getLeague().league_id);
-        intent.putExtra(LeagueActivity.LEAGUE_TITLE, event.getLeague().title);
+        intent.putExtra(LeagueActivity.LEAGUE_ID, currentLeague.league_id);
+        intent.putExtra(LeagueActivity.LEAGUE_TITLE, currentLeague.title);
         startActivity(intent);
-//        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague.newInstance(event.getLeague().league_id);
-//        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
-//            @Override
-//            public void onLeagueSaved(League league) {
-//                LeagueDbUtils.updateLeague(league);
-//                mAdapter.updatePlayer(new SimpleLeague(league));
-//            }
-//        });
-//        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
+    }
+
+    @Subscribe
+    public void editLeagueInfo(EditLeagueEvent event){
+        DialogFragmentEditLeague dFrag = DialogFragmentEditLeague
+                .newInstance(event.getLeague().league_id);
+        dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {
+            @Override
+            public void onLeagueSaved(League league) {
+                LeagueDbUtils.updateLeague(league);
+            }
+        });
+        dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
     }
 
 }
