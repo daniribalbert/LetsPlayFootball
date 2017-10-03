@@ -8,6 +8,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 
@@ -21,6 +23,8 @@ import java.util.List;
 public class BaseDialogFragment extends DialogFragment {
 
     public static final int ARGS_IMAGE_SELECT = 201;
+
+    ProgressBar mProgressBar;
 
     protected void promptSelectImage() {
         // Determine Uri of camera image to save.
@@ -48,6 +52,12 @@ public class BaseDialogFragment extends DialogFragment {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
                                cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
         startActivityForResult(chooserIntent, ARGS_IMAGE_SELECT);
+    }
+
+    protected void showProgress(boolean show) {
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
 }

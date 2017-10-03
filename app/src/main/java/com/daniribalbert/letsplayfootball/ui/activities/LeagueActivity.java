@@ -13,8 +13,10 @@ import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
+import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoOwnerModeFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 import com.google.firebase.database.DataSnapshot;
 
@@ -97,10 +99,17 @@ public class LeagueActivity extends BaseActivity
                 String userId = mAuth.getCurrentUser().getUid();
                 boolean viewMode = !mLeague.isOwner(userId);
                 mFab.setVisibility(viewMode ? View.GONE : View.VISIBLE);
-                LeagueInfoFragment frag = LeagueInfoFragment.newInstance(mLeagueId, viewMode);
+                BaseFragment frag;
+                String tag;
+                if (viewMode) {
+                    frag = LeagueInfoFragment.newInstance(mLeagueId);
+                    tag = LeagueInfoFragment.TAG;
+                } else {
+                    frag = LeagueInfoOwnerModeFragment.newInstance(mLeagueId);
+                    tag = LeagueInfoOwnerModeFragment.TAG;
+                }
                 frag.setProgress(mProgressBar);
-                getFragmentManager().beginTransaction()
-                                    .add(R.id.fragment_container, frag, LeagueInfoFragment.TAG)
+                getFragmentManager().beginTransaction().add(R.id.fragment_container, frag, tag)
                                     .commit();
             }
         });
@@ -149,7 +158,7 @@ public class LeagueActivity extends BaseActivity
         }
     }
 
-    private void resetFab(){
+    private void resetFab() {
         mFab.setImageResource(R.drawable.ic_add);
         mFabLayout.setVisibility(View.GONE);
     }

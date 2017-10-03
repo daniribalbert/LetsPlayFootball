@@ -198,12 +198,6 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
         mListener = listener;
     }
 
-    private void showProgress(boolean show) {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-    }
-
     @Override
     public void onDestroyView() {
         Dialog dialog = getDialog();

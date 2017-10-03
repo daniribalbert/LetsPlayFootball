@@ -178,34 +178,8 @@ public class PlayerListFragment extends BaseFragment {
 
     @Subscribe
     public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
-        DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer
-                .newInstance(mLeagueId, event.player.id, true);
-        dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
-            @Override
-            public void onPlayerSaved(Player player) {
-                PlayerDbUtils.updatePlayer(player);
-                mAdapter.updateItem(player);
-            }
-        });
-        dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
+        DialogFragmentViewPlayer dFrag = DialogFragmentViewPlayer
+                .newInstance(mLeagueId, event.player.id);
+        dFrag.show(getFragmentManager(), DialogFragmentViewPlayer.TAG);
     }
-
-    @Subscribe
-    public void OnPlayerRemoveEvent(final RemovePlayerEvent event) {
-        String name = event.player.getDisplayName();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_remove_player_title);
-        builder.setMessage(getString(R.string.dialog_remove_player_message, name));
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mAdapter.removeItem(event.player);
-                PlayerDbUtils.removePlayer(event.player, mLeagueId);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.create().show();
-    }
-
 }

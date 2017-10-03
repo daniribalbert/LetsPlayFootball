@@ -43,42 +43,15 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Dialog fragment used to add/edit the next match.
  */
-public class DialogFragmentEditMatch extends BaseDialogFragment implements View.OnClickListener,
-                                                                       DatePickerDialog.OnDateSetListener,
-                                                                       TimePickerDialog.OnTimeSetListener {
+public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
+                                                                     DatePickerDialog.OnDateSetListener,
+                                                                     TimePickerDialog.OnTimeSetListener {
 
     public static final String TAG = DialogFragmentEditMatch.class.getSimpleName();
 
-    public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
-    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
-
-    @BindView(R.id.edit_match_pic)
-    ImageView mMatchImage;
-
-    @BindView(R.id.edit_match_time_day)
-    TextView mMatchDay;
-
-    @BindView(R.id.edit_match_time_hour)
-    TextView mMatchHour;
-
-    @BindView(R.id.edit_match_time_layout)
-    View mTimeLayout;
-
-    @BindView(R.id.bt_save_match)
-    View mSaveMatch;
-
     private EditMatchListener mListener;
-
     private Uri mImageUri;
-
-    @BindView(R.id.dialog_progress)
-    ProgressBar mProgressBar;
-
-    private Match mMatch;
     private Calendar mCalendar = Calendar.getInstance();
-
-    private String mMatchId;
-    private String mLeagueId;
 
     public static DialogFragmentEditMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
@@ -102,75 +75,11 @@ public class DialogFragmentEditMatch extends BaseDialogFragment implements View.
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        loadArgs();
-    }
-
-    private void loadArgs() {
-        Bundle args = getArguments();
-        if (args != null) {
-            mMatchId = args.getString(ARGS_MATCH_ID);
-            mLeagueId = args.getString(ARGS_LEAGUE_ID);
-        }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_match, container, false);
-        ButterKnife.bind(this, rootView);
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void setupViewMode() {
+        mSaveMatch.setText(R.string.save);
         mSaveMatch.setOnClickListener(this);
         mMatchImage.setOnClickListener(this);
         mTimeLayout.setOnClickListener(this);
-        if (savedInstanceState == null) {
-            if (TextUtils.isEmpty(mMatchId)) {
-                mMatch = new Match(mLeagueId);
-                updatedTimeText();
-            } else {
-                loadMatchData(mLeagueId, mMatchId);
-            }
-        } else {
-            if (mImageUri != null) {
-                GlideUtils.loadCircularImage(mImageUri, mMatchImage);
-            } else if (mMatch != null && mMatch.hasImage()) {
-                GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
-            }
-        }
-    }
-
-    private void loadMatchData(String leagueId, String matchId) {
-        MatchDbUtils.getMatch(leagueId, matchId, new BaseValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mMatch = dataSnapshot.getValue(Match.class);
-
-                if (mMatch != null) {
-                    updatedTimeText();
-                    if (mMatch.hasImage()) {
-                        GlideUtils.loadCircularImage(mMatch.image, mMatchImage);
-                    }
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
-        }
     }
 
     @Override
@@ -261,22 +170,6 @@ public class DialogFragmentEditMatch extends BaseDialogFragment implements View.
         mListener = listener;
     }
 
-    private void showProgress(boolean show) {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        Dialog dialog = getDialog();
-        // handles https://code.google.com/p/android/issues/detail?id=17423
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-        super.onDestroyView();
-    }
-
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         mCalendar.set(Calendar.YEAR, year);
@@ -297,11 +190,6 @@ public class DialogFragmentEditMatch extends BaseDialogFragment implements View.
         }
         mMatch.time = nextMatchTime;
         updatedTimeText();
-    }
-
-    private void updatedTimeText() {
-        mMatchDay.setText(mMatch.getDate());
-        mMatchHour.setText(mMatch.getTime());
     }
 
 

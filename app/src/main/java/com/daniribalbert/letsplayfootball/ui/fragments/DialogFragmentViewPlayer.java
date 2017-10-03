@@ -39,25 +39,47 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Dialog fragment used to add/edit a new league.
  */
-public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implements View.OnClickListener {
+public class DialogFragmentViewPlayer extends BaseDialogFragment implements View.OnClickListener {
 
-    public static final String TAG = DialogFragmentEditPlayer.class.getSimpleName();
+    public static final String TAG = DialogFragmentViewPlayer.class.getSimpleName();
 
-    private EditPlayerListener mListener;
-    private Uri mImageUri;
+    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
+    public static final String ARGS_PLAYER = "ARGS_PLAYER";
 
-    public static DialogFragmentEditPlayer newInstance(String leagueId) {
+    @BindView(R.id.edit_player_pic)
+    ImageView mPlayerImage;
+
+    @BindView(R.id.edit_player_name)
+    EditText mPlayerName;
+
+    @BindView(R.id.edit_player_nickname)
+    EditText mPlayerNickname;
+
+    @BindView(R.id.player_rating)
+    RatingBar mRating;
+
+    @BindView(R.id.bt_save_player)
+    Button mSavePlayer;
+
+    @BindView(R.id.dialog_progress)
+    ProgressBar mProgressBar;
+
+    protected Player mPlayer;
+    protected String mLeagueId;
+    protected String mPlayerId;
+
+    public static DialogFragmentViewPlayer newInstance(String leagueId) {
         Bundle bundle = new Bundle();
-        DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
+        DialogFragmentViewPlayer dFrag = new DialogFragmentViewPlayer();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
     }
 
-    public static DialogFragmentEditPlayer newInstance(String leagueId, String playerId) {
+    public static DialogFragmentViewPlayer newInstance(String leagueId, String playerId) {
         Bundle bundle = new Bundle();
-        DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
+        DialogFragmentViewPlayer dFrag = new DialogFragmentViewPlayer();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
         bundle.putString(ARGS_PLAYER, playerId);
         dFrag.setArguments(bundle);
@@ -97,23 +119,46 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
                 loadPlayerData(mPlayerId);
             }
         } else {
-            if (mImageUri != null) {
-                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
-            } else if (mPlayer != null && mPlayer.hasImage()) {
+            if (mPlayer != null) {
                 GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
             }
         }
     }
 
-    @Override
     protected void setupViewMode() {
-        boolean canEdit = mPlayer.isGuest();
+        mPlayerImage.setClickable(false);
+        mPlayerName.setEnabled(false);
+        mPlayerNickname.setEnabled(false);
+        mRating.setEnabled(false);
+        mSavePlayer.setText(R.string.close);
+    }
 
-        mPlayerImage.setClickable(canEdit);
-        mPlayerName.setEnabled(canEdit);
-        mPlayerNickname.setEnabled(canEdit);
-        mRating.setEnabled(true);
-        mSavePlayer.setText(R.string.save);
+    protected void loadPlayerData(String playerId) {
+        showProgress(true);
+        PlayerDbUtils.getPlayer(playerId, new BaseValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                mPlayer = dataSnapshot.getValue(Player.class);
+
+                if (mPlayer != null) {
+                    mPlayerName.setText(mPlayer.getName());
+                    mPlayerNickname.setText(mPlayer.getNickname());
+                    mRating.setRating(mPlayer.getRating(mLeagueId));
+                    if (mPlayer.hasImage()) {
+                        GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
+                    }
+                    setupViewMode();
+                }
+                showProgress(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                super.onCancelled(databaseError);
+                showProgress(false);
+            }
+        });
+
     }
 
     @Override
@@ -130,76 +175,20 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_player:
-                showProgress(true);
-
-                mPlayer.name = mPlayerName.getText().toString();
-                mPlayer.nickname = mPlayerNickname.getText().toString();
-                mPlayer.setRating(mLeagueId, mRating.getRating());
-
-                if (mImageUri == null) {
-                    save(mPlayer);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
-                } else {
-                    uploadImage();
+                if (getDialog() != null) {
+                    dismiss();
                 }
                 break;
-            case R.id.edit_player_pic:
-                promptSelectImage();
         }
-    }
-
-    private void save(Player player) {
-        if (mListener != null){
-            mListener.onPlayerSaved(player);
-        }
-    }
-
-    private void uploadImage() {
-        showProgress(true);
-        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                super.onFailure(e);
-                showProgress(false);
-            }
-
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                if (downloadUrl != null) {
-                    mPlayer.image = downloadUrl.toString();
-                   save(mPlayer);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
-                    ToastUtils.show(R.string.toast_profile_saved, Toast.LENGTH_SHORT);
-                } else {
-                    ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
-                }
-                showProgress(false);
-            }
-        });
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ARGS_IMAGE_SELECT) {
-                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
-                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
-            }
+    public void onDestroyView() {
+        Dialog dialog = getDialog();
+        // handles https://code.google.com/p/android/issues/detail?id=17423
+        if (dialog != null && getRetainInstance()) {
+            dialog.setDismissMessage(null);
         }
-    }
-
-    public void setListener(EditPlayerListener listener) {
-        mListener = listener;
-    }
-
-    public interface EditPlayerListener {
-        void onPlayerSaved(Player player);
+        super.onDestroyView();
     }
 }

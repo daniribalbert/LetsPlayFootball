@@ -53,7 +53,6 @@ public class LeagueInfoFragment extends BaseFragment {
     LeagueItemListAdapter mAdapter;
 
     String mLeagueId;
-    private boolean mViewMode;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,10 +69,9 @@ public class LeagueInfoFragment extends BaseFragment {
      *
      * @return new instance of this Fragment.
      */
-    public static LeagueInfoFragment newInstance(String leagueId, boolean viewMode) {
+    public static LeagueInfoFragment newInstance(String leagueId) {
         Bundle args = new Bundle();
         args.putString(LEAGUE_ID, leagueId);
-        args.putBoolean(ARGS_LEAGUE_VIEW_MODE, viewMode);
         LeagueInfoFragment fragment = new LeagueInfoFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
@@ -87,7 +85,6 @@ public class LeagueInfoFragment extends BaseFragment {
         Bundle args = getArguments();
         if (args != null) {
             mLeagueId = args.getString(LEAGUE_ID);
-            mViewMode = args.getBoolean(ARGS_LEAGUE_VIEW_MODE, true);
         }
     }
 
@@ -141,7 +138,7 @@ public class LeagueInfoFragment extends BaseFragment {
         loadPlayers();
     }
 
-    private void loadNextMatch() {
+    protected void loadNextMatch() {
         MatchDbUtils.getUpcomingMatch(mLeagueId, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -167,7 +164,7 @@ public class LeagueInfoFragment extends BaseFragment {
         });
     }
 
-    private void loadPlayers() {
+    protected void loadPlayers() {
         PlayerDbUtils
                 .getPlayersFromLeague(mLeagueId,
                                       new BaseValueEventListener() {
@@ -204,100 +201,19 @@ public class LeagueInfoFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void onFabClicked(FabClickedEvent event) {
-        switch (event.fab.getId()) {
-            case R.id.fab_menu_2: // Add new player to league.
-                DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer.newInstance(mLeagueId);
-                dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
-                    @Override
-                    public void onPlayerSaved(Player player) {
-                        player.leagues.put(mLeagueId, new SimpleLeague(mLeagueId));
-                        PlayerDbUtils.createGuestPlayer(player);
-                        mAdapter.addPlayer(player);
-                    }
-                });
-                dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
-                break;
-            case R.id.fab_menu_3: // Add new match to the League.
-                DialogFragmentEditMatch dFragMatch = DialogFragmentEditMatch.newInstance(mLeagueId);
-                dFragMatch.setListener(new DialogFragmentEditMatch.EditMatchListener() {
-                    @Override
-                    public void onMatchSaved(Match match) {
-                        MatchDbUtils.createMatch(match);
-                        loadNextMatch();
-                    }
-                });
-                dFragMatch.show(getChildFragmentManager(), DialogFragmentEditMatch.TAG);
-                break;
-        }
-
-    }
-
-    @Subscribe
     public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
         final Player player = event.player;
 
-        DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer
-                .newInstance(mLeagueId, player.id, mViewMode);
-        dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
-            @Override
-            public void onPlayerSaved(Player player) {
-                if (!mViewMode) {
-                    PlayerDbUtils.updatePlayer(player);
-                    mAdapter.updatePlayer(player);
-                }
-            }
-        });
-        dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
-    }
-
-    @Subscribe
-    public void OnPlayerRemoveEvent(final RemovePlayerEvent event) {
-        String name = event.player.getDisplayName();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_remove_player_title);
-        builder.setMessage(getString(R.string.dialog_remove_player_message, name));
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                mAdapter.removePlayer(event.player);
-                PlayerDbUtils.removePlayer(event.player, mLeagueId);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.create().show();
+        DialogFragmentViewPlayer dFrag = DialogFragmentViewPlayer
+                .newInstance(mLeagueId, player.id);
+        dFrag.show(getFragmentManager(), DialogFragmentViewPlayer.TAG);
     }
 
     @Subscribe
     public void OnMatchSelectedEvent(OpenMatchEvent event) {
-        DialogFragmentEditMatch dFrag = DialogFragmentEditMatch
+        DialogFragmentViewMatch dFrag = DialogFragmentViewMatch
                 .newInstance(mLeagueId, event.matchId);
-        dFrag.setListener(new DialogFragmentEditMatch.EditMatchListener() {
-            @Override
-            public void onMatchSaved(Match match) {
-                MatchDbUtils.updateMatch(match);
-                loadNextMatch();
-            }
-        });
-        dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
-    }
-
-    @Subscribe
-    public void OnMatchRemoveEvent(final RemoveMatchEvent event) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_remove_match_title);
-        builder.setMessage(R.string.dialog_remove_match_message);
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                MatchDbUtils.removeMatch(event.match);
-                mAdapter.removeMatch(event.match);
-                loadNextMatch();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.create().show();
+        dFrag.show(getFragmentManager(), DialogFragmentViewMatch.TAG);
     }
 
 }
