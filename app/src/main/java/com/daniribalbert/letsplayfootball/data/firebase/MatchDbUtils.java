@@ -1,9 +1,12 @@
-package com.daniribalbert.letsplayfootball.data.database;
+package com.daniribalbert.letsplayfootball.data.firebase;
 
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class for Player database operations.
@@ -63,5 +66,23 @@ public class MatchDbUtils {
     public static void removeMatch(Match match) {
         DatabaseReference ref = getRef();
         ref.child(match.leagueId).child(match.id).removeValue();
+    }
+
+    public static void markCheckIn(Match match, String playerId) {
+        DatabaseReference ref = getRef();
+        match.players.put(playerId, true);
+        Map<String, Object> playersMap = new HashMap<>();
+
+        playersMap.put("players", match.players);
+        ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
+    }
+
+    public static void markCheckOut(Match match, String playerId) {
+        DatabaseReference ref = getRef();
+        match.players.put(playerId, false);
+        Map<String, Object> playersMap = new HashMap<>();
+
+        playersMap.put("players", match.players);
+        ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
     }
 }

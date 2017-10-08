@@ -1,42 +1,31 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.DatePicker;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.Calendar;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -71,10 +60,12 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         return dFrag;
     }
 
-    public static DialogFragmentEditMatch newInstance(String leagueId, String matchId) {
+    public static DialogFragmentEditMatch newInstance(String leagueId, String matchId,
+                                                      String playerId) {
         Bundle bundle = new Bundle();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
         bundle.putString(ARGS_MATCH_ID, matchId);
+        bundle.putString(ARGS_PLAYER_ID, playerId);
 
         DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
         dFrag.setArguments(bundle);
@@ -90,6 +81,14 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         mTimeLayout.setOnClickListener(this);
         mCheckInStartLayout.setOnClickListener(this);
         mCheckInEndLayout.setOnClickListener(this);
+
+        if (TextUtils.isEmpty(mMatchId)){
+            mMatchCheckInLayout.setVisibility(View.GONE);
+        } else {
+            mMatchCheckInLayout.setVisibility(View.VISIBLE);
+            mBtCheckIn.setOnClickListener(this);
+            mBtNotGoing.setOnClickListener(this);
+        }
     }
 
     @Override
@@ -113,6 +112,14 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
             case R.id.edit_match_check_in_end_layout:
                 currentTimeViewId = view.getId();
                 showDatePickerDialog();
+                break;
+            case R.id.bt_check_in:
+                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
+                updateCheckInLayout();
+                break;
+            case R.id.bt_not_going:
+                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
+                updateCheckInLayout();
                 break;
         }
     }

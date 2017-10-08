@@ -16,9 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;

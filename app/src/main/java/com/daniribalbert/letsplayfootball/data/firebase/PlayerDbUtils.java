@@ -1,8 +1,8 @@
-package com.daniribalbert.letsplayfootball.data.database;
+package com.daniribalbert.letsplayfootball.data.firebase;
 
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
-import com.daniribalbert.letsplayfootball.data.database.listeners.CompletionListener;
-import com.daniribalbert.letsplayfootball.data.database.listeners.SearchListener;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.CompletionListener;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;

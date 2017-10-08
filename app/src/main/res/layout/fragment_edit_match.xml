@@ -130,6 +130,7 @@
             </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/match_user_check_in_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center|bottom"

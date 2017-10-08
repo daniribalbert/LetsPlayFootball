@@ -12,8 +12,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
+import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;

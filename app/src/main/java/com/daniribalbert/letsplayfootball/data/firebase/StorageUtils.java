@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.data.database;
+package com.daniribalbert.letsplayfootball.data.firebase;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;

@@ -3,8 +3,8 @@ package com.daniribalbert.letsplayfootball.utils;
 import android.content.Context;
 import android.net.Uri;
 
-import com.daniribalbert.letsplayfootball.data.database.StorageUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseUploadListener;
+import com.daniribalbert.letsplayfootball.data.firebase.StorageUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 

@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.data.database.listeners;
+package com.daniribalbert.letsplayfootball.data.firebase.listeners;
 
 import java.util.Set;
 

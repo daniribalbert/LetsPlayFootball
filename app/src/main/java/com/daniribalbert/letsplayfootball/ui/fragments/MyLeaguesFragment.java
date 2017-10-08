@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.LeagueDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.PlayerDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;

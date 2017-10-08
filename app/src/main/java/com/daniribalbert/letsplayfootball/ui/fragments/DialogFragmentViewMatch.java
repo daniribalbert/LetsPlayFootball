@@ -14,8 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.database.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.database.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +32,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
     public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
+    public static final String ARGS_PLAYER_ID = "ARGS_PLAYER_ID";
 
     @BindView(R.id.edit_match_pic)
     ImageView mMatchImage;
@@ -60,6 +61,9 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     @BindView(R.id.bt_not_going)
     Button mBtNotGoing;
 
+    @BindView(R.id.match_user_check_in_layout)
+    View mMatchCheckInLayout;
+
     @BindView(R.id.bt_save_match)
     Button mSaveMatch;
 
@@ -70,6 +74,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     protected String mMatchId;
     protected String mLeagueId;
+    protected String mPlayerId;
 
     public static DialogFragmentViewMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
@@ -81,10 +86,12 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
         return dFrag;
     }
 
-    public static DialogFragmentViewMatch newInstance(String leagueId, String matchId) {
+    public static DialogFragmentViewMatch newInstance(String leagueId, String matchId,
+                                                      String playerId) {
         Bundle bundle = new Bundle();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
         bundle.putString(ARGS_MATCH_ID, matchId);
+        bundle.putString(ARGS_PLAYER_ID, playerId);
 
         DialogFragmentViewMatch dFrag = new DialogFragmentViewMatch();
         dFrag.setArguments(bundle);
@@ -103,6 +110,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
         if (args != null) {
             mMatchId = args.getString(ARGS_MATCH_ID);
             mLeagueId = args.getString(ARGS_LEAGUE_ID);
+            mPlayerId = args.getString(ARGS_PLAYER_ID);
         }
     }
 
@@ -158,11 +166,21 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     }
 
-    private void updateCheckInLayout() {
-        if (mMatch.isCheckInOpen()){
+    protected void updateCheckInLayout() {
+        if (mMatch.isCheckInOpen()) {
             mBtCheckIn.setVisibility(View.VISIBLE);
             mBtNotGoing.setVisibility(View.VISIBLE);
             mTvCheckinClosed.setVisibility(View.GONE);
+
+            boolean isCheckedIn =
+                    mMatch.players.containsKey(mPlayerId) && mMatch.players.get(mPlayerId);
+            if (isCheckedIn) {
+                mBtCheckIn.setEnabled(false);
+                mBtNotGoing.setEnabled(true);
+            } else {
+                mBtCheckIn.setEnabled(true);
+                mBtNotGoing.setEnabled(false);
+            }
         } else {
             mBtCheckIn.setVisibility(View.GONE);
             mBtNotGoing.setVisibility(View.GONE);
@@ -187,6 +205,14 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
                 if (getDialog() != null) {
                     dismiss();
                 }
+                break;
+            case R.id.bt_check_in:
+                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
+                updateCheckInLayout();
+                break;
+            case R.id.bt_not_going:
+                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
+                updateCheckInLayout();
                 break;
         }
     }

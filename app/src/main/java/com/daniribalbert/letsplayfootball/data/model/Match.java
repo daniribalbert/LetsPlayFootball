@@ -42,7 +42,7 @@ public class Match implements Comparable {
     /**
      * List of players participating in this match.
      */
-    public HashMap<String, Boolean> players;
+    public HashMap<String, Boolean> players = new HashMap<>();
 
     public Match() {
         //Firebase constructor.

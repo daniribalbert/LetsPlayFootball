@@ -1,4 +1,4 @@
-package com.daniribalbert.letsplayfootball.data.database.listeners;
+package com.daniribalbert.letsplayfootball.data.firebase.listeners;
 
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DatabaseError;
