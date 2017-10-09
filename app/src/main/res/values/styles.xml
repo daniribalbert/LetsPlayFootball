@@ -46,4 +46,11 @@
         <item name="android:progressTint">@color/star_color</item>
     </style>
 
+    <style name="MenuButtonStyle" parent="MessengerButton.White">
+        <item name="android:gravity">center|start</item>
+        <item name="android:padding">@dimen/padding_small</item>
+        <item name="android:paddingStart">@dimen/padding_large</item>
+        <item name="android:drawableEnd">@drawable/arrow_right_black</item>
+    </style>
+
 </resources>

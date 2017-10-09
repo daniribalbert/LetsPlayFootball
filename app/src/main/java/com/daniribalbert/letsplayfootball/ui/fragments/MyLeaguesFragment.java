@@ -150,7 +150,7 @@ public class MyLeaguesFragment extends BaseFragment {
         SimpleLeague currentLeague = event.getLeague();
 
         Intent intent = new Intent(getActivity(), LeagueActivity.class);
-        intent.putExtra(LeagueActivity.LEAGUE_ID, currentLeague.league_id);
+        intent.putExtra(LeagueActivity.ARGS_LEAGUE_ID, currentLeague.league_id);
         intent.putExtra(LeagueActivity.LEAGUE_TITLE, currentLeague.title);
         startActivity(intent);
     }

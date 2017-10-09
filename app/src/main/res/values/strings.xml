@@ -60,6 +60,7 @@
     <string name="check_in_closed_msg">Check-in is currently closed</string>
     <string name="cant_go">Can\'t go</string>
     <string name="match_time">Match Time</string>
+    <string name="teams">Teams</string>
 
 
     <!-- Strings that goes with Dialogs -->

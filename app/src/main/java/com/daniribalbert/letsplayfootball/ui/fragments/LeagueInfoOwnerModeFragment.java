@@ -2,6 +2,7 @@ package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.daniribalbert.letsplayfootball.R;
@@ -10,6 +11,9 @@ import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
+import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
+import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsManagerActivity;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
@@ -118,16 +122,12 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
     @Subscribe
     public void OnMatchSelectedEvent(OpenMatchEvent event) {
         String currentUserId = getBaseActivity().getCurrentUser().getUid();
-        DialogFragmentEditMatch dFrag = DialogFragmentEditMatch
-                .newInstance(mLeagueId, event.matchId, currentUserId);
-        dFrag.setListener(new DialogFragmentEditMatch.EditMatchListener() {
-            @Override
-            public void onMatchSaved(Match match) {
-                MatchDbUtils.updateMatch(match);
-                loadNextMatch();
-            }
-        });
-        dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
+
+        Intent intent = new Intent(getActivity(), MatchDetailsManagerActivity.class);
+        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeagueId);
+        intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
+        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, currentUserId);
+        startActivity(intent);
     }
 
     @Subscribe

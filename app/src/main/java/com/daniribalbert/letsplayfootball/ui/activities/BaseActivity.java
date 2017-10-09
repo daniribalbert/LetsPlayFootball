@@ -14,6 +14,10 @@ import com.google.firebase.auth.FirebaseUser;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
+    public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
+    public static final String ARGS_PLAYER_ID = "ARGS_PLAYER_ID";
+
     protected FirebaseAuth mAuth;
 
     protected FirebaseAuth.AuthStateListener mAuthListener;

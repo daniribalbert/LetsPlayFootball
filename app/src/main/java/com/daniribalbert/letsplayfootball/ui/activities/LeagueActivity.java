@@ -31,7 +31,6 @@ import butterknife.ButterKnife;
 public class LeagueActivity extends BaseActivity
         implements DialogFragmentEditLeague.EditLeagueListener, View.OnClickListener {
 
-    public static final String LEAGUE_ID = "LEAGUE_ID";
     public static final String LEAGUE_TITLE = "LEAGUE_TITLE";
 
     @BindView(R.id.toolbar)
@@ -88,7 +87,7 @@ public class LeagueActivity extends BaseActivity
         }
 
         setTitle(intent.getStringExtra(LEAGUE_TITLE));
-        mLeagueId = intent.getStringExtra(LEAGUE_ID);
+        mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
     }
 
     private void loadLeague() {
