@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
@@ -114,6 +115,7 @@ public class MyLeaguesFragment extends BaseFragment {
                                             LogUtils.e("Failed to load user data!");
                                             return;
                                         }
+                                        PlayersCache.savePlayerInfo(currentPlayer);
                                         ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
                                         HashMap<String, SimpleLeague> leagues = currentPlayer.leagues;
 
@@ -156,7 +158,7 @@ public class MyLeaguesFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void editLeagueInfo(EditLeagueEvent event){
+    public void editLeagueInfo(EditLeagueEvent event) {
         DialogFragmentEditLeague dFrag = DialogFragmentEditLeague
                 .newInstance(event.getLeague().league_id);
         dFrag.setListener(new DialogFragmentEditLeague.EditLeagueListener() {

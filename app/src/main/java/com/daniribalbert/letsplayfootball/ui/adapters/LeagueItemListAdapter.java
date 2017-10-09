@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.MatchViewHolder;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
@@ -61,7 +62,7 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             case TYPE_MATCH:
                 view = LayoutInflater.from(parent.getContext())
                                      .inflate(R.layout.card_match, parent, false);
-                viewHolder = new MatchViewHolder(view);
+                viewHolder = new LeagueItemMatchViewHolder(view);
                 break;
             case TYPE_PLAYER:
                 view = LayoutInflater.from(parent.getContext())
@@ -85,7 +86,7 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         switch (itemViewType) {
             case TYPE_MATCH:
                 Match match = mUpcomingMatches.get(position);
-                ((MatchViewHolder) holder).setMatch(match);
+                ((LeagueItemMatchViewHolder) holder).setMatch(match);
                 break;
             case TYPE_PLAYER:
                 int playerPosition = position - mUpcomingMatches.size();
@@ -166,6 +167,7 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         mUpcomingMatches.clear();
         notifyDataSetChanged();
     }
+
     public void clearUpcomingMatches() {
         int size = mUpcomingMatches.size();
         mUpcomingMatches.clear();
@@ -206,47 +208,12 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
     }
 
-    public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-                                                                            View.OnLongClickListener {
-        @BindView(R.id.match_card_view)
-        CardView mCardView;
-        @BindView(R.id.match_card_day)
-        TextView mDay;
-        @BindView(R.id.match_card_time)
-        TextView mTime;
-        @BindView(R.id.match_card_image)
-        ImageView mImage;
+    class LeagueItemMatchViewHolder extends MatchViewHolder implements View.OnClickListener,
+                                                                       View.OnLongClickListener {
 
-
-        public MatchViewHolder(View view) {
+        LeagueItemMatchViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-
-            view.setOnClickListener(this);
-            view.setOnLongClickListener(this);
-        }
-
-        public void setMatch(Match match) {
-            setTime(match.getTimeStr(match.time));
-            setDay(match.getDateString(match.time));
-            setImage(match.image);
-        }
-
-        public void setTime(String timeStr) {
-            mTime.setText(timeStr);
-        }
-
-        @Override
-        public String toString() {
-            return mTime.getText().toString() + " " + mDay.getText().toString();
-        }
-
-        public void setImage(String image) {
-            GlideUtils.loadCircularImage(image, mImage);
-        }
-
-        public void setDay(String dayStr) {
-            mDay.setText(dayStr);
         }
 
         @Override

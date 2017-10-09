@@ -44,6 +44,13 @@ public class MatchDbUtils {
         }
     }
 
+    public static void getPastMatches(String leagueId, ValueEventListener listener) {
+        final String now = String.valueOf(System.currentTimeMillis());
+        DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).orderByKey().endAt(now)
+             .addListenerForSingleValueEvent(listener);
+    }
+
     public static void getUpcomingMatches(String leagueId, ValueEventListener listener) {
         final String now = String.valueOf(System.currentTimeMillis());
         DatabaseReference dbRef = getRef();
