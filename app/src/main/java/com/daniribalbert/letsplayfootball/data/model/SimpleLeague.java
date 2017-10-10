@@ -6,7 +6,6 @@ package com.daniribalbert.letsplayfootball.data.model;
 public class SimpleLeague {
     public String league_id;
     public String title;
-    public String description;
     public String image;
 
     public SimpleLeague() {//Firebase constructor
@@ -24,13 +23,12 @@ public class SimpleLeague {
     public SimpleLeague(League league) {
         this.league_id = league.id;
         this.title = league.title;
-        this.description = league.description;
         this.image = league.image;
     }
 
     @Override
     public String toString() {
-        return title + "\n" + description;
+        return title;
     }
 
     @Override
@@ -49,13 +47,11 @@ public class SimpleLeague {
     @Override
     public int hashCode() {
         // Java... -_-
-        if (title == null){
+        if (league_id == null){
             return 0;
         }
-        if (description == null){
-            return title.length();
-        }
-        return title.length() + description.length();
+
+        return league_id.hashCode();
     }
 }
 

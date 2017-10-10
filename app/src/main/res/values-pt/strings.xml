@@ -34,4 +34,11 @@
     <string name="dialog_remove_match_title">Remover Partida?</string>
     <string name="toast_error_match_time">Erro! Essa data já passou</string>
     <string name="toast_generic_saved">Tá salvo!</string>
+    <string name="hint_match_description">Romário marcou 3 gols.\\nJr. Baiano expulso por agressão.</string>
+    <string name="hint_player_name">Ronaldo Nazário</string>
+    <string name="hint_player_nickname">Ronaldo</string>
+    <string name="hint_player_search">Cafu</string>
+    <string name="league_name_hint">Série A</string>
+    <string name="match_time">Horário</string>
+    <string name="teams">Times</string>
 </resources>

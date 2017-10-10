@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 
 import com.daniribalbert.letsplayfootball.application.App;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.Exclude;
 
 import java.util.Date;
@@ -32,6 +34,11 @@ public class Match implements Comparable {
     public String image;
 
     /**
+     * Match description, where the user can add comments about that particular match.
+     */
+    public String description = "";
+
+    /**
      * Time when this match is gonna happen.
      */
     public long time;
@@ -49,8 +56,8 @@ public class Match implements Comparable {
     }
 
     public Match(String leagueId) {
-        init();
         this.leagueId = leagueId;
+        init();
     }
 
     private void init() {
@@ -60,8 +67,6 @@ public class Match implements Comparable {
         this.time = now.getTime();
         now.setTime(now.getTime() - TimeUnit.HOURS.toMillis(4));
         this.checkInEnds = now.getTime();
-
-
     }
 
     @Exclude
@@ -81,11 +86,21 @@ public class Match implements Comparable {
     }
 
     public boolean hasImage() {
-        return !TextUtils.isEmpty(image);
+        return !TextUtils.isEmpty(getImage());
+    }
+
+    public String getImage() {
+        if (TextUtils.isEmpty(image)) {
+            League league = LeagueCache.getLeagueInfo(leagueId);
+            if (league != null) {
+                return league.image;
+            }
+        }
+        return image;
     }
 
     @Exclude
-    public boolean isCheckInOpen(){
+    public boolean isCheckInOpen() {
         long now = System.currentTimeMillis();
         return now >= checkInStart && now < checkInEnds;
     }

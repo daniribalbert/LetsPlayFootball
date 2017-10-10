@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
@@ -95,6 +96,7 @@ public class LeagueActivity extends BaseActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mLeague = dataSnapshot.getValue(League.class);
+                LeagueCache.saveLeagueInfo(mLeague);
                 String userId = mAuth.getCurrentUser().getUid();
                 boolean viewMode = !mLeague.isOwner(userId);
                 mFab.setVisibility(viewMode ? View.GONE : View.VISIBLE);

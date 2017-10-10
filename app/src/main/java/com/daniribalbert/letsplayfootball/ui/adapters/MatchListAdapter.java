@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.HistoryMatchViewHolder;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.MatchViewHolder;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display items from the League
  */
-public class MatchListAdapter extends RecyclerView.Adapter<MatchViewHolder> {
+public class MatchListAdapter extends RecyclerView.Adapter<HistoryMatchViewHolder> {
 
     private final List<Match> mMatches = new ArrayList<>();
 
@@ -23,16 +24,16 @@ public class MatchListAdapter extends RecyclerView.Adapter<MatchViewHolder> {
     }
 
     @Override
-    public MatchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HistoryMatchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
 
         view = LayoutInflater.from(parent.getContext())
-                             .inflate(R.layout.card_match, parent, false);
-        return new MatchViewHolder(view);
+                             .inflate(R.layout.card_match_ended, parent, false);
+        return new HistoryMatchViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final MatchViewHolder holder, int position) {
+    public void onBindViewHolder(final HistoryMatchViewHolder holder, int position) {
         Match match = mMatches.get(position);
          holder.setMatch(match);
     }

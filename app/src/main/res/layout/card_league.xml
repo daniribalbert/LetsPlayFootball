@@ -38,9 +38,10 @@
 
                 <TextView
                     android:id="@+id/league_card_title"
-                    style="@style/TextAppearance.AppCompat.Medium"
+                    style="@style/TextAppearance.AppCompat.Headline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     tools:text="Better than Premier League"/>
             </LinearLayout>
         </RelativeLayout>

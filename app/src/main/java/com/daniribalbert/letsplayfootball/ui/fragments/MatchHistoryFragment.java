@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -14,9 +15,15 @@ import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEvent
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
+import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.MatchListAdapter;
+import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,8 +71,15 @@ public class MatchHistoryFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        EventBus.getDefault().register(this);
         mRecyclerView.setAdapter(mAdapter);
         loadMatchHistory();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     private void loadMatchHistory() {
@@ -80,9 +94,8 @@ public class MatchHistoryFragment extends BaseFragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     showProgress(false);
-                    Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
-                    while (it.hasNext()) {
-                        DataSnapshot next = it.next();
+                    mAdapter.clear();
+                    for (DataSnapshot next : dataSnapshot.getChildren()) {
                         Match match = next.getValue(Match.class);
                         mAdapter.addMatch(match);
                     }
@@ -100,5 +113,14 @@ public class MatchHistoryFragment extends BaseFragment {
     private void loadArgs() {
     }
 
+    @Subscribe
+    public void onMatchSelected(OpenMatchEvent event){
+        String playerId = getBaseActivity().getCurrentUser().getUid();
+        Intent intent = new Intent(getActivity(), MatchDetailsActivity.class);
+        intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
+        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, playerId);
+        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, event.leagueId);
+        startActivity(intent);
+    }
 
 }

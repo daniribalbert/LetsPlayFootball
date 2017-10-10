@@ -8,14 +8,24 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
+import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
+import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Base Dialog fragment class.
@@ -25,6 +35,7 @@ public class BaseDialogFragment extends DialogFragment {
     public static final int ARGS_IMAGE_SELECT = 201;
 
     ProgressBar mProgressBar;
+    protected Uri mImageUri;
 
     protected void promptSelectImage() {
         // Determine Uri of camera image to save.
@@ -57,6 +68,23 @@ public class BaseDialogFragment extends DialogFragment {
     protected void showProgress(boolean show) {
         if (mProgressBar != null) {
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    protected boolean handleImageSelectionActivityResult(int requestCode, int resultCode,
+                                                         Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ARGS_IMAGE_SELECT) {
+                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
+                return mImageUri != null;
+            }
+        }
+        return false;
+    }
+
+    protected void tryAndCloseDialog(){
+        if (getDialog() != null){
+            getDialog().dismiss();
         }
     }
 

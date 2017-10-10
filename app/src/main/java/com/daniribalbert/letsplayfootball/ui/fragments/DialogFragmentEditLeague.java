@@ -56,8 +56,6 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
     private EditLeagueListener mListener;
     private League mLeague;
 
-    private Uri mImageUri;
-
     @BindView(R.id.dialog_progress)
     ProgressBar mProgressBar;
 
@@ -147,9 +145,7 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
 
                 if (mImageUri == null) {
                     mListener.onLeagueSaved(mLeague);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
+                    tryAndCloseDialog();
                 } else {
                     uploadImage();
                 }
@@ -161,12 +157,7 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
 
     private void uploadImage() {
         showProgress(true);
-        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                super.onFailure(e);
-                showProgress(false);
-            }
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener(mProgressBar) {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -186,13 +177,12 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ARGS_IMAGE_SELECT) {
-                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
-                GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
-            }
+        if (handleImageSelectionActivityResult(requestCode,resultCode,data)) {
+            GlideUtils.loadCircularImage(mImageUri, mLeagueImage);
         }
     }
+
+
 
     public void setListener(EditLeagueListener listener) {
         mListener = listener;

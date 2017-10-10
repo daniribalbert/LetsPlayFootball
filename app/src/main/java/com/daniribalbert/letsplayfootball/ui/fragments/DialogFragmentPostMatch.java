@@ -1,6 +1,8 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -9,16 +11,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
+import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.storage.UploadTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,9 +36,9 @@ import butterknife.ButterKnife;
 /**
  * Dialog fragment used to add/edit the next match.
  */
-public class DialogFragmentViewMatch extends BaseDialogFragment implements View.OnClickListener {
+public class DialogFragmentPostMatch extends BaseDialogFragment implements View.OnClickListener {
 
-    public static final String TAG = DialogFragmentViewMatch.class.getSimpleName();
+    public static final String TAG = DialogFragmentPostMatch.class.getSimpleName();
 
     public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
     public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
@@ -42,27 +52,8 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     @BindView(R.id.edit_match_time_hour)
     TextView mMatchHour;
 
-    @BindView(R.id.edit_match_check_in_start_day)
-    TextView mMatchCheckInStartDay;
-    @BindView(R.id.edit_match_check_in_start_hour)
-    TextView mMatchCheckInStartHour;
-
-    @BindView(R.id.edit_match_check_in_end_day)
-    TextView mMatchCheckInEndDay;
-    @BindView(R.id.edit_match_check_in_end_hour)
-    TextView mMatchCheckInEndHour;
-
-    @BindView(R.id.tv_check_in_closed)
-    TextView mTvCheckinClosed;
-
-    @BindView(R.id.bt_check_in)
-    Button mBtCheckIn;
-
-    @BindView(R.id.bt_not_going)
-    Button mBtNotGoing;
-
-    @BindView(R.id.match_user_check_in_layout)
-    View mMatchCheckInLayout;
+    @BindView(R.id.match_description_et)
+    EditText mMatchDescription;
 
     @BindView(R.id.bt_save_match)
     Button mSaveMatch;
@@ -76,24 +67,24 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     protected String mLeagueId;
     protected String mPlayerId;
 
-    public static DialogFragmentViewMatch newInstance(String leagueId) {
+    public static DialogFragmentPostMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
 
-        DialogFragmentViewMatch dFrag = new DialogFragmentViewMatch();
+        DialogFragmentPostMatch dFrag = new DialogFragmentPostMatch();
         dFrag.setRetainInstance(true);
         dFrag.setArguments(bundle);
         return dFrag;
     }
 
-    public static DialogFragmentViewMatch newInstance(String leagueId, String matchId,
+    public static DialogFragmentPostMatch newInstance(String leagueId, String matchId,
                                                       String playerId) {
         Bundle bundle = new Bundle();
         bundle.putString(ARGS_LEAGUE_ID, leagueId);
         bundle.putString(ARGS_MATCH_ID, matchId);
         bundle.putString(ARGS_PLAYER_ID, playerId);
 
-        DialogFragmentViewMatch dFrag = new DialogFragmentViewMatch();
+        DialogFragmentPostMatch dFrag = new DialogFragmentPostMatch();
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -118,7 +109,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_match, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_post_match, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;
     }
@@ -126,64 +117,43 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupViewMode();
         if (savedInstanceState == null) {
-            if (TextUtils.isEmpty(mMatchId)) {
-                mMatch = new Match(mLeagueId);
-                updatedTimeText();
-            } else {
-                loadMatchData(mLeagueId, mMatchId);
-            }
-        }
-        if (mMatch != null) {
-            GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImage);
+            loadMatchData(mLeagueId, mMatchId);
         }
     }
 
-    protected void setupViewMode() {
-        mSaveMatch.setText(R.string.close);
-        mSaveMatch.setOnClickListener(this);
-        mBtCheckIn.setOnClickListener(this);
-        mBtNotGoing.setOnClickListener(this);
-    }
-
-    protected void loadMatchData(String leagueId, String matchId) {
+    protected void loadMatchData(String leagueId, final String matchId) {
         MatchDbUtils.getMatch(leagueId, matchId, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mMatch = dataSnapshot.getValue(Match.class);
 
                 if (mMatch != null) {
+                    updateLayout();
                     updatedTimeText();
-                    updateCheckInLayout();
-                    if (mMatch.hasImage()) {
-                        GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImage);
-                    }
+                    updateMatchImage();
                 }
             }
         });
-
     }
 
-    protected void updateCheckInLayout() {
-        if (mMatch.isCheckInOpen()) {
-            mBtCheckIn.setVisibility(View.VISIBLE);
-            mBtNotGoing.setVisibility(View.VISIBLE);
-            mTvCheckinClosed.setVisibility(View.GONE);
+    private void updateMatchImage() {
+        if (mMatch.hasImage()) {
+            GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImage);
+        }
+    }
 
-            boolean isCheckedIn =
-                    mMatch.players.containsKey(mPlayerId) && mMatch.players.get(mPlayerId);
-            if (isCheckedIn) {
-                mBtCheckIn.setEnabled(false);
-                mBtNotGoing.setEnabled(true);
-            } else {
-                mBtCheckIn.setEnabled(true);
-                mBtNotGoing.setEnabled(false);
-            }
+    private void updateLayout() {
+        League league = LeagueCache.getLeagueInfo(mMatch.leagueId);
+        mSaveMatch.setOnClickListener(this);
+        mMatchDescription.setText(mMatch.description);
+        if (league != null && league.isOwner(mPlayerId)) {
+            mMatchDescription.setEnabled(true);
+            mMatchImage.setOnClickListener(this);
+            mSaveMatch.setText(R.string.save);
         } else {
-            mBtCheckIn.setVisibility(View.GONE);
-            mBtNotGoing.setVisibility(View.GONE);
-            mTvCheckinClosed.setVisibility(View.VISIBLE);
+            mMatchDescription.setEnabled(false);
+            mSaveMatch.setText(R.string.close);
         }
     }
 
@@ -201,18 +171,24 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_match:
-                if (getDialog() != null) {
-                    dismiss();
+                if (mImageUri == null) {
+                    saveMatch();
+                    tryAndCloseDialog();
+                } else {
+                    uploadImage();
                 }
                 break;
-            case R.id.bt_check_in:
-                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
-                updateCheckInLayout();
+            case R.id.edit_match_pic:
+                promptSelectImage();
                 break;
-            case R.id.bt_not_going:
-                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (handleImageSelectionActivityResult(requestCode, resultCode, data)) {
+            GlideUtils.loadCircularImage(mImageUri, mMatchImage);
         }
     }
 
@@ -229,12 +205,39 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     protected void updatedTimeText() {
         mMatchDay.setText(mMatch.getDateString(mMatch.time));
         mMatchHour.setText(mMatch.getTimeStr(mMatch.time));
+    }
 
-        mMatchCheckInStartDay.setText(mMatch.getDateString(mMatch.checkInStart));
-        mMatchCheckInStartHour.setText(mMatch.getTimeStr(mMatch.checkInStart));
+    private void uploadImage() {
+        showProgress(true);
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener(mProgressBar) {
 
-        mMatchCheckInEndDay.setText(mMatch.getDateString(mMatch.checkInEnds));
-        mMatchCheckInEndHour.setText(mMatch.getTimeStr(mMatch.checkInEnds));
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                if (downloadUrl != null) {
+                    mMatch.image = downloadUrl.toString();
+                    saveMatch();
+                    tryAndCloseDialog();
+                    ToastUtils.show(R.string.toast_generic_saved, Toast.LENGTH_SHORT);
+                } else {
+                    ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
+                }
+                showProgress(false);
+            }
+        });
+    }
+
+    private void saveMatch() {
+        if (hasContentChanged()) {
+            mMatch.description = mMatchDescription.getText().toString();
+            MatchDbUtils.updatePostMatch(mMatch);
+        }
+    }
+
+    private boolean hasContentChanged() {
+        return mImageUri != null || !mMatchDescription.getText().toString()
+                                                      .equalsIgnoreCase(mMatch.description);
     }
 
 }

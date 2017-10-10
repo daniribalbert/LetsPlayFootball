@@ -46,7 +46,6 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
     View mCheckInEndLayout;
 
     private EditMatchListener mListener;
-    private Uri mImageUri;
     private Calendar mCalendar = Calendar.getInstance();
     private int currentTimeViewId;
 
@@ -97,9 +96,7 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
             case R.id.bt_save_match:
                 if (mImageUri == null) {
                     mListener.onMatchSaved(mMatch);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
+                    tryAndCloseDialog();
                 } else {
                     uploadImage();
                 }
@@ -154,22 +151,15 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
 
     private void uploadImage() {
         showProgress(true);
-        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                super.onFailure(e);
-                showProgress(false);
-            }
-
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener(mProgressBar) {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 mMatch.image = downloadUrl.toString();
                 mListener.onMatchSaved(mMatch);
-                if (getDialog() != null) {
-                    dismiss();
-                }
+                tryAndCloseDialog();
+
                 showProgress(false);
                 ToastUtils.show(R.string.toast_generic_saved, Toast.LENGTH_SHORT);
             }
@@ -179,11 +169,8 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ARGS_IMAGE_SELECT) {
-                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
-                GlideUtils.loadCircularImage(mImageUri, mMatchImage);
-            }
+        if (handleImageSelectionActivityResult(requestCode, resultCode, data)){
+            GlideUtils.loadCircularImage(mImageUri, mMatchImage);
         }
     }
 

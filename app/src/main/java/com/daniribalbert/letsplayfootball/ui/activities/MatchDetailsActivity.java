@@ -14,6 +14,7 @@ import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEvent
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditMatch;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditPlayer;
+import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentPostMatch;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewMatch;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
@@ -87,7 +88,7 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void updateMatchLayout() {
-        GlideUtils.loadCircularImage(mMatch.image, mMatchImageView);
+        GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImageView);
         mMatchCardDay.setText(mMatch.getDateString(mMatch.time));
         mMatchCardTime.setText(mMatch.getTimeStr(mMatch.time));
     }
@@ -106,8 +107,8 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
 
     protected void showMatchDialog() {
         String userId = getCurrentUser().getUid();
-        DialogFragmentViewMatch dFrag = DialogFragmentViewMatch
+        DialogFragmentPostMatch dFrag = DialogFragmentPostMatch
                 .newInstance(mLeagueId, mMatchId, userId);
-        dFrag.show(getFragmentManager(), DialogFragmentViewMatch.TAG);
+        dFrag.show(getFragmentManager(), DialogFragmentPostMatch.TAG);
     }
 }

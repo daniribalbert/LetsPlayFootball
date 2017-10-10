@@ -1,6 +1,7 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
@@ -42,6 +43,17 @@ public class MatchDbUtils {
             removeMatch(match);
             createMatch(match);
         }
+    }
+
+    public static void updatePostMatch(Match match) {
+        DatabaseReference ref = getRef();
+        DatabaseReference matchRef = ref.child(match.leagueId).child(match.id);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("image", match.getImage());
+        updates.put("description", match.description);
+
+        matchRef.updateChildren(updates);
     }
 
     public static void getPastMatches(String leagueId, ValueEventListener listener) {

@@ -30,7 +30,7 @@ public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnC
     @BindView(R.id.match_card_image)
     ImageView mImage;
 
-    private String mMatchId;
+    protected Match mMatch;
 
 
     public MatchViewHolder(View view) {
@@ -43,8 +43,8 @@ public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void setMatch(Match match) {
         setTime(match.getTimeStr(match.time));
         setDay(match.getDateString(match.time));
-        setImage(match.image);
-        mMatchId = match.id;
+        setImage(match.getImage());
+        mMatch = match;
     }
 
     public void setTime(String timeStr) {
@@ -66,6 +66,6 @@ public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onClick(View view) {
-        EventBus.getDefault().post(new OpenMatchEvent(mMatchId));
+        EventBus.getDefault().post(new OpenMatchEvent(mMatch.id, mMatch.leagueId));
     }
 }

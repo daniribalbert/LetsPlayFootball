@@ -181,12 +181,7 @@ public class ProfileFragment extends ProfileViewFragment
 
     private void uploadImage() {
         showProgress(true);
-        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                super.onFailure(e);
-                showProgress(false);
-            }
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener(mProgressBar) {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

@@ -33,7 +33,6 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     public static final String TAG = DialogFragmentEditPlayer.class.getSimpleName();
 
     private EditPlayerListener mListener;
-    private Uri mImageUri;
 
     public static DialogFragmentEditPlayer newInstance(String leagueId) {
         Bundle bundle = new Bundle();
@@ -127,9 +126,8 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
 
                 if (mImageUri == null) {
                     save(mPlayer);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
+                    tryAndCloseDialog();
+
                 } else {
                     uploadImage();
                 }
@@ -147,12 +145,7 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
 
     private void uploadImage() {
         showProgress(true);
-        FileUtils.uploadImage(mImageUri, new BaseUploadListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                super.onFailure(e);
-                showProgress(false);
-            }
+        FileUtils.uploadImage(mImageUri, new BaseUploadListener(mProgressBar) {
 
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -161,9 +154,8 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
                 if (downloadUrl != null) {
                     mPlayer.image = downloadUrl.toString();
                    save(mPlayer);
-                    if (getDialog() != null) {
-                        dismiss();
-                    }
+                    tryAndCloseDialog();
+
                     ToastUtils.show(R.string.toast_profile_saved, Toast.LENGTH_SHORT);
                 } else {
                     ToastUtils.show(R.string.toast_error_generic, Toast.LENGTH_SHORT);
@@ -176,11 +168,8 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ARGS_IMAGE_SELECT) {
-                mImageUri = ActivityUtils.extractImageUri(data, getActivity());
-                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
-            }
+        if (handleImageSelectionActivityResult(requestCode, resultCode, data)){
+            GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
         }
     }
 

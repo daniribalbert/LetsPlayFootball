@@ -40,11 +40,6 @@ public class League {
     public String image;
 
     /**
-     * List of matches in this league.
-     */
-    public List<Match> matches = new ArrayList<>();
-
-    /**
      * List of player who participate in this league.
      */
     public List<Player> players = new ArrayList<>();
