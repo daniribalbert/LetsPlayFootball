@@ -11,14 +11,11 @@ import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
-import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
-import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsManagerActivity;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
-import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.RemoveMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -85,7 +82,7 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
 
     @Subscribe
     @Override
-    public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
+    public void OnPlayerSelectedEvent(PlayerClickedEvent event) {
         final Player player = event.player;
 
         DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer
@@ -102,7 +99,7 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
     }
 
     @Subscribe
-    public void OnPlayerRemoveEvent(final RemovePlayerEvent event) {
+    public void OnPlayerRemoveEvent(final PlayerLongClickEvent event) {
         String name = event.player.getDisplayName();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -117,17 +114,6 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
         });
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.create().show();
-    }
-
-    @Subscribe
-    public void OnMatchSelectedEvent(OpenMatchEvent event) {
-        String currentUserId = getBaseActivity().getCurrentUser().getUid();
-
-        Intent intent = new Intent(getActivity(), MatchDetailsManagerActivity.class);
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeagueId);
-        intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
-        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, currentUserId);
-        startActivity(intent);
     }
 
     @Subscribe
@@ -147,4 +133,8 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
         builder.create().show();
     }
 
+    @Override
+    protected Intent getMatchDetailsIntent() {
+        return new Intent(getActivity(), MatchDetailsManagerActivity.class);
+    }
 }

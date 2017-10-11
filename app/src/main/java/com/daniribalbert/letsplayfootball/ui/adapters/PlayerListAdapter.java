@@ -8,8 +8,9 @@ import android.view.ViewGroup;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
-import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -25,6 +26,9 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
     private final List<Player> mValues = new ArrayList<>();
 
     String mLeagueId;
+    private List<Integer> mSelectedPlayersIndexes = new ArrayList<>();
+    private boolean mPlayerSelectionEnabled;
+    private boolean mIsInSelectionMode = false;
 
     public PlayerListAdapter(String leagueId) {
         mLeagueId = leagueId;
@@ -45,6 +49,8 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
     public void onBindViewHolder(final PlayerViewHolder holder, int position) {
         Player player = mValues.get(position);
         holder.setPlayer(player, mLeagueId);
+        boolean isSelected = mSelectedPlayersIndexes.contains(position);
+        holder.itemView.setSelected(isSelected);
     }
 
     @Override
@@ -102,9 +108,28 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
         }
     }
 
+    public List<Integer> getSelectedPlayersIndexes() {
+        return mSelectedPlayersIndexes;
+    }
+
     public void clear() {
         mValues.clear();
         notifyDataSetChanged();
+    }
+
+    public void setSelectionMode(boolean selectionMode) {
+        this.mIsInSelectionMode = selectionMode;
+    }
+
+    public void clearSelection() {
+        mSelectedPlayersIndexes.clear();
+    }
+
+    public void setPlayerSelectionEnabled(boolean enabled) {
+        mPlayerSelectionEnabled = enabled;
+        if (!enabled){
+            mIsInSelectionMode = false;
+        }
     }
 
     public class PlayerViewHolder extends PlayerCardViewHolder {
@@ -115,14 +140,27 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
 
         @Override
         public void onClick(View view) {
-            Player player = mValues.get(getAdapterPosition());
-            EventBus.getDefault().post(new OpenPlayerEvent(player));
+            int position = getAdapterPosition();
+            Player player = mValues.get(position);
+            EventBus.getDefault().post(new PlayerClickedEvent(player));
+            if (mIsInSelectionMode) {
+                if (mSelectedPlayersIndexes.contains(position)) {
+                    mSelectedPlayersIndexes.remove(mSelectedPlayersIndexes.indexOf(position));
+                } else {
+                    mSelectedPlayersIndexes.add(position);
+                }
+                notifyItemChanged(position);
+            }
         }
 
         @Override
         public boolean onLongClick(View view) {
-            final int adapterPosition = getAdapterPosition();
-            EventBus.getDefault().post(new RemovePlayerEvent(mValues.get(adapterPosition)));
+            if (mPlayerSelectionEnabled) {
+                final int adapterPosition = getAdapterPosition();
+                EventBus.getDefault().post(new PlayerLongClickEvent(mValues.get(adapterPosition)));
+                mSelectedPlayersIndexes.add(getAdapterPosition());
+                notifyItemChanged(getAdapterPosition());
+            }
             return true;
         }
     }

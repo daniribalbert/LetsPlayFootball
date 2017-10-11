@@ -38,7 +38,7 @@
     <string name="hint_player_name">Ronaldo Nazário</string>
     <string name="hint_player_nickname">Ronaldo</string>
     <string name="hint_player_search">Cafu</string>
-    <string name="league_name_hint">Série A</string>
+    <string name="hint_league_name">Série A</string>
     <string name="match_time">Horário</string>
     <string name="teams">Times</string>
 </resources>

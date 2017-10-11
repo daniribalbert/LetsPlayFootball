@@ -1,12 +1,9 @@
 package com.daniribalbert.letsplayfootball.ui.adapters;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
@@ -14,10 +11,9 @@ import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.MatchViewHolder;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.RemoveMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.RemovePlayerEvent;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -25,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -186,6 +181,10 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         notifyItemRemoved(index);
     }
 
+    public List<Player> getPlayers() {
+        return mPlayers;
+    }
+
 
     public class LeaguePlayerViewHolder extends PlayerCardViewHolder {
 
@@ -196,14 +195,14 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         @Override
         public void onClick(View view) {
             Player player = mPlayers.get(getAdapterPosition() - mUpcomingMatches.size());
-            EventBus.getDefault().post(new OpenPlayerEvent(player));
+            EventBus.getDefault().post(new PlayerClickedEvent(player));
         }
 
         @Override
         public boolean onLongClick(View view) {
             final int adapterPosition = getAdapterPosition();
             Player player = mPlayers.get(adapterPosition - mUpcomingMatches.size());
-            EventBus.getDefault().post(new RemovePlayerEvent(player));
+            EventBus.getDefault().post(new PlayerLongClickEvent(player));
             return true;
         }
     }
@@ -218,14 +217,12 @@ public class LeagueItemListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
         @Override
         public void onClick(View view) {
-            Match match = mUpcomingMatches.get(getAdapterPosition());
-            EventBus.getDefault().post(new OpenMatchEvent(match.id));
+            EventBus.getDefault().post(new OpenMatchEvent(mMatch.id));
         }
 
         @Override
         public boolean onLongClick(View view) {
-            final int adapterPosition = getAdapterPosition();
-            EventBus.getDefault().post(new RemoveMatchEvent(mUpcomingMatches.get(adapterPosition)));
+            EventBus.getDefault().post(new RemoveMatchEvent(mMatch));
             return true;
         }
     }

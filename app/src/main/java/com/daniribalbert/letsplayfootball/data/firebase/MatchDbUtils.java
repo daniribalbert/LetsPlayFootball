@@ -1,5 +1,7 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
+import android.support.annotation.NonNull;
+
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DatabaseReference;
@@ -77,7 +79,7 @@ public class MatchDbUtils {
              .addListenerForSingleValueEvent(listener);
     }
 
-    public static void getMatch(String leagueId, String matchId, ValueEventListener listener) {
+    public static void getMatch(@NonNull String leagueId, @NonNull String matchId, ValueEventListener listener) {
         DatabaseReference dbRef = getRef();
         dbRef.child(leagueId).child(matchId).addListenerForSingleValueEvent(listener);
     }
@@ -102,6 +104,14 @@ public class MatchDbUtils {
         Map<String, Object> playersMap = new HashMap<>();
 
         playersMap.put("players", match.players);
+        ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
+    }
+
+    public static void saveTeam(Match match) {
+        DatabaseReference ref = getRef();
+        Map<String, Object> playersMap = new HashMap<>();
+
+        playersMap.put("teams", match.teams);
         ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
     }
 }

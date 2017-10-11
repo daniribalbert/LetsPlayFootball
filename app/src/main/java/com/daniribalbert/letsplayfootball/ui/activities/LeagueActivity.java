@@ -110,7 +110,7 @@ public class LeagueActivity extends BaseActivity
                     tag = LeagueInfoOwnerModeFragment.TAG;
                 }
                 frag.setProgress(mProgressBar);
-                getFragmentManager().beginTransaction().add(R.id.fragment_container, frag, tag)
+                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, frag, tag)
                                     .commit();
             }
         });
@@ -133,7 +133,7 @@ public class LeagueActivity extends BaseActivity
                 PlayerSearchFragment playerSearchFragment = PlayerSearchFragment
                         .newInstance(mLeagueId);
                 playerSearchFragment.setProgress(mProgressBar);
-                getFragmentManager().beginTransaction()
+                getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, playerSearchFragment,
                                              PlayerSearchFragment.TAG)
                                     .addToBackStack(PlayerSearchFragment.TAG).commit();

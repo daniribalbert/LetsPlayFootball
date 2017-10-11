@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:gravity="center|start"
-                android:hint="@string/league_name_hint"
+                android:hint="@string/hint_league_name"
                 android:inputType="text"
                 android:maxLength="30"
                 android:maxLines="1"

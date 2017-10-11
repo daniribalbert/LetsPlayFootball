@@ -1,6 +1,5 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
-import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,18 +7,12 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;

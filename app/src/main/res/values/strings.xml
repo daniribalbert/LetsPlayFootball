@@ -15,11 +15,11 @@
     <string name="back">Back</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
-    <string name="league_name_hint">Major League</string>
     <string name="optional">Optional</string>
     <string name="save">Save</string>
     <string name="remove">Remove</string>
     <string name="close">Close</string>
+    <string name="leave">Leave</string>
 
 
     <!-- Strings related to user Profile -->
@@ -29,9 +29,6 @@
     <string name="toast_generic_saved">Saved!</string>
     <string name="toast_error_generic">Something went wrong!</string>
     <string name="toast_error_match_time">Error! Match time in the past</string>
-    <string name="hint_player_name">Pavel Nedvěd</string>
-    <string name="hint_player_nickname">Nedved</string>
-    <string name="hint_player_search">Del Piero</string>
 
     <!-- Strings related to login -->
     <string name="dialog_login_failed">Login Failed</string>
@@ -50,11 +47,16 @@
     <string name="settings_social_connected">Connected</string>
     <string name="settings_social_not_connected">Not connected</string>
 
-    <!-- Strings related to League -->
+    <!-- Input hint text Strings -->
     <string name="hint_search_players">Search Players</string>
     <string name="hint_add_player">Add new player</string>
     <string name="hint_add_upcoming_match">Add upcoming match</string>
     <string name="hint_match_description">Ryan Giggs scored a hat-trick.\nScholes received a yellow card.</string>
+    <string name="hint_team_name">Liverpool</string>
+    <string name="hint_player_name">Pavel Nedvěd</string>
+    <string name="hint_player_nickname">Nedved</string>
+    <string name="hint_player_search">Del Piero</string>
+    <string name="hint_league_name">Major League</string>
 
 
     <!-- Strings related to Matches -->
@@ -63,6 +65,7 @@
     <string name="cant_go">Can\'t go</string>
     <string name="match_time">Match Time</string>
     <string name="teams">Teams</string>
+    <string name="all_players">All Players</string>
 
 
     <!-- Strings that goes with Dialogs -->
@@ -72,6 +75,8 @@
     <string name="dialog_add_player_message">Are you sure you want to add %1$s to the league?</string>
     <string name="dialog_remove_match_title">Remove Match?</string>
     <string name="dialog_remove_match_message">Are you sure you want to cancel upcoming match?</string>
-
+    <string name="dialog_add_team_title">Add Team</string>
+    <string name="dialog_add_team_message">Team title:</string>
+    <string name="dialog_team_save_on_leave_message">Save teams?</string>
 
 </resources>

@@ -23,6 +23,6 @@ public class MatchDetailsManagerActivity extends MatchDetailsActivity implements
                 MatchDbUtils.updateMatch(match);
             }
         });
-        dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
+        dFrag.show(getSupportFragmentManager(), DialogFragmentEditPlayer.TAG);
     }
 }

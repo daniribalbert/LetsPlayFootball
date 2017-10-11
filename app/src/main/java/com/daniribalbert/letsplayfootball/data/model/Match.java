@@ -11,6 +11,7 @@ import com.google.firebase.database.Exclude;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,6 +51,12 @@ public class Match implements Comparable {
      * List of players participating in this match.
      */
     public HashMap<String, Boolean> players = new HashMap<>();
+
+    /**
+     * Teams playing this match.
+     * This is a list a map of the team name to the players Ids.
+     */
+    public HashMap<String, List<String>> teams = new HashMap<>();
 
     public Match() {
         //Firebase constructor.

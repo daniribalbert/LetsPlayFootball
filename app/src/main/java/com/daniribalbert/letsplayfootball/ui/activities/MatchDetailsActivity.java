@@ -5,19 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditMatch;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditPlayer;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentPostMatch;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewMatch;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
+import com.daniribalbert.letsplayfootball.utils.GsonUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 
 import butterknife.BindView;
@@ -43,6 +41,10 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
     @BindView(R.id.match_teams_bt)
     View mTeamsBt;
 
+    @BindView(R.id.app_progress)
+    ProgressBar mProgressBar;
+
+
     protected String mLeagueId;
     protected String mMatchId;
     protected String mPlayerId;
@@ -54,14 +56,17 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_match_details);
         ButterKnife.bind(this);
         setupListeners();
-        loadArgs();
-        if (savedInstanceState == null) {
-            loadMatchData();
-        }
+        loadArgs(getIntent());
     }
 
-    private void loadArgs() {
-        Intent intent = getIntent();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mProgressBar.setVisibility(View.VISIBLE);
+        loadMatchData();
+    }
+
+    private void loadArgs(final Intent intent) {
         if (intent != null) {
             mMatchId = intent.getStringExtra(ARGS_MATCH_ID);
             mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
@@ -82,6 +87,7 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
 
                 if (mMatch != null) {
                     updateMatchLayout();
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -100,7 +106,10 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
                 showMatchDialog();
                 break;
             case R.id.match_teams_bt:
-                ToastUtils.show("will show team options", Toast.LENGTH_SHORT);
+                Intent intent = new Intent(this, TeamsActivity.class);
+                intent.putExtra(ARGS_LEAGUE_ID, mLeagueId);
+                intent.putExtra(TeamsActivity.ARG_MATCH, GsonUtils.toJson(mMatch));
+                startActivity(intent);
                 break;
         }
     }
@@ -109,6 +118,6 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
         String userId = getCurrentUser().getUid();
         DialogFragmentPostMatch dFrag = DialogFragmentPostMatch
                 .newInstance(mLeagueId, mMatchId, userId);
-        dFrag.show(getFragmentManager(), DialogFragmentPostMatch.TAG);
+        dFrag.show(getSupportFragmentManager(), DialogFragmentPostMatch.TAG);
     }
 }

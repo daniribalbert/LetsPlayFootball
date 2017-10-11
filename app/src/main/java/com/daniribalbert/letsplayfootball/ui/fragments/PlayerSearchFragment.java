@@ -16,7 +16,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -76,11 +76,6 @@ public class PlayerSearchFragment extends PlayerListFragment
         mSearchText.setOnEditorActionListener(this);
     }
 
-    @Override
-    protected void loadData() {
-        // This is not the league list.
-    }
-
     private void searchPlayer() {
         showProgress(true);
 
@@ -104,7 +99,7 @@ public class PlayerSearchFragment extends PlayerListFragment
 
     @Subscribe
     @Override
-    public void OnPlayerSelectedEvent(final OpenPlayerEvent event) {
+    public void OnPlayerSelectedEvent(final PlayerClickedEvent event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_add_player_title);
         final Player player = event.player;

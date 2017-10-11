@@ -1,13 +1,12 @@
 package com.daniribalbert.letsplayfootball.ui.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,7 +21,6 @@ import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchHistoryFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.SettingsFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -71,7 +69,7 @@ public class HomeActivity extends BaseActivity
         if (savedInstanceState == null) {
             MyLeaguesFragment frag = MyLeaguesFragment.newInstance();
             frag.setProgress(mProgressBar);
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
                     .commit();
         }
@@ -104,7 +102,7 @@ public class HomeActivity extends BaseActivity
         // Handle navigation view item clicks here.
         mSelectedDrawerItemId = item.getItemId();
 
-        Fragment frag = null;
+        BaseFragment frag = null;
         String tag = "";
 
         switch (mSelectedDrawerItemId) {
@@ -125,8 +123,8 @@ public class HomeActivity extends BaseActivity
                 tag = MatchHistoryFragment.TAG;
                 break;
             case R.id.nav_settings:
-                frag = SettingsFragment.newInstance();
-                tag = SettingsFragment.TAG;
+                //frag = SettingsFragment.newInstance();
+                //tag = SettingsFragment.TAG;
                 break;
             case R.id.nav_logout:
                 mAuth.signOut();
@@ -137,7 +135,7 @@ public class HomeActivity extends BaseActivity
         }
 
         if (frag != null) {
-            final FragmentManager fManager = getFragmentManager();
+            final FragmentManager fManager = getSupportFragmentManager();
             FragmentTransaction fTransaction = fManager.beginTransaction();
             fTransaction.replace(R.id.fragment_container, frag, tag);
             fTransaction.commit();

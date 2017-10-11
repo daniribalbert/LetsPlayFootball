@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
@@ -20,7 +21,7 @@ import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.LeagueItemListAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.OpenPlayerEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -198,7 +199,7 @@ public class LeagueInfoFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void OnPlayerSelectedEvent(OpenPlayerEvent event) {
+    public void OnPlayerSelectedEvent(PlayerClickedEvent event) {
         final Player player = event.player;
 
         DialogFragmentViewPlayer dFrag = DialogFragmentViewPlayer
@@ -209,12 +210,17 @@ public class LeagueInfoFragment extends BaseFragment {
     @Subscribe
     public void OnMatchSelectedEvent(OpenMatchEvent event) {
         String currentUserId = getBaseActivity().getCurrentUser().getUid();
+        PlayersCache.saveLeaguePlayersInfo(mAdapter.getPlayers());
 
-        Intent intent = new Intent(getActivity(), MatchDetailsActivity.class);
+        Intent intent = getMatchDetailsIntent();
         intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeagueId);
         intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
         intent.putExtra(BaseActivity.ARGS_PLAYER_ID, currentUserId);
         startActivity(intent);
+    }
+
+    protected Intent getMatchDetailsIntent() {
+        return new Intent(getActivity(), MatchDetailsActivity.class);
     }
 
 }

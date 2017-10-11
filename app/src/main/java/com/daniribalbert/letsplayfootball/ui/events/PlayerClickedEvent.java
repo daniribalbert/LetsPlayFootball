@@ -3,13 +3,13 @@ package com.daniribalbert.letsplayfootball.ui.events;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 
 /**
- * EventBus event sent when the user requests to remove a player from the league.
+ * EventBus event sent when the user requests to open a player profile.
  */
-public class RemovePlayerEvent {
+public class PlayerClickedEvent {
 
     public Player player;
 
-    public RemovePlayerEvent(Player player) {
+    public PlayerClickedEvent(Player player) {
         this.player = player;
     }
 }
