@@ -62,6 +62,7 @@
     <!-- Strings related to Matches -->
     <string name="check_in">Check-in</string>
     <string name="check_in_closed_msg">Check-in is currently closed</string>
+    <string name="check_in_add_everyone_msg">Check-in everyone in the league</string>
     <string name="cant_go">Can\'t go</string>
     <string name="match_time">Match Time</string>
     <string name="teams">Teams</string>

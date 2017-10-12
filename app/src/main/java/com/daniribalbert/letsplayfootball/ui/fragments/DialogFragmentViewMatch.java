@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -69,6 +70,9 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     @BindView(R.id.dialog_progress)
     ProgressBar mProgressBar;
+
+    @BindView(R.id.checkbox_check_them_all)
+    CheckBox mCheckThemAllBox;
 
     protected Match mMatch;
 
@@ -141,6 +145,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     }
 
     protected void setupViewMode() {
+        mCheckThemAllBox.setVisibility(View.GONE);
         mSaveMatch.setText(R.string.close);
         mSaveMatch.setOnClickListener(this);
         mBtCheckIn.setOnClickListener(this);

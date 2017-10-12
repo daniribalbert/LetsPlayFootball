@@ -9,14 +9,17 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
@@ -24,6 +27,7 @@ import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import butterknife.BindView;
 
@@ -81,9 +85,27 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         mCheckInStartLayout.setOnClickListener(this);
         mCheckInEndLayout.setOnClickListener(this);
 
-        if (TextUtils.isEmpty(mMatchId)){
+        if (TextUtils.isEmpty(mMatchId)) {
+            mCheckThemAllBox.setVisibility(View.VISIBLE);
+            mCheckThemAllBox.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton,
+                                                     boolean checked) {
+                            HashMap<String, Player> currentLeaguePlayers = PlayersCache
+                                    .getCurrentLeaguePlayers();
+                            if (checked) {
+                                for (String playerId : currentLeaguePlayers.keySet()){
+                                    mMatch.players.put(playerId, true);
+                                }
+                            } else {
+                                mMatch.players.clear();
+                            }
+                        }
+                    });
             mMatchCheckInLayout.setVisibility(View.GONE);
         } else {
+            mCheckThemAllBox.setVisibility(View.GONE);
             mMatchCheckInLayout.setVisibility(View.VISIBLE);
             mBtCheckIn.setOnClickListener(this);
             mBtNotGoing.setOnClickListener(this);
@@ -169,7 +191,7 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (handleImageSelectionActivityResult(requestCode, resultCode, data)){
+        if (handleImageSelectionActivityResult(requestCode, resultCode, data)) {
             GlideUtils.loadCircularImage(mImageUri, mMatchImage);
         }
     }

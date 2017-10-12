@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Match;
@@ -66,6 +67,7 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
                 dFrag.show(getFragmentManager(), DialogFragmentEditPlayer.TAG);
                 break;
             case R.id.fab_menu_3: // Add new match to the League.
+                PlayersCache.saveLeaguePlayersInfo(mAdapter.getPlayers());
                 DialogFragmentEditMatch dFragMatch = DialogFragmentEditMatch.newInstance(mLeagueId);
                 dFragMatch.setListener(new DialogFragmentEditMatch.EditMatchListener() {
                     @Override
