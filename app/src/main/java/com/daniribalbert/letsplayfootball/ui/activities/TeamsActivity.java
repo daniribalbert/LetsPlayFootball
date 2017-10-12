@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,10 +94,19 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loadPlayers() {
-        HashMap<String, Player> allPlayersMap = new HashMap<>(PlayersCache.getCurrentLeaguePlayers());
-        if (mMatch.teams.size() > 0){
-            for (List<String> team : mMatch.teams.values()){
-                for (String player : team){
+        HashMap<String, Player> allPlayersMap = new HashMap<>(
+                PlayersCache.getCurrentLeaguePlayers());
+
+        // Filter for player which have checked-in.
+        for (String playerId : allPlayersMap.keySet()){
+            if (!mMatch.players.containsKey(playerId) || !mMatch.players.get(playerId)){
+                allPlayersMap.remove(playerId);
+            }
+        }
+
+        if (mMatch.teams.size() > 0) {
+            for (List<String> team : mMatch.teams.values()) {
+                for (String player : team) {
                     allPlayersMap.remove(player);
                 }
             }
@@ -289,7 +299,10 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
             } else {
                 List<String> playersIdsInPosition = mMatch.teams.get(getPageTitle(position));
                 for (String id : playersIdsInPosition) {
-                    playerList.add(PlayersCache.getPlayerInfo(id));
+                    boolean isCheckedIn = mMatch.players.containsKey(id) && mMatch.players.get(id);
+                    if (isCheckedIn) { // Avoid adding players who didn't check-in.
+                        playerList.add(PlayersCache.getPlayerInfo(id));
+                    }
                 }
             }
             return playerList;
