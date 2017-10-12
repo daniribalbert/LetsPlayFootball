@@ -122,7 +122,9 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
 
                 mPlayer.name = mPlayerName.getText().toString();
                 mPlayer.nickname = mPlayerNickname.getText().toString();
-                mPlayer.setRating(mLeagueId, mRating.getRating());
+                if (mPlayer.isGuest()){
+                    mPlayer.rating.put(mLeagueId, mRating.getRating());
+                }
 
                 if (mImageUri == null) {
                     save(mPlayer);
@@ -139,7 +141,7 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
 
     private void save(Player player) {
         if (mListener != null){
-            mListener.onPlayerSaved(player);
+            mListener.onPlayerSaved(player, mRating.getRating());
         }
     }
 
@@ -178,6 +180,6 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     }
 
     public interface EditPlayerListener {
-        void onPlayerSaved(Player player);
+        void onPlayerSaved(Player player, float rating);
     }
 }

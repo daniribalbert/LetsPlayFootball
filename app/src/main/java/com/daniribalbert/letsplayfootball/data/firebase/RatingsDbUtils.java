@@ -1,17 +1,40 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Utility class for database operations regarding Player Ratings.
+ * Ratings are updated as follows.
+ * <p>
+ * Players have their map rating as: "leagueId" > rating.
+ * This rating is updated every time a new rate is added to the "ratings" table.
+ * <p>
+ * The "ratings" table is organized as:
+ * <p>
+ * {
+ * "ratings" {
+ * "leagueId"{
+ * "player1"{
+ * "rateByX": 3.0,
+ * "rateByY": 4.0,
+ * "rateByZ": 3.5
+ * },
+ * "player2"{
+ * "rateByX": 3.0,
+ * "rateByY": 4.0,
+ * "rateByZ": 3.5
+ * }
+ * }
+ * }
+ * }
  */
 public class RatingsDbUtils {
 
@@ -23,53 +46,62 @@ public class RatingsDbUtils {
     }
 
     /**
-     * Adds a new rating to the player.
+     * Adds a new rating to the player. This must be done as a Transaction because it can be updated
+     * by multiple users at the same time and it must update both the ratings table AND the player.
      *
      * @param playerId  Id of the player.
      * @param leagueId  Id of the league where this player is being rated.
      * @param ratedById Id of the user who rated the player.
      * @param rating    player rating on the League.
      */
-    public static void addPlayerRating(final String playerId, final String leagueId,
-                                       final String ratedById, final float rating) {
+    public static void savePlayerRating(final String playerId, final String leagueId,
+                                        final String ratedById, final float rating,
+                                        final OnPlayerRateUpdateListener listener) {
         final DatabaseReference dbRef = getRef();
-        dbRef.child(leagueId).child(playerId).child(ratedById).setValue(rating);
-    }
-
-    public static void getPlayerRatings(String playerId, String leagueId,
-                                        final RatingListener listener) {
-        DatabaseReference dbRef = getRef();
-        dbRef.child(leagueId).child(playerId).addListenerForSingleValueEvent(
-                new BaseValueEventListener() {
+        dbRef.child(leagueId).child(playerId).runTransaction(
+                new Transaction.Handler() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        float rating = 0f;
-                        LogUtils.i("Ratings: " + dataSnapshot.toString());
-                        Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                        List<Float> ratings = new ArrayList<Float>();
-                        int counter = 0;
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        mutableData.child(ratedById).setValue(rating);
+                        Iterable<MutableData> children = mutableData.getChildren();
+                        Iterator<MutableData> iterator = children.iterator();
+                        float sumRatings = 0f;
+                        int nRatings = 0;
                         while (iterator.hasNext()) {
-                            DataSnapshot next = iterator.next();
-                            Float nextRating = next.getValue(Float.class);
-                            if (nextRating != null) {
-                                rating += nextRating;
-                                counter++;
+                            MutableData next = iterator.next();
+                            Float value = next.getValue(Float.class);
+                            if (value != null) {
+                                sumRatings += value;
+                                nRatings++;
                             }
                         }
+                        float playerRating = nRatings == 0 ? 0 : sumRatings / nRatings;
+                        PlayerDbUtils.updatePlayerRating(playerId, leagueId, playerRating);
+                        listener.onRateUpdated(playerRating);
+                        return Transaction.success(mutableData);
+                    }
 
-                        // Avoid division by 0.
-                        if (counter == 0) {
-                            rating = 0f;
-                        } else {
-                            rating = rating / counter;
-                        }
-                        listener.onRatingLoaded(rating);
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b,
+                                           DataSnapshot dataSnapshot) {
+
                     }
                 });
     }
 
-    public interface RatingListener {
-        void onRatingLoaded(float rating);
+    public static void getPlayerRateBy(final String playerId, final String leagueId,
+                                       final String ratedBy, ValueEventListener listener) {
+        final DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).child(playerId).child(ratedBy)
+             .addListenerForSingleValueEvent(listener);
     }
 
+    public static void removePlayerFromLeague(final String playerId, final String leagueId) {
+        final DatabaseReference dbRef = getRef();
+        dbRef.child(leagueId).child(playerId).removeValue();
+    }
+
+    public interface OnPlayerRateUpdateListener{
+        void onRateUpdated(float rating);
+    }
 }

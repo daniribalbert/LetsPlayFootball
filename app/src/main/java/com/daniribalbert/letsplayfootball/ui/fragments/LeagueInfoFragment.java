@@ -219,6 +219,11 @@ public class LeagueInfoFragment extends BaseFragment {
         startActivity(intent);
     }
 
+    @Subscribe
+    public void onPlayerUpdatedEvent(Player player){
+        mAdapter.updatePlayer(player);
+    }
+
     protected Intent getMatchDetailsIntent() {
         return new Intent(getActivity(), MatchDetailsActivity.class);
     }

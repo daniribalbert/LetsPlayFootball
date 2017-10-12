@@ -79,5 +79,6 @@
     <string name="dialog_add_team_title">Add Team</string>
     <string name="dialog_add_team_message">Team title:</string>
     <string name="dialog_team_save_on_leave_message">Save teams?</string>
+    <string name="dialog_rating_confirm">Confirm rating?</string>
 
 </resources>

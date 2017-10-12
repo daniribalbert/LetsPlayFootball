@@ -1,6 +1,8 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -16,11 +18,16 @@ import android.widget.RatingBar;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.RatingsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -118,8 +125,49 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
         mPlayerImage.setClickable(false);
         mPlayerName.setEnabled(false);
         mPlayerNickname.setEnabled(false);
-        mRating.setEnabled(false);
+        mRating.setEnabled(!mPlayer.isGuest());
+        mRating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if (fromUser) {
+                    promptSaveRating(rating);
+                }
+
+            }
+        });
         mSavePlayer.setText(R.string.close);
+    }
+
+    private void promptSaveRating(final float rating) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.dialog_rating_confirm);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String userId = getBaseActivity().getCurrentUser().getUid();
+                showProgress(true);
+                RatingsDbUtils.savePlayerRating(mPlayerId, mLeagueId, userId, rating,
+                                                new RatingsDbUtils.OnPlayerRateUpdateListener() {
+                                                    @Override
+                                                    public void onRateUpdated(float rating) {
+                                                        showProgress(false);
+                                                        mRating.setRating(rating);
+                                                        mPlayer.setRating(mLeagueId, rating);
+                                                        EventBus.getDefault().post(mPlayer);
+                                                    }
+                                                });
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mRating.setRating(mPlayer.rating.get(mLeagueId));
+                dialogInterface.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
     protected void loadPlayerData(String playerId) {

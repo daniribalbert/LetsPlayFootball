@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 
@@ -29,6 +30,10 @@ public class BaseDialogFragment extends DialogFragment {
 
     ProgressBar mProgressBar;
     protected Uri mImageUri;
+
+    public BaseActivity getBaseActivity(){
+        return (BaseActivity) getActivity();
+    }
 
     protected void promptSelectImage() {
         // Determine Uri of camera image to save.

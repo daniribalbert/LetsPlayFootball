@@ -182,6 +182,13 @@ public class PlayerDbUtils {
         updateMap.put("rating", player.rating);
         updateMap.put("leagues", player.leagues);
         ref.child(player.id).updateChildren(updateMap);
+
+        //  Also needs to remove previous entries from the ratings table.
+        RatingsDbUtils.removePlayerFromLeague(player.id, leagueId);
     }
 
+    public static void updatePlayerRating(String playerId, String leagueId, float playerRating) {
+        DatabaseReference ref = getRef();
+        ref.child(playerId).child("rating").child(leagueId).setValue(playerRating);
+    }
 }

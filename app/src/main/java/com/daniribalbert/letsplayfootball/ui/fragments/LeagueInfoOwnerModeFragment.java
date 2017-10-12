@@ -9,6 +9,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.RatingsDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
@@ -58,7 +59,7 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
                 DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer.newInstance(mLeagueId);
                 dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
                     @Override
-                    public void onPlayerSaved(Player player) {
+                    public void onPlayerSaved(Player player, float rating) {
                         player.leagues.put(mLeagueId, new SimpleLeague(mLeagueId));
                         PlayerDbUtils.createGuestPlayer(player);
                         mAdapter.addPlayer(player);
@@ -91,9 +92,23 @@ public class LeagueInfoOwnerModeFragment extends LeagueInfoFragment {
                 .newInstance(mLeagueId, player.id);
         dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
             @Override
-            public void onPlayerSaved(Player player) {
-                    PlayerDbUtils.updatePlayer(player);
-                    mAdapter.updatePlayer(player);
+            public void onPlayerSaved(final Player player, float rating) {
+                    if (player.isGuest()) {
+                        PlayerDbUtils.updatePlayer(player);
+                    } else {
+                        showProgress(true);
+                        String userId = getBaseActivity().getCurrentUser().getUid();
+                        RatingsDbUtils.savePlayerRating(player.id, mLeagueId, userId, rating,
+                                                        new RatingsDbUtils.OnPlayerRateUpdateListener() {
+                                                            @Override
+                                                            public void onRateUpdated(
+                                                                    float rating) {
+                                                                showProgress(false);
+                                                                player.setRating(mLeagueId, rating);
+                                                                mAdapter.updatePlayer(player);
+                                                            }
+                                                        });
+                    }
 
             }
         });
