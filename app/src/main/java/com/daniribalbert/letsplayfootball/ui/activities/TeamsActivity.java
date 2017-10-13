@@ -40,7 +40,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TeamsActivity extends BaseActivity implements View.OnClickListener {
+public class TeamsActivity extends BaseActivity {
 
     public static final String ARG_MATCH = "ARG_MATCH";
 
@@ -52,9 +52,9 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    protected SectionsPagerAdapter mSectionsPagerAdapter;
 
-    private List<Player> mAllPlayersList = new ArrayList<>();
+    protected List<Player> mAllPlayersList = new ArrayList<>();
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -67,11 +67,9 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
 
     @BindView(R.id.tabs)
     TabLayout mTabLayout;
-    private String mLeagueId;
+    protected String mLeagueId;
 
-    private Match mMatch;
-
-    private boolean mSelectionMode;
+    protected Match mMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,19 +87,27 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
-        mFab.setOnClickListener(this);
         loadPlayers();
+        setupViewMode();
     }
 
-    private void loadPlayers() {
+    protected void setupViewMode() {
+        mFab.setVisibility(View.GONE);
+    }
+
+    protected void loadPlayers() {
         HashMap<String, Player> allPlayersMap = new HashMap<>(
                 PlayersCache.getCurrentLeaguePlayers());
 
         // Filter for player which have checked-in.
+        List<String> toRemove = new ArrayList<>();
         for (String playerId : allPlayersMap.keySet()){
             if (!mMatch.players.containsKey(playerId) || !mMatch.players.get(playerId)){
-                allPlayersMap.remove(playerId);
+                toRemove.add(playerId);
             }
+        }
+        for (String removeThis : toRemove) {
+            allPlayersMap.remove(removeThis);
         }
 
         if (mMatch.teams.size() > 0) {
@@ -114,145 +120,11 @@ public class TeamsActivity extends BaseActivity implements View.OnClickListener 
         mAllPlayersList.addAll(allPlayersMap.values());
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
-    private void loadArgs(Intent intent) {
+    protected void loadArgs(Intent intent) {
         if (intent != null) {
             mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
             String matchJsonStr = intent.getStringExtra(ARG_MATCH);
             mMatch = GsonUtils.fromJson(matchJsonStr, Match.class);
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab:
-                if (mSelectionMode) {
-                    promptSelectTeamToAddPlayers();
-                } else {
-                    promptAddTeam();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mSelectionMode) {
-            updateSelectionMode(false);
-        } else {
-            promptSaveTeams();
-        }
-    }
-
-    private void promptSaveTeams() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_team_save_on_leave_message);
-        builder.setIcon(android.R.drawable.ic_menu_save);
-        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                MatchDbUtils.saveTeam(mMatch);
-                finish();
-            }
-        });
-        builder.setNegativeButton(R.string.leave, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
-        builder.show();
-    }
-
-    private void promptAddTeam() {
-        final EditText teamNameInput = new EditText(this);
-        teamNameInput.setLines(1);
-        teamNameInput.setMaxLines(1);
-        teamNameInput.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
-        teamNameInput.setHint(R.string.hint_team_name);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.dialog_add_team_title)
-                .setMessage(R.string.dialog_add_team_message)
-                .setView(teamNameInput)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String teamName = teamNameInput.getText().toString();
-                        createTeam(teamName);
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
-
-    private void createTeam(String teamName) {
-        mMatch.teams.put(teamName, new ArrayList<String>());
-        mSectionsPagerAdapter.notifyDataSetChanged();
-        mSectionsPagerAdapter.getCurrentFragment().setPlayerSelectionEnabled(true);
-    }
-
-    private void addSelectionToTeam(String teamName) {
-        PlayerListFragment currentFragment = mSectionsPagerAdapter.getCurrentFragment();
-        List<Integer> selectedPlayersIndexes = currentFragment.getSelectedPlayers();
-        List<Player> selectedPlayersList = new ArrayList<>();
-        Collections.sort(selectedPlayersIndexes);
-        for (int i = selectedPlayersIndexes.size() - 1; i >= 0; i--) {
-            int index = selectedPlayersIndexes.get(i);
-            selectedPlayersList.add(mAllPlayersList.remove(index));
-        }
-
-        for (Player player : selectedPlayersList) {
-            mMatch.teams.get(teamName).add(player.id);
-        }
-        updateSelectionMode(false);
-        currentFragment.setPlayers(mAllPlayersList);
-        currentFragment.teamSelected();
-    }
-
-    private void promptSelectTeamToAddPlayers() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-                                                                     android.R.layout.select_dialog_singlechoice);
-        final List<String> teamNames = new ArrayList<>(mMatch.teams.keySet());
-        arrayAdapter.addAll(teamNames);
-        builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int selection) {
-                String selectedTeamName = teamNames.get(selection);
-                addSelectionToTeam(selectedTeamName);
-                dialogInterface.dismiss();
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.show();
-    }
-
-    @Subscribe
-    public void OnPlayerSelectionActivated(PlayerLongClickEvent event) {
-        updateSelectionMode(true);
-    }
-
-    private void updateSelectionMode(boolean isInSelectionMode) {
-        mSelectionMode = isInSelectionMode;
-        if (isInSelectionMode) {
-            mFab.setImageResource(R.drawable.ic_check);
-        } else {
-            mFab.setImageResource(R.drawable.ic_add);
-            mSectionsPagerAdapter.getCurrentFragment().teamSelected();
         }
     }
 

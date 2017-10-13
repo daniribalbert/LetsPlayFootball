@@ -32,52 +32,19 @@ import butterknife.ButterKnife;
 /**
  * Match history fragment class.
  */
-public class MatchHistoryFragment extends BaseFragment {
+public class MatchUpcomingFragment extends MatchHistoryFragment {
 
-    public static final String TAG = MatchHistoryFragment.class.getSimpleName();
+    public static final String TAG = MatchUpcomingFragment.class.getSimpleName();
 
-    @BindView(R.id.my_matches_recyclerview)
-    RecyclerView mRecyclerView;
-
-    protected MatchListAdapter mAdapter = new MatchListAdapter();
-
-    public static MatchHistoryFragment newInstance() {
+    public static MatchUpcomingFragment newInstance() {
         Bundle args = new Bundle();
 
-        MatchHistoryFragment fragment = new MatchHistoryFragment();
+        MatchUpcomingFragment fragment = new MatchUpcomingFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        loadArgs();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_match_list, container, false);
-        ButterKnife.bind(this, rootView);
-        return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        mRecyclerView.setAdapter(mAdapter);
-        loadMatches();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-    }
-
     protected void loadMatches() {
         Player player = PlayersCache.getPlayerInfo(getBaseActivity().getCurrentUser().getUid());
         if (player == null) {
@@ -86,7 +53,7 @@ public class MatchHistoryFragment extends BaseFragment {
         showProgress(true);
         Set<String> leagueIds = player.leagues.keySet();
         for (String leagueId : leagueIds) {
-            MatchDbUtils.getPastMatches(leagueId, new BaseValueEventListener() {
+            MatchDbUtils.getUpcomingMatches(leagueId, new BaseValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     showProgress(false);
@@ -107,16 +74,6 @@ public class MatchHistoryFragment extends BaseFragment {
     }
 
     private void loadArgs() {
-    }
-
-    @Subscribe
-    public void onMatchSelected(OpenMatchEvent event){
-        String playerId = getBaseActivity().getCurrentUser().getUid();
-        Intent intent = new Intent(getActivity(), MatchDetailsActivity.class);
-        intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
-        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, playerId);
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, event.leagueId);
-        startActivity(intent);
     }
 
 }

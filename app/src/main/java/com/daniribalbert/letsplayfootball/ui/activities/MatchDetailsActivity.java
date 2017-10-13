@@ -13,6 +13,7 @@ import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentPostMatch;
+import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewMatch;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
@@ -106,18 +107,28 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
                 showMatchDialog();
                 break;
             case R.id.match_teams_bt:
-                Intent intent = new Intent(this, TeamsActivity.class);
-                intent.putExtra(ARGS_LEAGUE_ID, mLeagueId);
-                intent.putExtra(TeamsActivity.ARG_MATCH, GsonUtils.toJson(mMatch));
-                startActivity(intent);
+                startActivity(getTeamsActivityIntent());
                 break;
         }
     }
 
+    protected Intent getTeamsActivityIntent() {
+        Intent intent = new Intent(this, TeamsActivity.class);
+        intent.putExtra(ARGS_LEAGUE_ID, mLeagueId);
+        intent.putExtra(TeamsActivity.ARG_MATCH, GsonUtils.toJson(mMatch));
+        return intent;
+    }
+
     protected void showMatchDialog() {
         String userId = getCurrentUser().getUid();
-        DialogFragmentPostMatch dFrag = DialogFragmentPostMatch
-                .newInstance(mLeagueId, mMatchId, userId);
-        dFrag.show(getSupportFragmentManager(), DialogFragmentPostMatch.TAG);
+        if (mMatch.isPastMatch()) {
+            DialogFragmentPostMatch dFrag = DialogFragmentPostMatch
+                    .newInstance(mLeagueId, mMatchId, userId);
+            dFrag.show(getSupportFragmentManager(), DialogFragmentPostMatch.TAG);
+        } else {
+            DialogFragmentViewMatch dFrag = DialogFragmentViewMatch
+                    .newInstance(mLeagueId, mMatchId, userId);
+            dFrag.show(getSupportFragmentManager(), DialogFragmentViewMatch.TAG);
+        }
     }
 }

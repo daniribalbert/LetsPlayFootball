@@ -112,6 +112,12 @@ public class Match implements Comparable {
         return now >= checkInStart && now < checkInEnds;
     }
 
+    public boolean isPastMatch(){
+        long now = System.currentTimeMillis();
+        return now > time;
+    }
+
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Match) {

@@ -19,6 +19,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchHistoryFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.MatchUpcomingFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
@@ -110,17 +111,26 @@ public class HomeActivity extends BaseActivity
                 frag = MyLeaguesFragment.newInstance();
                 ((BaseFragment)frag).setProgress(mProgressBar);
                 tag = MyLeaguesFragment.TAG;
+                mFab.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_profile:
                 frag = ProfileFragment.newInstance(getCurrentUser());
                 ((BaseFragment)frag).setProgress(mProgressBar);
                 tag = ProfileFragment.TAG;
                 mFab.setImageResource(android.R.drawable.ic_menu_edit);
+                mFab.setVisibility(View.VISIBLE);
+                break;
+            case R.id.nav_upcoming_matches:
+                frag = MatchUpcomingFragment.newInstance();
+                ((BaseFragment)frag).setProgress(mProgressBar);
+                tag = MatchUpcomingFragment.TAG;
+                mFab.setVisibility(View.GONE);
                 break;
             case R.id.nav_history:
                 frag = MatchHistoryFragment.newInstance();
                 ((BaseFragment)frag).setProgress(mProgressBar);
                 tag = MatchHistoryFragment.TAG;
+                mFab.setVisibility(View.GONE);
                 break;
             case R.id.nav_settings:
                 //frag = SettingsFragment.newInstance();

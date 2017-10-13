@@ -13,6 +13,11 @@
             android:title="@string/drawer_profile" />
 
         <item
+            android:id="@+id/nav_upcoming_matches"
+            android:icon="@drawable/ic_schedule"
+            android:title="@string/drawer_upcoming_matches" />
+
+        <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history_black"
             android:title="@string/drawer_history" />
