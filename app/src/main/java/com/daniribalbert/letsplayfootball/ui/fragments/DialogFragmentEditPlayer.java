@@ -73,27 +73,6 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mSavePlayer.setOnClickListener(this);
-        mPlayerImage.setOnClickListener(this);
-        if (savedInstanceState == null) {
-            if (TextUtils.isEmpty(mPlayerId)) {
-                mPlayer = new Player();
-                setupViewMode();
-            } else {
-                loadPlayerData(mPlayerId);
-            }
-        } else {
-            if (mImageUri != null) {
-                GlideUtils.loadCircularImage(mImageUri, mPlayerImage);
-            } else if (mPlayer != null && mPlayer.hasImage()) {
-                GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
-            }
-        }
-    }
-
-    @Override
     protected void setupViewMode() {
         boolean canEdit = mPlayer.isGuest();
 

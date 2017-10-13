@@ -64,6 +64,8 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     protected String mLeagueId;
     protected String mPlayerId;
 
+    protected float mPreviousRating = 0f;
+
     public static DialogFragmentViewPlayer newInstance(String leagueId) {
         Bundle bundle = new Bundle();
         DialogFragmentViewPlayer dFrag = new DialogFragmentViewPlayer();
@@ -146,12 +148,13 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
             public void onClick(DialogInterface dialogInterface, int i) {
                 String userId = getBaseActivity().getCurrentUser().getUid();
                 showProgress(true);
+                mPreviousRating = rating;
                 RatingsDbUtils.savePlayerRating(mPlayerId, mLeagueId, userId, rating,
                                                 new RatingsDbUtils.OnPlayerRateUpdateListener() {
                                                     @Override
                                                     public void onRateUpdated(float rating) {
                                                         showProgress(false);
-                                                        mRating.setRating(rating);
+                                                        mRating.setRating(mPreviousRating);
                                                         mPlayer.setRating(mLeagueId, rating);
                                                         EventBus.getDefault().post(mPlayer);
                                                     }
@@ -170,7 +173,7 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
         builder.show();
     }
 
-    protected void loadPlayerData(String playerId) {
+    protected void loadPlayerData(final String playerId) {
         showProgress(true);
         PlayerDbUtils.getPlayer(playerId, new BaseValueEventListener() {
             @Override
@@ -178,9 +181,11 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
                 mPlayer = dataSnapshot.getValue(Player.class);
 
                 if (mPlayer != null) {
+                    loadPreviousRating(mPlayerId);
+
                     mPlayerName.setText(mPlayer.getName());
                     mPlayerNickname.setText(mPlayer.getNickname());
-                    mRating.setRating(mPlayer.getRating(mLeagueId));
+
                     if (mPlayer.hasImage()) {
                         GlideUtils.loadCircularImage(mPlayer.image, mPlayerImage);
                     }
@@ -195,7 +200,26 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
                 showProgress(false);
             }
         });
+    }
 
+    protected void loadPreviousRating(String playerId) {
+        if (mPlayer.isGuest()){
+            mPreviousRating = mPlayer.getRating(mLeagueId);
+            mRating.setRating(mPreviousRating);
+        } else {
+            String mUid = getBaseActivity().getCurrentUser().getUid();
+            RatingsDbUtils
+                    .getPlayerRateBy(playerId, mLeagueId, mUid, new BaseValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Float value = dataSnapshot.getValue(Float.class);
+                            if (value != null) {
+                                mPreviousRating = value;
+                                mRating.setRating(mPreviousRating);
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
