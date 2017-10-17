@@ -1,41 +1,28 @@
 package com.daniribalbert.letsplayfootball.ui.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.design.widget.TabLayout;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.text.InputType;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
-import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,8 +88,8 @@ public class TeamsActivity extends BaseActivity {
 
         // Filter for player which have checked-in.
         List<String> toRemove = new ArrayList<>();
-        for (String playerId : allPlayersMap.keySet()){
-            if (!mMatch.players.containsKey(playerId) || !mMatch.players.get(playerId)){
+        for (String playerId : allPlayersMap.keySet()) {
+            if (!mMatch.isCheckedIn(playerId)) {
                 toRemove.add(playerId);
             }
         }
@@ -117,7 +104,13 @@ public class TeamsActivity extends BaseActivity {
                 }
             }
         }
-        mAllPlayersList.addAll(allPlayersMap.values());
+
+        // Sort and remove players which exceed Match players limit.
+        LinkedList<Player> sortedList = mMatch.sortPlayersByCheckIn(allPlayersMap.values());
+        while (sortedList.size() > mMatch.maxPlayers && mMatch.maxPlayers > 1) {
+            sortedList.removeLast();
+        }
+        mAllPlayersList.addAll(sortedList);
     }
 
     protected void loadArgs(Intent intent) {
@@ -149,8 +142,7 @@ public class TeamsActivity extends BaseActivity {
             if (getCurrentFragment() != object) {
                 mCurrentFragment = ((PlayerListFragment) object);
                 mCurrentFragment.setPlayers(getPlayerListForPosition(position));
-                boolean canSelectPlayers = position == 0 && getCount() > 1;
-                mCurrentFragment.setPlayerSelectionEnabled(canSelectPlayers);
+                mCurrentFragment.setPlayerSelectionEnabled(false);
             }
             super.setPrimaryItem(container, position, object);
         }
@@ -171,7 +163,7 @@ public class TeamsActivity extends BaseActivity {
             } else {
                 List<String> playersIdsInPosition = mMatch.teams.get(getPageTitle(position));
                 for (String id : playersIdsInPosition) {
-                    boolean isCheckedIn = mMatch.players.containsKey(id) && mMatch.players.get(id);
+                    boolean isCheckedIn = mMatch.isCheckedIn(id);
                     if (isCheckedIn) { // Avoid adding players who didn't check-in.
                         playerList.add(PlayersCache.getPlayerInfo(id));
                     }

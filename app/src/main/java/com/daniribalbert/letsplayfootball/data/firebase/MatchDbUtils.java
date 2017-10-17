@@ -91,7 +91,7 @@ public class MatchDbUtils {
 
     public static void markCheckIn(Match match, String playerId) {
         DatabaseReference ref = getRef();
-        match.players.put(playerId, true);
+        match.players.put(playerId, System.currentTimeMillis());
         Map<String, Object> playersMap = new HashMap<>();
 
         playersMap.put("players", match.players);
@@ -100,7 +100,7 @@ public class MatchDbUtils {
 
     public static void markCheckOut(Match match, String playerId) {
         DatabaseReference ref = getRef();
-        match.players.put(playerId, false);
+        match.players.put(playerId, -1L);
         Map<String, Object> playersMap = new HashMap<>();
 
         playersMap.put("players", match.players);

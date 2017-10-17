@@ -23,5 +23,6 @@
         android:layout_height="wrap_content"
         android:text="@string/teams"/>
 
+    <include layout="@layout/match_check_in_layout"/>
 
 </LinearLayout>

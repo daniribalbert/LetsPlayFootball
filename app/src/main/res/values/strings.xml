@@ -21,6 +21,13 @@
     <string name="remove">Remove</string>
     <string name="close">Close</string>
     <string name="leave">Leave</string>
+    <string name="players">Players</string>
+    <string name="next_match">Next Match</string>
+    <string name="league_manage_admin">Choose admins</string>
+    <string name="league_schedule_match">Schedule match</string>
+    <string name="not_available_small">N/A</string>
+    <string name="Add_non_registered_player">Add new Guest Player</string>
+    <string name="search_players">Search Players</string>
 
 
     <!-- Strings related to user Profile -->
@@ -42,6 +49,8 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_cannot_remove_last_league_admin">League must have at least one Admin.</string>
+    <string name="error_add_guest_as_manager">This player does not have an account on the app!</string>
 
     <!-- Strings related to settings screen -->
     <string name="settings_category_social">Social</string>
@@ -68,6 +77,8 @@
     <string name="match_time">Match Time</string>
     <string name="teams">Teams</string>
     <string name="all_players">All Players</string>
+    <string name="max_players">Max Players</string>
+    <string name="dialog_choose_max_players">Select maximum number of players</string>
 
 
     <!-- Strings that goes with Dialogs -->
@@ -81,5 +92,9 @@
     <string name="dialog_add_team_message">Team title:</string>
     <string name="dialog_team_save_on_leave_message">Save teams?</string>
     <string name="dialog_rating_confirm">Confirm rating?</string>
+    <string name="dialog_league_add_manager_title">Add new admin?</string>
+    <string name="dialog_league_add_manager_msg">Add %1$s as admin of %2$s?</string>
+    <string name="dialog_league_remove_manager_title">Remove admin?</string>
+    <string name="dialog_league_remove_manager_msg">Remove %1$s as admin of %2$s?</string>
 
 </resources>

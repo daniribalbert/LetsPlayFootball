@@ -5,6 +5,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -44,9 +46,12 @@ public class LeagueDbUtils {
     public static void updateLeague(League league) {
         DatabaseReference dbRef = getRef();
         dbRef.child(league.id).setValue(league);
-        Set<String> userIds = league.ownersId.keySet();
-        for (String userId : userIds){
-            PlayerDbUtils.updatePlayerLeague(userId, league);
-        }
+    }
+
+    public static void updateLeagueOwners(League league) {
+        DatabaseReference dbRef = getRef();
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("ownersId", league.ownersId);
+        dbRef.child(league.id).updateChildren(updateMap);
     }
 }

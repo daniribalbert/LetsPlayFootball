@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/app_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <com.daniribalbert.letsplayfootball.ui.views.LeagueCardView
+            android:id="@+id/league_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:id="@+id/league_upcoming_match_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:padding="@dimen/padding_small"
+                android:text="@string/next_match"/>
+
+            <com.daniribalbert.letsplayfootball.ui.views.MatchCardView
+                android:id="@+id/league_match_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/league_players_bt"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/players"/>
+
+        <Button
+            android:id="@+id/league_search_players_bt"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_players"/>
+
+        <Button
+            android:id="@+id/league_add_new_guest_player"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Add_non_registered_player"/>
+
+        <Button
+            android:id="@+id/league_manage_owners"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/league_manage_admin"/>
+
+        <Button
+            android:id="@+id/league_schedule_match_bt"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/league_schedule_match"/>
+
+    </LinearLayout>
+
+</ScrollView>

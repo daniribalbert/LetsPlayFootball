@@ -224,7 +224,7 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
             } else {
                 List<String> playersIdsInPosition = mMatch.teams.get(getPageTitle(position));
                 for (String id : playersIdsInPosition) {
-                    boolean isCheckedIn = mMatch.players.containsKey(id) && mMatch.players.get(id);
+                    boolean isCheckedIn = mMatch.isCheckedIn(id);
                     if (isCheckedIn) { // Avoid adding players who didn't check-in.
                         playerList.add(PlayersCache.getPlayerInfo(id));
                     }

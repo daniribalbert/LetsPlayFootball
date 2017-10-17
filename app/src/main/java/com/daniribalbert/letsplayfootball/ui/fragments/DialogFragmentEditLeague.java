@@ -35,29 +35,9 @@ import static android.app.Activity.RESULT_OK;
 /**
  * Dialog fragment used to add/edit a new league.
  */
-public class DialogFragmentEditLeague extends BaseDialogFragment implements View.OnClickListener {
-
-    public static final String TAG = DialogFragmentEditLeague.class.getSimpleName();
-
-    public static final String ARGS_LEAGUE = "ARGS_LEAGUE";
-
-    @BindView(R.id.edit_league_pic)
-    ImageView mLeagueImage;
-
-    @BindView(R.id.edit_league_title)
-    EditText mLeagueTitle;
-
-    @BindView(R.id.edit_league_description)
-    EditText mLeagueDescription;
-
-    @BindView(R.id.bt_save_league)
-    View mSaveLeague;
+public class DialogFragmentEditLeague extends DialogFragmentViewLeague implements View.OnClickListener {
 
     private EditLeagueListener mListener;
-    private League mLeague;
-
-    @BindView(R.id.dialog_progress)
-    ProgressBar mProgressBar;
 
     public static DialogFragmentEditLeague newInstance() {
         DialogFragmentEditLeague dFrag = new DialogFragmentEditLeague();
@@ -72,15 +52,6 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_league, container, false);
-        ButterKnife.bind(this, rootView);
-        return rootView;
     }
 
     @Override
@@ -105,34 +76,6 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
             } else if (mLeague != null && mLeague.hasImage()) {
                 GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
             }
-        }
-    }
-
-    private void loadLeagueData(String leagueId) {
-        LeagueDbUtils.getLeague(leagueId, new BaseValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mLeague = dataSnapshot.getValue(League.class);
-
-                if (mLeague != null) {
-                    mLeagueTitle.setText(mLeague.title);
-                    mLeagueDescription.setText(mLeague.description);
-                    if (mLeague.hasImage()) {
-                        GlideUtils.loadCircularImage(mLeague.image, mLeagueImage);
-                    }
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
         }
     }
 
@@ -186,16 +129,6 @@ public class DialogFragmentEditLeague extends BaseDialogFragment implements View
 
     public void setListener(EditLeagueListener listener) {
         mListener = listener;
-    }
-
-    @Override
-    public void onDestroyView() {
-        Dialog dialog = getDialog();
-        // handles https://code.google.com/p/android/issues/detail?id=17423
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-        super.onDestroyView();
     }
 
     public interface EditLeagueListener {

@@ -53,18 +53,6 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     @BindView(R.id.edit_match_check_in_end_hour)
     TextView mMatchCheckInEndHour;
 
-    @BindView(R.id.tv_check_in_closed)
-    TextView mTvCheckinClosed;
-
-    @BindView(R.id.bt_check_in)
-    Button mBtCheckIn;
-
-    @BindView(R.id.bt_not_going)
-    Button mBtNotGoing;
-
-    @BindView(R.id.match_user_check_in_layout)
-    View mMatchCheckInLayout;
-
     @BindView(R.id.bt_save_match)
     Button mSaveMatch;
 
@@ -73,6 +61,9 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
     @BindView(R.id.checkbox_check_them_all)
     CheckBox mCheckThemAllBox;
+
+    @BindView(R.id.match_max_players)
+    TextView mMaxPlayersTextView;
 
     protected Match mMatch;
 
@@ -123,7 +114,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_edit_match, container, false);
-        ButterKnife.bind(this, rootView);
+        mUnbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
@@ -148,8 +139,6 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
         mCheckThemAllBox.setVisibility(View.GONE);
         mSaveMatch.setText(R.string.close);
         mSaveMatch.setOnClickListener(this);
-        mBtCheckIn.setOnClickListener(this);
-        mBtNotGoing.setOnClickListener(this);
     }
 
     protected void loadMatchData(String leagueId, String matchId) {
@@ -160,46 +149,14 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
 
                 if (mMatch != null) {
                     updatedTimeText();
-                    updateCheckInLayout();
                     if (mMatch.hasImage()) {
                         GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImage);
                     }
+                    mMaxPlayersTextView.setText(mMatch.getMaxPlayersText());
                 }
             }
         });
 
-    }
-
-    protected void updateCheckInLayout() {
-        if (mMatch.isCheckInOpen()) {
-            mBtCheckIn.setVisibility(View.VISIBLE);
-            mBtNotGoing.setVisibility(View.VISIBLE);
-            mTvCheckinClosed.setVisibility(View.GONE);
-
-            boolean isCheckedIn =
-                    mMatch.players.containsKey(mPlayerId) && mMatch.players.get(mPlayerId);
-            if (isCheckedIn) {
-                mBtCheckIn.setEnabled(false);
-                mBtNotGoing.setEnabled(true);
-            } else {
-                mBtCheckIn.setEnabled(true);
-                mBtNotGoing.setEnabled(false);
-            }
-        } else {
-            mBtCheckIn.setVisibility(View.GONE);
-            mBtNotGoing.setVisibility(View.GONE);
-            mTvCheckinClosed.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
-        }
     }
 
     @Override
@@ -210,25 +167,7 @@ public class DialogFragmentViewMatch extends BaseDialogFragment implements View.
                     dismiss();
                 }
                 break;
-            case R.id.bt_check_in:
-                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
-            case R.id.bt_not_going:
-                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        Dialog dialog = getDialog();
-        // handles https://code.google.com/p/android/issues/detail?id=17423
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-        super.onDestroyView();
     }
 
     protected void updatedTimeText() {

@@ -130,47 +130,41 @@
 
             <CheckBox
                 android:id="@+id/checkbox_check_them_all"
+                style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start|center"
-                style="@style/TextAppearance.AppCompat.Caption"
                 android:text="@string/check_in_add_everyone_msg"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
+
             <LinearLayout
-                android:id="@+id/match_user_check_in_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center|bottom"
-                android:orientation="horizontal">
+                android:layout_margin="@dimen/margin_small"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_check_in_closed"
+                    style="@style/TextAppearance.AppCompat.Title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin_medium"
-                    android:text="@string/check_in_closed_msg"
-                    android:visibility="visible"/>
-
-                <Button
-                    android:id="@+id/bt_check_in"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_gravity="start|center"
                     android:layout_marginEnd="@dimen/margin_medium"
-                    android:text="@string/check_in"/>
+                    android:text="@string/max_players"/>
 
-                <Button
-                    android:id="@+id/bt_not_going"
+                <TextView
+                    android:id="@+id/match_max_players"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/margin_medium"
-                    android:text="@string/cant_go"/>
-
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:text="@string/not_available_small"
+                    />
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

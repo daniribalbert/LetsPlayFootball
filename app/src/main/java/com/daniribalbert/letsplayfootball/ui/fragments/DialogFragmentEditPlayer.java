@@ -84,16 +84,6 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
-        }
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_player:

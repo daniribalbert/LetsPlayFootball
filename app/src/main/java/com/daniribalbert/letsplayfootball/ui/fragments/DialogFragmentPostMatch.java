@@ -110,7 +110,7 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_match, container, false);
-        ButterKnife.bind(this, rootView);
+        mUnbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
@@ -158,16 +158,6 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
-        }
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_match:
@@ -190,16 +180,6 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
         if (handleImageSelectionActivityResult(requestCode, resultCode, data)) {
             GlideUtils.loadCircularImage(mImageUri, mMatchImage);
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        Dialog dialog = getDialog();
-        // handles https://code.google.com/p/android/issues/detail?id=17423
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-        super.onDestroyView();
     }
 
     protected void updatedTimeText() {

@@ -3,14 +3,13 @@ package com.daniribalbert.letsplayfootball.data.cache;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.daniribalbert.letsplayfootball.application.App;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Shared preferences file used to cache Players info.
@@ -46,7 +45,7 @@ public class PlayersCache {
         editor.apply();
     }
 
-    public static void saveLeaguePlayersInfo(List<Player> playerList){
+    public static void saveLeaguePlayersInfo(Collection<Player> playerList){
         sMemoryCache.clear();
         for (Player player : playerList){
             sMemoryCache.put(player.id, player);

@@ -74,7 +74,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
      *
      * @param player Player to be updated on the list.
      */
-    public void updateItem(Player player) {
+    public void updatePlayer(Player player) {
         int position = mValues.indexOf(player);
         if (position >= 0 && position < mValues.size()) {
             mValues.set(position, player);

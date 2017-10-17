@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,6 +46,18 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
 
+    @BindView(R.id.tv_check_in_closed)
+    TextView mTvCheckinClosed;
+
+    @BindView(R.id.bt_check_in)
+    Button mBtCheckIn;
+
+    @BindView(R.id.bt_not_going)
+    Button mBtNotGoing;
+
+    @BindView(R.id.match_user_check_in_layout)
+    View mMatchCheckInLayout;
+
 
     protected String mLeagueId;
     protected String mMatchId;
@@ -77,6 +90,8 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
 
     protected void setupListeners() {
         mMatchCardView.setOnClickListener(this);
+        mBtCheckIn.setOnClickListener(this);
+        mBtNotGoing.setOnClickListener(this);
         mTeamsBt.setOnClickListener(this);
     }
 
@@ -98,6 +113,7 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
         GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImageView);
         mMatchCardDay.setText(mMatch.getDateString(mMatch.time));
         mMatchCardTime.setText(mMatch.getTimeStr(mMatch.time));
+        updateCheckInLayout();
     }
 
     @Override
@@ -108,6 +124,14 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
                 break;
             case R.id.match_teams_bt:
                 startActivity(getTeamsActivityIntent());
+                break;
+            case R.id.bt_check_in:
+                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
+                updateCheckInLayout();
+                break;
+            case R.id.bt_not_going:
+                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
+                updateCheckInLayout();
                 break;
         }
     }
@@ -129,6 +153,31 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
             DialogFragmentViewMatch dFrag = DialogFragmentViewMatch
                     .newInstance(mLeagueId, mMatchId, userId);
             dFrag.show(getSupportFragmentManager(), DialogFragmentViewMatch.TAG);
+        }
+    }
+
+    protected void updateCheckInLayout() {
+        if (mMatch.isCheckInOpen()) {
+            mBtCheckIn.setVisibility(View.VISIBLE);
+            mBtNotGoing.setVisibility(View.VISIBLE);
+            mTvCheckinClosed.setVisibility(View.GONE);
+
+            boolean isCheckedIn = mMatch.isCheckedIn(mPlayerId);;
+            if (isCheckedIn) {
+                mBtCheckIn.setEnabled(false);
+                mBtNotGoing.setEnabled(true);
+            } else {
+                mBtCheckIn.setEnabled(true);
+                mBtNotGoing.setEnabled(false);
+            }
+        } else {
+            mBtCheckIn.setVisibility(View.GONE);
+            mBtNotGoing.setVisibility(View.GONE);
+            if (mMatch.isPastMatch()) {
+                mTvCheckinClosed.setVisibility(View.GONE);
+            } else {
+                mTvCheckinClosed.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

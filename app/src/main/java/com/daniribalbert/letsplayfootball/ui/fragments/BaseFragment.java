@@ -18,6 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Unbinder;
+
 /**
  * That BaseFragment that starts every other Fragment.
  */
@@ -26,6 +28,7 @@ public abstract class BaseFragment extends Fragment {
     public static final int ARGS_IMAGE_SELECT = 201;
 
     protected ProgressBar mProgressBar;
+    protected Unbinder mUnbinder;
 
     public BaseActivity getBaseActivity(){
         return (BaseActivity) getActivity();
@@ -66,5 +69,12 @@ public abstract class BaseFragment extends Fragment {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
                                cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
         startActivityForResult(chooserIntent, ARGS_IMAGE_SELECT);
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
     }
 }

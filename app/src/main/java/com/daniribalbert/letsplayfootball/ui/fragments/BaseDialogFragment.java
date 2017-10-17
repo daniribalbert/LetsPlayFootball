@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
@@ -18,6 +20,8 @@ import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -30,6 +34,30 @@ public class BaseDialogFragment extends DialogFragment {
 
     ProgressBar mProgressBar;
     protected Uri mImageUri;
+    protected Unbinder mUnbinder;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow()
+                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                                  WindowManager.LayoutParams.MATCH_PARENT);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
+        Dialog dialog = getDialog();
+        // handles https://code.google.com/p/android/issues/detail?id=17423
+        if (dialog != null && getRetainInstance()) {
+            dialog.setDismissMessage(null);
+        }
+        super.onDestroyView();
+    }
 
     public BaseActivity getBaseActivity(){
         return (BaseActivity) getActivity();

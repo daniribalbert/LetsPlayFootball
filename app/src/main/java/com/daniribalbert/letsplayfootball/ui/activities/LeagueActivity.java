@@ -13,15 +13,22 @@ import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
+import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
+import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditPlayer;
+import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewPlayer;
+import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsManagerFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoOwnerModeFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 import com.google.firebase.database.DataSnapshot;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,28 +36,9 @@ import butterknife.ButterKnife;
 /**
  * Activity which handles League viewing and edition feature.
  */
-public class LeagueActivity extends BaseActivity
-        implements DialogFragmentEditLeague.EditLeagueListener, View.OnClickListener {
+public class LeagueActivity extends BaseActivity {
 
     public static final String LEAGUE_TITLE = "LEAGUE_TITLE";
-
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-
-    @BindView(R.id.fab)
-    FloatingActionButton mFab;
-
-    @BindView(R.id.fab_menu_layout)
-    View mFabLayout;
-
-    @BindView(R.id.fab_menu_1)
-    FloatingActionButton mFabMenu1;
-
-    @BindView(R.id.fab_menu_2)
-    FloatingActionButton mFabMenu2;
-
-    @BindView(R.id.fab_menu_3)
-    FloatingActionButton mFabMenu3;
 
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
@@ -66,20 +54,10 @@ public class LeagueActivity extends BaseActivity
         ButterKnife.bind(this);
 
         loadArgs(getIntent());
-        setSupportActionBar(mToolbar);
 
-        setupFabListeners();
         if (savedInstanceState == null) {
             loadLeague();
         }
-    }
-
-    private void setupFabListeners() {
-        mFab.setVisibility(View.GONE);
-        mFab.setOnClickListener(this);
-        mFabMenu1.setOnClickListener(this);
-        mFabMenu2.setOnClickListener(this);
-        mFabMenu3.setOnClickListener(this);
     }
 
     private void loadArgs(final Intent intent) {
@@ -99,79 +77,19 @@ public class LeagueActivity extends BaseActivity
                 LeagueCache.saveLeagueInfo(mLeague);
                 String userId = mAuth.getCurrentUser().getUid();
                 boolean viewMode = !mLeague.isOwner(userId);
-                mFab.setVisibility(viewMode ? View.GONE : View.VISIBLE);
                 BaseFragment frag;
                 String tag;
                 if (viewMode) {
-                    frag = LeagueInfoFragment.newInstance(mLeagueId);
-                    tag = LeagueInfoFragment.TAG;
+                    frag = LeagueDetailsFragment.newInstance(mLeague);
+                    tag = LeagueDetailsFragment.TAG;
                 } else {
-                    frag = LeagueInfoOwnerModeFragment.newInstance(mLeagueId);
-                    tag = LeagueInfoOwnerModeFragment.TAG;
+                    frag = LeagueDetailsManagerFragment.newInstance(mLeague);
+                    tag = LeagueDetailsManagerFragment.TAG;
                 }
                 frag.setProgress(mProgressBar);
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, frag, tag)
                                     .commit();
             }
         });
-    }
-
-    @Override
-    public void onLeagueSaved(League league) {
-        LeagueDbUtils.updateLeague(league);
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab:
-                toggleFabMenu();
-                break;
-            case R.id.fab_menu_1:
-                resetFab();
-                mFab.setVisibility(View.GONE);
-                PlayerSearchFragment playerSearchFragment = PlayerSearchFragment
-                        .newInstance(mLeagueId);
-                playerSearchFragment.setProgress(mProgressBar);
-                getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, playerSearchFragment,
-                                             PlayerSearchFragment.TAG)
-                                    .addToBackStack(PlayerSearchFragment.TAG).commit();
-                break;
-            case R.id.fab_menu_2:
-                resetFab();
-                EventBus.getDefault().post(new FabClickedEvent(mFabMenu2));
-                break;
-            case R.id.fab_menu_3:
-                resetFab();
-                EventBus.getDefault().post(new FabClickedEvent(mFabMenu3));
-                break;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mFabLayout.getVisibility() == View.VISIBLE) {
-            toggleFabMenu();
-        } else {
-            mFab.setVisibility(View.VISIBLE);
-            super.onBackPressed();
-        }
-    }
-
-    private void resetFab() {
-        mFab.setImageResource(R.drawable.ic_add);
-        mFabLayout.setVisibility(View.GONE);
-    }
-
-    private void toggleFabMenu() {
-        boolean isVisible = mFabLayout.getVisibility() == View.VISIBLE;
-        if (isVisible) {
-            mFabLayout.setVisibility(View.GONE);
-            mFab.setImageResource(R.drawable.ic_add);
-        } else {
-            mFabLayout.setVisibility(View.VISIBLE);
-            mFab.setImageResource(R.drawable.ic_close);
-        }
     }
 }

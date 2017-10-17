@@ -100,7 +100,7 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_edit_player, container, false);
-        ButterKnife.bind(this, rootView);
+        mUnbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
@@ -223,16 +223,6 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (getDialog() != null && getDialog().getWindow() != null) {
-            getDialog().getWindow()
-                       .setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                  WindowManager.LayoutParams.MATCH_PARENT);
-        }
-    }
-
-    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_player:
@@ -241,15 +231,5 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        Dialog dialog = getDialog();
-        // handles https://code.google.com/p/android/issues/detail?id=17423
-        if (dialog != null && getRetainInstance()) {
-            dialog.setDismissMessage(null);
-        }
-        super.onDestroyView();
     }
 }

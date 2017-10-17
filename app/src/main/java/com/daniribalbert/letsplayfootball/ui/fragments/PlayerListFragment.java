@@ -10,15 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.PlayerListAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,6 +39,8 @@ public class PlayerListFragment extends BaseFragment {
 
     PlayerListAdapter mAdapter;
     String mLeagueId;
+
+    private OnPlayerSelectedListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -82,7 +85,7 @@ public class PlayerListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_player_list, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
 
         return view;
     }
@@ -121,9 +124,12 @@ public class PlayerListFragment extends BaseFragment {
 
     @Subscribe
     public void OnPlayerSelectedEvent(final PlayerClickedEvent event) {
+        if (mListener != null) {
+            mListener.onPlayerSelected(event.player);
+        }
     }
 
-    public List<Integer> getSelectedPlayers(){
+    public List<Integer> getSelectedPlayers() {
         return mAdapter.getSelectedPlayersIndexes();
     }
 
@@ -137,6 +143,12 @@ public class PlayerListFragment extends BaseFragment {
         mAdapter.addItems(players);
     }
 
+    public void loadPlayersFromCache(){
+        mAdapter.clear();
+        HashMap<String, Player> currentLeaguePlayers = PlayersCache.getCurrentLeaguePlayers();
+        mAdapter.addItems(currentLeaguePlayers.values());
+    }
+
     public void teamSelected() {
         mAdapter.clearSelection();
         mAdapter.notifyDataSetChanged();
@@ -145,5 +157,19 @@ public class PlayerListFragment extends BaseFragment {
 
     public void setPlayerSelectionEnabled(boolean enabled) {
         mAdapter.setPlayerSelectionEnabled(enabled);
+    }
+
+    @Subscribe
+    public void onPlayerUpdatedEvent(Player player) {
+        mAdapter.updatePlayer(player);
+    }
+
+    public void setListener(
+            OnPlayerSelectedListener mListener) {
+        this.mListener = mListener;
+    }
+
+    public interface OnPlayerSelectedListener {
+        void onPlayerSelected(Player player);
     }
 }

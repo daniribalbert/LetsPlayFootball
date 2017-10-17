@@ -1,7 +1,9 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -20,9 +23,11 @@ import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.activities.LoginActivity;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.storage.UploadTask;
 
@@ -84,6 +89,7 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
         mTimeLayout.setOnClickListener(this);
         mCheckInStartLayout.setOnClickListener(this);
         mCheckInEndLayout.setOnClickListener(this);
+        mMaxPlayersTextView.setOnClickListener(this);
 
         if (TextUtils.isEmpty(mMatchId)) {
             mCheckThemAllBox.setVisibility(View.VISIBLE);
@@ -95,20 +101,16 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
                             HashMap<String, Player> currentLeaguePlayers = PlayersCache
                                     .getCurrentLeaguePlayers();
                             if (checked) {
-                                for (String playerId : currentLeaguePlayers.keySet()){
-                                    mMatch.players.put(playerId, true);
+                                for (String playerId : currentLeaguePlayers.keySet()) {
+                                    mMatch.players.put(playerId, System.currentTimeMillis());
                                 }
                             } else {
                                 mMatch.players.clear();
                             }
                         }
                     });
-            mMatchCheckInLayout.setVisibility(View.GONE);
         } else {
             mCheckThemAllBox.setVisibility(View.GONE);
-            mMatchCheckInLayout.setVisibility(View.VISIBLE);
-            mBtCheckIn.setOnClickListener(this);
-            mBtNotGoing.setOnClickListener(this);
         }
     }
 
@@ -132,16 +134,13 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
                 currentTimeViewId = view.getId();
                 showDatePickerDialog();
                 break;
-            case R.id.bt_check_in:
-                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
-                updateCheckInLayout();
+            case R.id.match_max_players:
+                promptSelectMaxPlayers();
                 break;
-            case R.id.bt_not_going:
-                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
+
         }
     }
+
 
     private void showTimePickerDialog() {
         long matchTime = mMatch.time;
@@ -169,6 +168,38 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
                                                                  day);
         datePickerDialog.setTitle("Select Day");
         datePickerDialog.show();
+    }
+
+    private void promptSelectMaxPlayers() {
+        final NumberPicker picker = new NumberPicker(getActivity());
+
+
+        final String[] values = new String[(Match.MAX_PLAYERS - Match.MIN_PLAYERS) + 2];
+        values[0] = getString(R.string.not_available_small);
+        for (int i = 0; i <= Match.MAX_PLAYERS - Match.MIN_PLAYERS; i++) {
+            values[i + 1] = String.valueOf(Match.MIN_PLAYERS + i);
+        }
+        picker.setMinValue(0);
+        picker.setMaxValue(values.length - 1);
+        picker.setDisplayedValues(values);
+        picker.setWrapSelectorWheel(true);
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.dialog_choose_max_players)
+                .setView(picker)
+                .setPositiveButton(android.R.string.ok,
+                                   new DialogInterface.OnClickListener() {
+                                       public void onClick(DialogInterface dialog,
+                                                           int whichButton) {
+                                           int maxPlayers = picker.getValue() == 0
+                                                            ? -1
+                                                            : picker.getValue() + 1;
+                                           LogUtils.w("VALUE= " + maxPlayers);
+                                           mMatch.maxPlayers = maxPlayers;
+                                           mMaxPlayersTextView.setText(mMatch.getMaxPlayersText());
+                                       }
+                                   })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void uploadImage() {
