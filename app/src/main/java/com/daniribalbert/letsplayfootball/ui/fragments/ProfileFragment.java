@@ -80,6 +80,7 @@ public class ProfileFragment extends ProfileViewFragment
         mPlayerNickname.addTextChangedListener(this);
         mProfilePic.setOnClickListener(this);
         mProfilePic.setClickable(false);
+        mGoalkeeperCheck.setEnabled(false);
     }
 
     @Override
@@ -110,6 +111,7 @@ public class ProfileFragment extends ProfileViewFragment
             mDataChanged = false;
         } else {
             event.fab.setImageResource(android.R.drawable.ic_menu_edit);
+            mDataChanged = mDataChanged || mGoalkeeperCheck.isChecked() != mPlayer.isGoalkeeper();
             if (mDataChanged) {
                 if (mImageUri != null) {
                     uploadImage();
@@ -123,6 +125,7 @@ public class ProfileFragment extends ProfileViewFragment
     private void savePlayerInfo() {
         mPlayer.nickname = mPlayerNickname.getText().toString();
         mPlayer.name = mPlayerName.getText().toString();
+        mPlayer.goalkeeper = mGoalkeeperCheck.isChecked();
         LogUtils.i("Player info updated! " + mPlayer);
         PlayerDbUtils.updatePlayer(mPlayer);
     }
@@ -133,6 +136,7 @@ public class ProfileFragment extends ProfileViewFragment
         mPlayerName.setEnabled(toggle);
         mPlayerNickname.setEnabled(toggle);
         mProfilePic.setClickable(toggle);
+        mGoalkeeperCheck.setEnabled(toggle);
     }
 
     @Override
@@ -155,6 +159,7 @@ public class ProfileFragment extends ProfileViewFragment
         if (mPlayer != null) {
             mPlayerName.setText(mPlayer.getName());
             mPlayerNickname.setText(mPlayer.getDisplayName());
+            mGoalkeeperCheck.setChecked(mPlayer.isGoalkeeper());
         }
     }
 

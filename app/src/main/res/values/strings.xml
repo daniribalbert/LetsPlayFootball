@@ -23,11 +23,12 @@
     <string name="leave">Leave</string>
     <string name="players">Players</string>
     <string name="next_match">Next Match</string>
-    <string name="league_manage_admin">Choose admins</string>
+    <string name="league_manage_admin">Administrador(es) do racha</string>
     <string name="league_schedule_match">Schedule match</string>
     <string name="not_available_small">N/A</string>
     <string name="Add_non_registered_player">Add new Guest Player</string>
     <string name="search_players">Search Players</string>
+    <string name="goalkeeper">Goalkeeper</string>
 
 
     <!-- Strings related to user Profile -->

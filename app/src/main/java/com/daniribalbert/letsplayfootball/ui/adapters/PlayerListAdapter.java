@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
@@ -48,7 +49,7 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
     @Override
     public void onBindViewHolder(final PlayerViewHolder holder, int position) {
         Player player = mValues.get(position);
-        holder.setPlayer(player, mLeagueId);
+        holder.setPlayer(player, LeagueCache.getLeagueInfo(mLeagueId));
         boolean isSelected = mSelectedPlayersIndexes.contains(position);
         holder.itemView.setSelected(isSelected);
     }

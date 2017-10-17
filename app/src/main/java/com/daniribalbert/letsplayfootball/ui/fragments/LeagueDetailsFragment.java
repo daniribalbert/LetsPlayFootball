@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
@@ -22,10 +23,12 @@ import com.daniribalbert.letsplayfootball.ui.views.LeagueCardView;
 import com.daniribalbert.letsplayfootball.ui.views.MatchCardView;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -118,7 +121,6 @@ public class LeagueDetailsFragment extends BaseFragment {
 
     protected void setupView() {
         mLeagueCard.setCard(mLeague);
-        mManageLeagueOwners.setVisibility(View.GONE);
         mScheduleMatchView.setVisibility(View.GONE);
         mSearchPlayers.setVisibility(View.GONE);
         mAddNewGuestPlayers.setVisibility(View.GONE);
@@ -208,6 +210,23 @@ public class LeagueDetailsFragment extends BaseFragment {
         intent.putExtra(BaseActivity.ARGS_MATCH_ID, mMatch.id);
         intent.putExtra(BaseActivity.ARGS_PLAYER_ID, currentUserId);
         startActivity(intent);
+    }
+
+    @OnClick(R.id.league_manage_owners)
+    public void onSelectedOwners() {
+        PlayerListFragment playerListFragment = PlayerListFragment.newInstance(mLeague.id);
+        HashMap<String, Boolean> ownersId = mLeague.ownersId;
+        List<Player> players = new ArrayList<>();
+        HashMap<String, Player> currentLeaguePlayers = PlayersCache.getCurrentLeaguePlayers();
+        for (String playerId : ownersId.keySet()){
+            players.add(currentLeaguePlayers.get(playerId));
+        }
+        playerListFragment.setPlayerSelectionEnabled(false);
+        playerListFragment.setPlayers(players);
+        getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, playerListFragment,
+                                     PlayerListFragment.TAG)
+                            .addToBackStack(PlayerListFragment.TAG).commit();
     }
 
     protected Intent getMatchDetailsIntent() {

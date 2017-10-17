@@ -51,6 +51,11 @@ public class Player {
      */
     public HashMap<String, Float> rating = new HashMap<>();
 
+    /**
+     * Boolean indicating if player is a goalkeeper.
+     */
+    public boolean goalkeeper = false;
+
     // Skills set used to rank this player.
     // TODO: For future releases add skills.
 //    public float stamina;
@@ -88,7 +93,8 @@ public class Player {
             player.name = email.substring(0, email.indexOf("@"));
         } else {
             player.name = user.getDisplayName();
-        }return player;
+        }
+        return player;
     }
 
     @Override
@@ -125,7 +131,7 @@ public class Player {
 
     @Exclude
     public String getNickname() {
-        if (TextUtils.isEmpty(nickname)){
+        if (TextUtils.isEmpty(nickname)) {
             return "";
         }
         if (nickname.startsWith(GUEST_NAME_PREFIX)) {
@@ -166,5 +172,9 @@ public class Player {
     @Override
     public int hashCode() {
         return rating.size() + leagues.size(); // Java... -_-
+    }
+
+    public boolean isGoalkeeper() {
+        return goalkeeper;
     }
 }

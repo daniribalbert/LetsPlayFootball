@@ -8,6 +8,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 
@@ -17,8 +18,9 @@ import butterknife.ButterKnife;
 /**
  * ViewHolder for Player cards.
  */
-public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-                                                                                      View.OnLongClickListener {
+public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder
+        implements View.OnClickListener,
+                   View.OnLongClickListener {
     @BindView(R.id.player_card_view)
     CardView mCardView;
     @BindView(R.id.player_card_title)
@@ -27,6 +29,10 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder imple
     ImageView mImage;
     @BindView(R.id.player_rating)
     RatingBar mRating;
+    @BindView(R.id.player_card_position_icon)
+    ImageView mPlayerPositionIcon;
+    @BindView(R.id.player_card_manager_icon)
+    ImageView mPlayerManagerIcon;
 
     public PlayerCardViewHolder(View view) {
         super(view);
@@ -36,10 +42,17 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder imple
         view.setOnLongClickListener(this);
     }
 
-    public void setPlayer(Player player, String leagueId) {
+    public void setPlayer(Player player, League league) {
         setTitle(player.toString());
         setImage(player.image);
-        setRating(player.getRating(leagueId));
+        setRating(player.getRating(league.id));
+        setPositionIcon(player.isGoalkeeper());
+        setManagerIcon(league.isOwner(player.id));
+    }
+
+    private void setManagerIcon(boolean isManager) {
+        int visibility = isManager ? View.VISIBLE : View.GONE;
+        mPlayerManagerIcon.setVisibility(visibility);
     }
 
     public void setTitle(String title) {
@@ -64,4 +77,9 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder imple
 
     @Override
     public abstract boolean onLongClick(View view);
+
+    public void setPositionIcon(boolean isGoalkeeper) {
+        int resId = isGoalkeeper ? R.drawable.ic_goalkeeper : R.drawable.ic_player_default;
+        mPlayerPositionIcon.setImageResource(resId);
+    }
 }

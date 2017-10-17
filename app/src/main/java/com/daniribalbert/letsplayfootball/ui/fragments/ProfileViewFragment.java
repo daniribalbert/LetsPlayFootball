@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -32,6 +33,9 @@ public class ProfileViewFragment extends BaseFragment {
     EditText mPlayerNickname;
     @BindView(R.id.profile_name)
     EditText mPlayerName;
+
+    @BindView(R.id.profile_goalkeeper_check)
+    CheckBox mGoalkeeperCheck;
 
     protected Player mPlayer;
 
@@ -73,5 +77,7 @@ public class ProfileViewFragment extends BaseFragment {
         }
         mPlayerName.setText(mPlayer.getName());
         mPlayerNickname.setText(mPlayer.getDisplayName());
+        mGoalkeeperCheck.setChecked(mPlayer.isGoalkeeper());
+        mGoalkeeperCheck.setEnabled(false);
     }
 }

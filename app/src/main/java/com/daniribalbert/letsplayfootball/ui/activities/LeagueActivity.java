@@ -3,9 +3,6 @@ package com.daniribalbert.letsplayfootball.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.R;
@@ -13,22 +10,10 @@ import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
-import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
-import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditLeague;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentEditPlayer;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewPlayer;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsManagerFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.LeagueInfoOwnerModeFragment;
-import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 import com.google.firebase.database.DataSnapshot;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
