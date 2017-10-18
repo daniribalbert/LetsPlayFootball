@@ -203,6 +203,9 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     }
 
     protected void loadPreviousRating(String playerId) {
+        if (!isAdded()){
+            return;
+        }
         if (mPlayer.isGuest()){
             mPreviousRating = mPlayer.getRating(mLeagueId);
             mRating.setRating(mPreviousRating);

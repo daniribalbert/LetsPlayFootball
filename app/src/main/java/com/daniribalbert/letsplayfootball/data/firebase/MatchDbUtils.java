@@ -89,22 +89,26 @@ public class MatchDbUtils {
         ref.child(match.leagueId).child(match.id).removeValue();
     }
 
-    public static void markCheckIn(Match match, String playerId) {
+    public static Match markCheckIn(Match match, String playerId) {
         DatabaseReference ref = getRef();
         match.players.put(playerId, System.currentTimeMillis());
         Map<String, Object> playersMap = new HashMap<>();
 
         playersMap.put("players", match.players);
         ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
+        LogUtils.d("CHECKIN: " + playerId);
+        return match;
     }
 
-    public static void markCheckOut(Match match, String playerId) {
+    public static Match markCheckOut(Match match, String playerId) {
         DatabaseReference ref = getRef();
         match.players.put(playerId, -1L);
         Map<String, Object> playersMap = new HashMap<>();
 
         playersMap.put("players", match.players);
         ref.child(match.leagueId).child(match.id).updateChildren(playersMap);
+        LogUtils.d("CHECKOUT: " + playerId);
+        return match;
     }
 
     public static void saveTeam(Match match) {

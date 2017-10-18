@@ -1,17 +1,21 @@
 package com.daniribalbert.letsplayfootball.ui.adapters;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.application.App;
 import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
+import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.PlayerCardViewHolder;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -30,6 +34,9 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
     private List<Integer> mSelectedPlayersIndexes = new ArrayList<>();
     private boolean mPlayerSelectionEnabled;
     private boolean mIsInSelectionMode = false;
+    private boolean mCheckInIconEnabled = false;
+
+    private Match mMatch;
 
     public PlayerListAdapter(String leagueId) {
         mLeagueId = leagueId;
@@ -41,7 +48,6 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
                                   .inflate(R.layout.card_player, parent, false);
 
         final PlayerViewHolder viewHolder = new PlayerViewHolder(view);
-
 
         return viewHolder;
     }
@@ -128,15 +134,27 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
 
     public void setPlayerSelectionEnabled(boolean enabled) {
         mPlayerSelectionEnabled = enabled;
-        if (!enabled){
+        if (!enabled) {
             mIsInSelectionMode = false;
         }
+    }
+
+    public void enableCheckInIcons(boolean showCheckInIcons, Match match) {
+        mMatch = match;
+        mCheckInIconEnabled = showCheckInIcons;
+        notifyDataSetChanged();
     }
 
     public class PlayerViewHolder extends PlayerCardViewHolder {
 
         public PlayerViewHolder(View view) {
             super(view);
+        }
+
+        @Override
+        public void setPlayer(Player player, League league) {
+            super.setPlayer(player, league);
+            setCheckInIcons(player, mCheckInIconEnabled);
         }
 
         @Override
@@ -163,6 +181,24 @@ public class PlayerListAdapter extends RecyclerView.Adapter<PlayerListAdapter.Pl
                 notifyItemChanged(getAdapterPosition());
             }
             return true;
+        }
+
+        void setCheckInIcons(Player player, boolean checkInIcons) {
+            if (mMatch != null && checkInIcons) {
+                Context context = mPlayerCheckInIcon.getContext();
+                mPlayerCheckInIcon.setVisibility(View.VISIBLE);
+                if (mMatch.isCheckedIn(player.id)) {
+                    int color = ContextCompat.getColor(context, android.R.color.holo_green_dark);
+                    mPlayerCheckInIcon.setColorFilter(color);
+                    mPlayerCheckInIcon.setImageResource(R.drawable.ic_check);
+                } else {
+                    int color = ContextCompat.getColor(context, android.R.color.holo_red_dark);
+                    mPlayerCheckInIcon.setColorFilter(color);
+                    mPlayerCheckInIcon.setImageResource(R.drawable.ic_close);
+                }
+            } else {
+                mPlayerCheckInIcon.setVisibility(View.GONE);
+            }
         }
     }
 }

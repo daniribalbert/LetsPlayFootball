@@ -1,5 +1,7 @@
 package com.daniribalbert.letsplayfootball.ui.adapters.viewholders;
 
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -33,6 +35,9 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder
     ImageView mPlayerPositionIcon;
     @BindView(R.id.player_card_manager_icon)
     ImageView mPlayerManagerIcon;
+    @BindView(R.id.player_card_check_in_icon)
+    protected
+    ImageView mPlayerCheckInIcon;
 
     public PlayerCardViewHolder(View view) {
         super(view);
@@ -43,7 +48,7 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder
     }
 
     public void setPlayer(Player player, League league) {
-        setTitle(player.toString());
+        setTitle(player);
         setImage(player.image);
         setRating(player.getRating(league.id));
         setPositionIcon(player.isGoalkeeper());
@@ -55,8 +60,15 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder
         mPlayerManagerIcon.setVisibility(visibility);
     }
 
-    public void setTitle(String title) {
-        mTitle.setText(title);
+    public void setTitle(Player player) {
+        mTitle.setText(player.toString());
+        if (player.isGuest()) {
+            Drawable drawable = ContextCompat
+                    .getDrawable(mTitle.getContext(), R.drawable.ic_non_user);
+            mTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
+        } else {
+            mTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+        }
     }
 
     @Override

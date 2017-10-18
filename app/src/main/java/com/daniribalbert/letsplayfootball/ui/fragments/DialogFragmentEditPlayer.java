@@ -89,11 +89,12 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
             case R.id.bt_save_player:
                 showProgress(true);
 
-                mPlayer.name = mPlayerName.getText().toString();
-                mPlayer.nickname = mPlayerNickname.getText().toString();
                 if (mPlayer.isGuest()){
                     mPlayer.rating.put(mLeagueId, mRating.getRating());
                 }
+                mPlayer.name = mPlayerName.getText().toString();
+                mPlayer.nickname = mPlayerNickname.getText().toString();
+
 
                 if (mImageUri == null) {
                     save(mPlayer);

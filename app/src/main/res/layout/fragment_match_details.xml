@@ -23,6 +23,22 @@
         android:layout_height="wrap_content"
         android:text="@string/teams"/>
 
+    <Button
+        android:id="@+id/match_players_bt"
+        style="@style/MenuButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/players"/>
+
+    <Button
+        android:id="@+id/match_manager_guest_check_in_bt"
+        style="@style/MenuButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/manage_match_guests"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <include layout="@layout/match_check_in_layout"/>
 
 </LinearLayout>

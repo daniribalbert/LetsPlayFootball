@@ -13,9 +13,11 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.adapters.MatchPlayerQueueAdapter;
 import com.daniribalbert.letsplayfootball.ui.adapters.PlayerListAdapter;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
+import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,67 +29,47 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * A fragment representing a list of Player Items.
+ * A fragment representing a list of Player Items in the Match queue.
  */
-public class PlayerListFragment extends BaseFragment {
+public class MatchPlayerQueueFragment extends BaseFragment {
 
-    public static final String TAG = PlayerListFragment.class.getSimpleName();
-
-    public static final String LEAGUE_ID = "LEAGUE_ID";
+    public static final String TAG = MatchPlayerQueueFragment.class.getSimpleName();
+    public static final String ARGS_MATCH = "ARGS_MATCH";
 
     @BindView(R.id.players_recyclerview)
     RecyclerView mRecyclerView;
 
-    PlayerListAdapter mAdapter;
-    String mLeagueId;
+    MatchPlayerQueueAdapter mAdapter;
 
     private OnPlayerSelectedListener mListener;
+    private Match mMatch;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlayerListFragment() {
+    public MatchPlayerQueueFragment() {
     }
 
     /**
-     * Creates a new instance of PlayerListFragment with a list of players based from the League
-     * with the given leagueId.
+     * Creates a new instance of MatchPlayerQueueFragment based on the given Match.
      *
-     * @param leagueId league_id of the League which players will be loaded.
-     *
-     * @return new instance of this Fragment.
-     */
-    public static PlayerListFragment newInstance(String leagueId) {
-        Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
-        PlayerListFragment fragment = new PlayerListFragment();
-        fragment.setRetainInstance(true);
-        fragment.setArguments(args);
-        fragment.createAdapter(leagueId);
-        return fragment;
-    }
-
-    /**
-     * Creates a new instance of PlayerListFragment with a list of players based from the League
-     * with the given leagueId.
-     *
-     * @param leagueId league_id of the League which players will be loaded.
+     * @param match league_id of the League which players will be loaded.
      *
      * @return new instance of this Fragment.
      */
-    public static PlayerListFragment newInstance(String leagueId, String matchId) {
+    public static MatchPlayerQueueFragment newInstance(Match match) {
         Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
-        PlayerListFragment fragment = new PlayerListFragment();
+        args.putString(ARGS_MATCH, GsonUtils.toJson(match));
+        MatchPlayerQueueFragment fragment = new MatchPlayerQueueFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
-        fragment.createAdapter(leagueId);
+        fragment.createAdapter(match);
         return fragment;
     }
 
-    private void createAdapter(String leagueId) {
-        mAdapter = new PlayerListAdapter(leagueId);
+    private void createAdapter(Match match) {
+        mAdapter = new MatchPlayerQueueAdapter(match);
     }
 
     @Override
@@ -96,7 +78,8 @@ public class PlayerListFragment extends BaseFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            mLeagueId = args.getString(LEAGUE_ID);
+            String matchJson = args.getString(ARGS_MATCH);
+            mMatch = GsonUtils.fromJson(matchJson, Match.class);
         }
     }
 
@@ -122,7 +105,7 @@ public class PlayerListFragment extends BaseFragment {
         super.onResume();
         EventBus.getDefault().register(this);
         if (mAdapter == null) {
-            mAdapter = new PlayerListAdapter(mLeagueId);
+            mAdapter = new MatchPlayerQueueAdapter(mMatch);
             mRecyclerView.setAdapter(mAdapter);
         } else {
             mRecyclerView.setAdapter(mAdapter);
@@ -145,56 +128,12 @@ public class PlayerListFragment extends BaseFragment {
     public void OnPlayerSelectedEvent(final PlayerClickedEvent event) {
         if (mListener != null) {
             mListener.onPlayerSelected(event.player);
-            mAdapter.updatePlayer(event.player);
         }
-    }
-
-    public List<Integer> getSelectedPlayers() {
-        return mAdapter.getSelectedPlayersIndexes();
-    }
-
-    @Subscribe
-    public void OnPlayerSelectionActivated(PlayerLongClickEvent event) {
-        mAdapter.setSelectionMode(true);
-    }
-
-    public void setPlayers(List<Player> players) {
-        mAdapter.clear();
-        mAdapter.addItems(players);
-    }
-
-    public void loadPlayersFromCache() {
-        mAdapter.clear();
-        HashMap<String, Player> currentLeaguePlayers = PlayersCache.getCurrentLeaguePlayers();
-        mAdapter.addItems(currentLeaguePlayers.values());
-    }
-
-    public void teamSelected() {
-        mAdapter.clearSelection();
-        mAdapter.notifyDataSetChanged();
-        mAdapter.setSelectionMode(false);
-    }
-
-    public void setPlayerSelectionEnabled(boolean enabled) {
-        mAdapter.setPlayerSelectionEnabled(enabled);
-    }
-
-    @Subscribe
-    public void onPlayerUpdatedEvent(Player player) {
-        mAdapter.updatePlayer(player);
     }
 
     public void setListener(
             OnPlayerSelectedListener mListener) {
         this.mListener = mListener;
-    }
-
-    public void setShowCheckInIcons(boolean showCheckInIcons, Match match) {
-        mAdapter.enableCheckInIcons(showCheckInIcons, match);
-    }
-
-    public void updateMatch(Match match) {
-        mAdapter.enableCheckInIcons(true, match);
     }
 
     public interface OnPlayerSelectedListener {

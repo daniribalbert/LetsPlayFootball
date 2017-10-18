@@ -142,6 +142,10 @@ public class Player {
 
     @Exclude
     public boolean isGuest() {
+        // New guest player won't have a name yet.
+        if (TextUtils.isEmpty(name)){
+            return true;
+        }
         Set<String> keys = this.leagues.keySet();
         if (keys.isEmpty()) {
             return false;

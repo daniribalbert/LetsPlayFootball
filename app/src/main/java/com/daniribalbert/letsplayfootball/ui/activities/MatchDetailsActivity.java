@@ -3,22 +3,12 @@ package com.daniribalbert.letsplayfootball.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.support.v4.app.Fragment;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentPostMatch;
-import com.daniribalbert.letsplayfootball.ui.fragments.DialogFragmentViewMatch;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.daniribalbert.letsplayfootball.utils.GsonUtils;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.google.firebase.database.DataSnapshot;
+import com.daniribalbert.letsplayfootball.ui.fragments.MatchDetailsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,38 +16,10 @@ import butterknife.ButterKnife;
 /**
  * Activity to show details of an Match.
  */
-public class MatchDetailsActivity extends BaseActivity implements View.OnClickListener {
-
-    @BindView(R.id.match_card_view)
-    View mMatchCardView;
-
-    @BindView(R.id.match_card_image)
-    ImageView mMatchImageView;
-
-    @BindView(R.id.match_card_time)
-    TextView mMatchCardTime;
-
-    @BindView(R.id.match_card_day)
-    TextView mMatchCardDay;
-
-    @BindView(R.id.match_teams_bt)
-    View mTeamsBt;
+public class MatchDetailsActivity extends BaseActivity  {
 
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
-
-    @BindView(R.id.tv_check_in_closed)
-    TextView mTvCheckinClosed;
-
-    @BindView(R.id.bt_check_in)
-    Button mBtCheckIn;
-
-    @BindView(R.id.bt_not_going)
-    Button mBtNotGoing;
-
-    @BindView(R.id.match_user_check_in_layout)
-    View mMatchCheckInLayout;
-
 
     protected String mLeagueId;
     protected String mMatchId;
@@ -67,17 +29,18 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_match_details);
+        setContentView(R.layout.activity_league);
         ButterKnife.bind(this);
-        setupListeners();
         loadArgs(getIntent());
+        if (savedInstanceState == null) {
+            loadFragment();
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mProgressBar.setVisibility(View.VISIBLE);
-        loadMatchData();
+    protected void loadFragment() {
+        Fragment frag = MatchDetailsFragment.newInstance(mMatchId, mLeagueId, mPlayerId);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, frag,
+                                                               MatchDetailsFragment.TAG).commit();
     }
 
     private void loadArgs(final Intent intent) {
@@ -88,96 +51,4 @@ public class MatchDetailsActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
-    protected void setupListeners() {
-        mMatchCardView.setOnClickListener(this);
-        mBtCheckIn.setOnClickListener(this);
-        mBtNotGoing.setOnClickListener(this);
-        mTeamsBt.setOnClickListener(this);
-    }
-
-    protected void loadMatchData() {
-        MatchDbUtils.getMatch(mLeagueId, mMatchId, new BaseValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mMatch = dataSnapshot.getValue(Match.class);
-
-                if (mMatch != null) {
-                    updateMatchLayout();
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void updateMatchLayout() {
-        GlideUtils.loadCircularImage(mMatch.getImage(), mMatchImageView);
-        mMatchCardDay.setText(mMatch.getDateString(mMatch.time));
-        mMatchCardTime.setText(mMatch.getTimeStr(mMatch.time));
-        updateCheckInLayout();
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.match_card_view:
-                showMatchDialog();
-                break;
-            case R.id.match_teams_bt:
-                startActivity(getTeamsActivityIntent());
-                break;
-            case R.id.bt_check_in:
-                MatchDbUtils.markCheckIn(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
-            case R.id.bt_not_going:
-                MatchDbUtils.markCheckOut(mMatch, mPlayerId);
-                updateCheckInLayout();
-                break;
-        }
-    }
-
-    protected Intent getTeamsActivityIntent() {
-        Intent intent = new Intent(this, TeamsActivity.class);
-        intent.putExtra(ARGS_LEAGUE_ID, mLeagueId);
-        intent.putExtra(TeamsActivity.ARG_MATCH, GsonUtils.toJson(mMatch));
-        return intent;
-    }
-
-    protected void showMatchDialog() {
-        String userId = getCurrentUser().getUid();
-        if (mMatch.isPastMatch()) {
-            DialogFragmentPostMatch dFrag = DialogFragmentPostMatch
-                    .newInstance(mLeagueId, mMatchId, userId);
-            dFrag.show(getSupportFragmentManager(), DialogFragmentPostMatch.TAG);
-        } else {
-            DialogFragmentViewMatch dFrag = DialogFragmentViewMatch
-                    .newInstance(mLeagueId, mMatchId, userId);
-            dFrag.show(getSupportFragmentManager(), DialogFragmentViewMatch.TAG);
-        }
-    }
-
-    protected void updateCheckInLayout() {
-        if (mMatch.isCheckInOpen()) {
-            mBtCheckIn.setVisibility(View.VISIBLE);
-            mBtNotGoing.setVisibility(View.VISIBLE);
-            mTvCheckinClosed.setVisibility(View.GONE);
-
-            boolean isCheckedIn = mMatch.isCheckedIn(mPlayerId);;
-            if (isCheckedIn) {
-                mBtCheckIn.setEnabled(false);
-                mBtNotGoing.setEnabled(true);
-            } else {
-                mBtCheckIn.setEnabled(true);
-                mBtNotGoing.setEnabled(false);
-            }
-        } else {
-            mBtCheckIn.setVisibility(View.GONE);
-            mBtNotGoing.setVisibility(View.GONE);
-            if (mMatch.isPastMatch()) {
-                mTvCheckinClosed.setVisibility(View.GONE);
-            } else {
-                mTvCheckinClosed.setVisibility(View.VISIBLE);
-            }
-        }
-    }
 }

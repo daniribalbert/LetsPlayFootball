@@ -107,7 +107,8 @@ public class TeamsActivity extends BaseActivity {
 
         // Sort and remove players which exceed Match players limit.
         LinkedList<Player> sortedList = mMatch.sortPlayersByCheckIn(allPlayersMap.values());
-        while (sortedList.size() > mMatch.maxPlayers && mMatch.maxPlayers > 1) {
+        while (sortedList.size() > mMatch.getMaxPlayers()
+                && mMatch.getMaxPlayers() != Match.NUMBER_OF_PLAYERS_UNDEFINED) {
             sortedList.removeLast();
         }
         mAllPlayersList.addAll(sortedList);

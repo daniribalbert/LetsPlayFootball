@@ -157,6 +157,10 @@ public class Match implements Comparable {
         return Integer.MIN_VALUE;
     }
 
+    public int getMaxPlayers() {
+        return maxPlayers >= MIN_PLAYERS && maxPlayers <= MAX_PLAYERS ? maxPlayers : NUMBER_OF_PLAYERS_UNDEFINED;
+    }
+
     @Exclude
     public String getMaxPlayersText() {
         return (maxPlayers > 0)

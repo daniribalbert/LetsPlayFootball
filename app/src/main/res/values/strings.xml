@@ -79,7 +79,8 @@
     <string name="teams">Teams</string>
     <string name="all_players">All Players</string>
     <string name="max_players">Max Players</string>
-    <string name="dialog_choose_max_players">Select maximum number of players</string>
+    <string name="manage_match_guests">Manage Guests</string>
+    <string name="waiting_list">Waiting List</string>
 
 
     <!-- Strings that goes with Dialogs -->
@@ -97,5 +98,8 @@
     <string name="dialog_league_add_manager_msg">Add %1$s as admin of %2$s?</string>
     <string name="dialog_league_remove_manager_title">Remove admin?</string>
     <string name="dialog_league_remove_manager_msg">Remove %1$s as admin of %2$s?</string>
+    <string name="dialog_choose_max_players">Select maximum number of players</string>
+    <string name="dialog_confirm_check_in">Confirm check-in for %1$s?</string>
+    <string name="dialog_confirm_check_out">Confirm remove %1$s from current match?</string>
 
 </resources>
