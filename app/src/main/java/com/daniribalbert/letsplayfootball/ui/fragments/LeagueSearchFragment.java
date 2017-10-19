@@ -10,18 +10,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
+import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -45,6 +51,9 @@ public class LeagueSearchFragment extends MyLeaguesFragment
 
     @BindView(R.id.search_edit_text)
     EditText mSearchText;
+
+    @BindView(R.id.app_progress)
+    protected ProgressBar mProgressBar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,6 +89,7 @@ public class LeagueSearchFragment extends MyLeaguesFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSearchText.setOnEditorActionListener(this);
+        setProgress(mProgressBar);
     }
 
     private void searchLeague() {
@@ -115,5 +125,25 @@ public class LeagueSearchFragment extends MyLeaguesFragment
     @OnClick(R.id.ic_search)
     public void searchIconClicked(){
         searchLeague();
+    }
+
+    @Override
+    @Subscribe
+    public void OnLeagueSelectedEvent(final OpenLeagueEvent event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_join_league_title);
+        builder.setMessage(R.string.dialog_join_league_msg);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                FirebaseUser currentUser = getBaseActivity().getCurrentUser();
+                Player currentPlayer = Player.fromFirebase(currentUser);
+                JoinLeagueRequest request = new JoinLeagueRequest(event.getLeague(), currentPlayer, currentPlayer.id);
+                RequestsDbUtils.sendRequestToJoinLeague(request);
+                mAdapter.removeItem(event.getLeague());
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
     }
 }

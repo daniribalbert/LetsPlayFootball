@@ -13,11 +13,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
+import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
+import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -108,7 +114,11 @@ public class PlayerSearchFragment extends PlayerListFragment
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                PlayerDbUtils.addLeague(player.id, mLeagueId);
+                League league = LeagueCache.getLeagueInfo(mLeagueId);
+                FirebaseUser currentUser = getBaseActivity().getCurrentUser();
+                Player currentPlayer = Player.fromFirebase(currentUser);
+                JoinLeagueRequest request = new JoinLeagueRequest(league, currentPlayer, player.id);
+                RequestsDbUtils.sendRequestToJoinLeague(request);
                 mAdapter.removeItem(player);
             }
         });

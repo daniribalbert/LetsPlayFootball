@@ -103,6 +103,12 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public void removeItem(SimpleLeague league) {
+        int i = mValues.indexOf(league);
+        mValues.remove(i);
+        notifyItemRemoved(i);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.league_card_view)
         CardView mCardView;

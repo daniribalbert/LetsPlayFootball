@@ -80,14 +80,14 @@ public class MyLeaguesFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onStart() {
+        super.onStart();
         EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onStop() {
+        super.onStop();
         EventBus.getDefault().unregister(this);
     }
 
@@ -148,7 +148,7 @@ public class MyLeaguesFragment extends BaseFragment {
     }
 
     @Subscribe
-    public void OnLeagueSelectedEvent(OpenLeagueEvent event) {
+    public void OnLeagueSelectedEvent(final OpenLeagueEvent event) {
         SimpleLeague currentLeague = event.getLeague();
 
         Intent intent = new Intent(getActivity(), LeagueActivity.class);

@@ -10,6 +10,7 @@
     <string name="drawer_upcoming_matches">Upcoming Matches</string>
     <string name="drawer_home">Home</string>
     <string name="drawer_profile">Profile</string>
+    <string name="drawer_pending_requests">Pending Requests</string>
     <string name="auth_failed">Authentication Failed!</string>
     <string name="title_activity_login">Sign in</string>
     <string name="create">Create</string>
@@ -29,6 +30,9 @@
     <string name="Add_non_registered_player">Add new Guest Player</string>
     <string name="search_players">Search Players</string>
     <string name="goalkeeper">Goalkeeper</string>
+    <string name="request_player_join_league">Join %1$s?</string>
+    <string name="request_manage_player_join_league">Add %1$s to %2$s?</string>
+    <string name="accept">Accept</string>
 
 
     <!-- Strings related to user Profile -->
@@ -107,5 +111,7 @@
 
     <!-- Content description strings -->
     <string name="content_desc_search">Search</string>
+    <string name="dialog_join_league_title">Join</string>
+    <string name="dialog_join_league_msg">Send request to join league?</string>
 
 </resources>

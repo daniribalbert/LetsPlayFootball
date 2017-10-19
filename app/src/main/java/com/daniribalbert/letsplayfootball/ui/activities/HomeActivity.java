@@ -22,6 +22,7 @@ import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchHistoryFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchUpcomingFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -128,6 +129,12 @@ public class HomeActivity extends BaseActivity
                 tag = ProfileFragment.TAG;
                 mFab.setImageResource(android.R.drawable.ic_menu_edit);
                 mFab.setVisibility(View.VISIBLE);
+                break;
+            case R.id.nav_pending_requests:
+                frag = PendingRequestsFragment.newInstance();
+                ((BaseFragment) frag).setProgress(mProgressBar);
+                tag = PendingRequestsFragment.TAG;
+                mFab.setVisibility(View.GONE);
                 break;
             case R.id.nav_upcoming_matches:
                 frag = MatchUpcomingFragment.newInstance();
