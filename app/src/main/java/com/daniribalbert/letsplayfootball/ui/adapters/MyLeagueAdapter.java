@@ -98,6 +98,11 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
         notifyItemRangeInserted(itemCount, leagues.size());
     }
 
+    public void clear() {
+        mValues.clear();
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.league_card_view)
         CardView mCardView;

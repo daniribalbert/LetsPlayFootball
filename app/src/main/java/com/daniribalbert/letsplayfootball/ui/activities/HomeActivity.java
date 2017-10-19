@@ -18,19 +18,20 @@ import android.widget.ProgressBar;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
+import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchHistoryFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchUpcomingFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class HomeActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String DRAWER_ITEM = "DRAWER_ITEM";
 
@@ -40,6 +41,15 @@ public class HomeActivity extends BaseActivity
 
     @BindView(R.id.fab)
     FloatingActionButton mFab;
+
+    @BindView(R.id.fab_menu_1)
+    FloatingActionButton mFab1;
+
+    @BindView(R.id.fab_menu_2)
+    FloatingActionButton mFab2;
+
+    @BindView(R.id.fab_menu_layout)
+    View mFabMenuLayout;
 
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
@@ -54,10 +64,9 @@ public class HomeActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mFab.setOnClickListener(this);
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -71,8 +80,8 @@ public class HomeActivity extends BaseActivity
             MyLeaguesFragment frag = MyLeaguesFragment.newInstance();
             frag.setProgress(mProgressBar);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
-                    .commit();
+                                       .add(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
+                                       .commit();
         }
     }
 
@@ -109,26 +118,26 @@ public class HomeActivity extends BaseActivity
         switch (mSelectedDrawerItemId) {
             case R.id.nav_home:
                 frag = MyLeaguesFragment.newInstance();
-                ((BaseFragment)frag).setProgress(mProgressBar);
+                ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = MyLeaguesFragment.TAG;
                 mFab.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_profile:
                 frag = ProfileFragment.newInstance(getCurrentUser());
-                ((BaseFragment)frag).setProgress(mProgressBar);
+                ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = ProfileFragment.TAG;
                 mFab.setImageResource(android.R.drawable.ic_menu_edit);
                 mFab.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_upcoming_matches:
                 frag = MatchUpcomingFragment.newInstance();
-                ((BaseFragment)frag).setProgress(mProgressBar);
+                ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = MatchUpcomingFragment.TAG;
                 mFab.setVisibility(View.GONE);
                 break;
             case R.id.nav_history:
                 frag = MatchHistoryFragment.newInstance();
-                ((BaseFragment)frag).setProgress(mProgressBar);
+                ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = MatchHistoryFragment.TAG;
                 mFab.setVisibility(View.GONE);
                 break;
@@ -155,14 +164,29 @@ public class HomeActivity extends BaseActivity
         return true;
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.fab:
-                EventBus.getDefault().post(new FabClickedEvent(mFab));
-                break;
-            default:
-                LogUtils.w("Button not found!");
+    @OnClick(R.id.fab)
+    public void toggleFabMenu() {
+        if (mFabMenuLayout.getVisibility() == View.VISIBLE){
+            mFabMenuLayout.setVisibility(View.GONE);
+            mFab.setImageResource(R.drawable.ic_add);
+        } else {
+            mFabMenuLayout.setVisibility(View.VISIBLE);
+            mFab.setImageResource(R.drawable.ic_close);
         }
     }
+
+    @OnClick(R.id.fab_menu_1)
+    public void searchForLeague() {
+        toggleFabMenu();
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.ARGS_TAG, LeagueSearchFragment.TAG);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.fab_menu_2)
+    public void addNewLeague() {
+        toggleFabMenu();
+        EventBus.getDefault().post(new FabClickedEvent(mFab));
+    }
+
 }

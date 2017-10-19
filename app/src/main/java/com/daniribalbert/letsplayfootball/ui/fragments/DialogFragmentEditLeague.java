@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class DialogFragmentEditLeague extends DialogFragmentViewLeague implement
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSaveLeague.setOnClickListener(this);
+        mSaveLeague.setText(R.string.save);
         mLeagueImage.setOnClickListener(this);
         Bundle args = getArguments();
         if (savedInstanceState == null) {
@@ -83,7 +85,13 @@ public class DialogFragmentEditLeague extends DialogFragmentViewLeague implement
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_save_league:
-                mLeague.title = mLeagueTitle.getText().toString();
+                String leagueTitle = mLeagueTitle.getText().toString();
+                if (TextUtils.isEmpty(leagueTitle)){
+                    ToastUtils.show(R.string.error_league_no_title, Toast.LENGTH_SHORT);
+                    mLeagueTitle.setError(getString(R.string.error_field_required));
+                    return;
+                }
+                mLeague.title = leagueTitle;
                 mLeague.description = mLeagueDescription.getText().toString();
 
                 if (mImageUri == null) {

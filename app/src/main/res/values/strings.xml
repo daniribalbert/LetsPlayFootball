@@ -52,6 +52,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="error_cannot_remove_last_league_admin">League must have at least one Admin.</string>
     <string name="error_add_guest_as_manager">This player does not have an account on the app!</string>
+    <string name="error_league_no_title">Error! Missing League title</string>
 
     <!-- Strings related to settings screen -->
     <string name="settings_category_social">Social</string>
@@ -60,6 +61,7 @@
 
     <!-- Input hint text Strings -->
     <string name="hint_search_players">Search Players</string>
+    <string name="hint_search_league">Search Leagues</string>
     <string name="hint_add_player">Add new player</string>
     <string name="hint_add_upcoming_match">Add upcoming match</string>
     <string name="hint_match_description">Ryan Giggs scored a hat-trick.\nScholes received a yellow card.</string>
@@ -67,6 +69,7 @@
     <string name="hint_player_name">Pavel Nedvěd</string>
     <string name="hint_player_nickname">Nedved</string>
     <string name="hint_player_search">Del Piero</string>
+    <string name="hint_league_search">Champions League</string>
     <string name="hint_league_name">Major League</string>
 
 
@@ -101,5 +104,8 @@
     <string name="dialog_choose_max_players">Select maximum number of players</string>
     <string name="dialog_confirm_check_in">Confirm check-in for %1$s?</string>
     <string name="dialog_confirm_check_out">Confirm remove %1$s from current match?</string>
+
+    <!-- Content description strings -->
+    <string name="content_desc_search">Search</string>
 
 </resources>

@@ -17,12 +17,12 @@ import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
+import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsManagerActivity;
+import com.daniribalbert.letsplayfootball.ui.activities.SearchActivity;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.OnClick;
@@ -209,13 +209,10 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
 
     @OnClick(R.id.league_search_players_bt)
     public void onSearchForPlayers(){
-        PlayerSearchFragment playerSearchFragment = PlayerSearchFragment
-                .newInstance(mLeague.id);
-        playerSearchFragment.setProgress(mProgressBar);
-        getFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, playerSearchFragment,
-                                            PlayerSearchFragment.TAG)
-                                   .addToBackStack(PlayerSearchFragment.TAG).commit();
+        Intent intent = new Intent(getActivity(), SearchActivity.class);
+        intent.putExtra(SearchActivity.ARGS_TAG, PlayerSearchFragment.TAG);
+        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeague.id);
+        startActivity(intent);
     }
 
     protected Intent getMatchDetailsIntent() {

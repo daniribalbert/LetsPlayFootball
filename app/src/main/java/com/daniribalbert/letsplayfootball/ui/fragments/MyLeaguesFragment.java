@@ -46,7 +46,7 @@ public class MyLeaguesFragment extends BaseFragment {
 
     @BindView(R.id.my_league_recyclerview)
     RecyclerView mRecyclerView;
-    private MyLeagueAdapter mAdapter;
+    protected MyLeagueAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -103,7 +103,7 @@ public class MyLeaguesFragment extends BaseFragment {
         }
     }
 
-    private void loadData() {
+    protected void loadData() {
         showProgress(true);
         PlayerDbUtils.getPlayer(getBaseActivity().getCurrentUser().getUid(),
                                 new BaseValueEventListener() {

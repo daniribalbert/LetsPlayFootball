@@ -13,14 +13,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
+import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.database.DataSnapshot;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import butterknife.BindView;
@@ -28,12 +36,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
- * A fragment where the user can search for a list of Player.
+ * A fragment where the user can search for a list of Leagues.
  */
-public class PlayerSearchFragment extends PlayerListFragment
+public class LeagueSearchFragment extends MyLeaguesFragment
         implements TextView.OnEditorActionListener {
 
-    public static final String TAG = PlayerSearchFragment.class.getSimpleName();
+    public static final String TAG = LeagueSearchFragment.class.getSimpleName();
 
     @BindView(R.id.search_edit_text)
     EditText mSearchText;
@@ -42,21 +50,18 @@ public class PlayerSearchFragment extends PlayerListFragment
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public PlayerSearchFragment() {
+    public LeagueSearchFragment() {
     }
 
     /**
-     * Creates a new instance of PlayerListFragment with a list of players based from the League
-     * with the given leagueId.
-     *
-     * @param leagueId league_id of the League which players will be loaded.
+     * Creates a new instance of LeagueSearchFragment.
+     * *
      *
      * @return new instance of this Fragment.
      */
-    public static PlayerSearchFragment newInstance(String leagueId) {
+    public static LeagueSearchFragment newInstance() {
         Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
-        PlayerSearchFragment fragment = new PlayerSearchFragment();
+        LeagueSearchFragment fragment = new LeagueSearchFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
         return fragment;
@@ -65,7 +70,7 @@ public class PlayerSearchFragment extends PlayerListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_search_player, container, false);
+        final View view = inflater.inflate(R.layout.fragment_search_league, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
         return view;
@@ -77,58 +82,38 @@ public class PlayerSearchFragment extends PlayerListFragment
         mSearchText.setOnEditorActionListener(this);
     }
 
-    private void searchPlayer() {
+    private void searchLeague() {
         showProgress(true);
 
         String searchQuery = mSearchText.getText().toString();
         mAdapter.clear();
-        LogUtils.i("Searching for players with name/nickname: " + searchQuery);
-        PlayerDbUtils.searchPlayers(searchQuery, new SearchListener<Player>() {
+        LogUtils.i("Searching for Leagues with name: " + searchQuery);
+        LeagueDbUtils.searchLeague(searchQuery, new LeagueDbUtils.LeagueSearchListener() {
             @Override
-            public void onDataReceived(Set<Player> results) {
-                for (Player player : results) {
-                    if (player.leagues.containsKey(mLeagueId)){
-                        results.remove(player);
-                    }
-                }
-                mAdapter.addItems(results);
+            public void onLeagueSearchResult(List<SimpleLeague> leagues) {
+                mAdapter.addItems(leagues);
                 showProgress(false);
             }
-
         });
-    }
-
-    @Subscribe
-    @Override
-    public void OnPlayerSelectedEvent(final PlayerClickedEvent event) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_add_player_title);
-        final Player player = event.player;
-        builder.setMessage(getString(R.string.dialog_add_player_message, player.name));
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                PlayerDbUtils.addLeague(player.id, mLeagueId);
-                mAdapter.removeItem(player);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, null);
-
-        builder.show();
     }
 
     @Override
     public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
         switch (actionId) {
             case EditorInfo.IME_ACTION_SEARCH:
-                searchPlayer();
+                searchLeague();
                 break;
         }
         return true;
     }
 
+    @Override
+    protected void loadData() {
+        //DO NOTHING
+    }
+
     @OnClick(R.id.ic_search)
     public void searchIconClicked(){
-        searchPlayer();
+        searchLeague();
     }
 }

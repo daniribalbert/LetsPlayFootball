@@ -107,8 +107,8 @@ public class PlayerDbUtils {
                 for (DataSnapshot next : dataSnapshot.getChildren()) {
                     Player player = next.getValue(Player.class);
                     if (player != null
-                            && (player.name.startsWith(searchQuery)
-                            || player.nickname.startsWith(searchQuery))) {
+                            && (player.getName().startsWith(searchQuery)
+                            || player.getNickname().startsWith(searchQuery))) {
                         result.add(player);
                     }
                 }
