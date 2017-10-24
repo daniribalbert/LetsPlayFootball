@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
@@ -24,8 +25,6 @@ import butterknife.ButterKnife;
 public class ProfileViewFragment extends BaseFragment {
 
     public static final String TAG = ProfileViewFragment.class.getSimpleName();
-
-    public static String ARGS_PLAYER = "ARGS_PLAYER";
 
     @BindView(R.id.profile_pic)
     ImageView mProfilePic;
@@ -43,7 +42,7 @@ public class ProfileViewFragment extends BaseFragment {
         Bundle args = new Bundle();
 
         String playerJson = GsonUtils.toJson(player);
-        args.putString(ARGS_PLAYER, playerJson);
+        args.putString(IntentConstants.ARGS_PLAYER_JSON, playerJson);
 
         ProfileViewFragment fragment = new ProfileViewFragment();
         fragment.setArguments(args);
@@ -56,7 +55,7 @@ public class ProfileViewFragment extends BaseFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            String playerJsonStr = args.getString(ARGS_PLAYER);
+            String playerJsonStr = args.getString(IntentConstants.ARGS_PLAYER_JSON);
             this.mPlayer = GsonUtils.fromJson(playerJsonStr, Player.class);
         }
     }

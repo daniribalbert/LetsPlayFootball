@@ -10,20 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.MatchPlayerQueueAdapter;
-import com.daniribalbert.letsplayfootball.ui.adapters.PlayerListAdapter;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
-import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.HashMap;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +29,6 @@ import butterknife.ButterKnife;
 public class MatchPlayerQueueFragment extends BaseFragment {
 
     public static final String TAG = MatchPlayerQueueFragment.class.getSimpleName();
-    public static final String ARGS_MATCH = "ARGS_MATCH";
 
     @BindView(R.id.players_recyclerview)
     RecyclerView mRecyclerView;
@@ -60,7 +54,7 @@ public class MatchPlayerQueueFragment extends BaseFragment {
      */
     public static MatchPlayerQueueFragment newInstance(Match match) {
         Bundle args = new Bundle();
-        args.putString(ARGS_MATCH, GsonUtils.toJson(match));
+        args.putString(IntentConstants.ARGS_MATCH_JSON, GsonUtils.toJson(match));
         MatchPlayerQueueFragment fragment = new MatchPlayerQueueFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
@@ -78,7 +72,7 @@ public class MatchPlayerQueueFragment extends BaseFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            String matchJson = args.getString(ARGS_MATCH);
+            String matchJson = args.getString(IntentConstants.ARGS_MATCH_JSON);
             mMatch = GsonUtils.fromJson(matchJson, Match.class);
         }
     }

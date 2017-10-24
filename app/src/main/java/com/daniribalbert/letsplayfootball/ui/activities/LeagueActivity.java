@@ -10,6 +10,7 @@ import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.LeagueDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsManagerFragment;
@@ -22,8 +23,6 @@ import butterknife.ButterKnife;
  * Activity which handles League viewing and edition feature.
  */
 public class LeagueActivity extends BaseActivity {
-
-    public static final String LEAGUE_TITLE = "LEAGUE_TITLE";
 
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
@@ -50,8 +49,8 @@ public class LeagueActivity extends BaseActivity {
             return;
         }
 
-        setTitle(intent.getStringExtra(LEAGUE_TITLE));
-        mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
+        setTitle(intent.getStringExtra(IntentConstants.ARGS_LEAGUE_TITLE));
+        mLeagueId = intent.getStringExtra(IntentConstants.ARGS_LEAGUE_ID);
     }
 
     private void loadLeague() {

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
@@ -17,13 +16,12 @@ import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEvent
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.views.LeagueCardView;
 import com.daniribalbert.letsplayfootball.ui.views.MatchCardView;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
@@ -42,8 +40,6 @@ import butterknife.OnClick;
 public class LeagueDetailsFragment extends BaseFragment {
 
     public static final String TAG = LeagueDetailsFragment.class.getSimpleName();
-
-    protected static final String ARGS_LEAGUE = "ARGS_LEAGUE";
 
     @BindView(R.id.league_upcoming_match_layout)
     View mUpcomingMatchLayout;
@@ -75,7 +71,7 @@ public class LeagueDetailsFragment extends BaseFragment {
     public static LeagueDetailsFragment newInstance(League league) {
         Bundle args = new Bundle();
         String leagueJson = GsonUtils.toJson(league);
-        args.putString(ARGS_LEAGUE, leagueJson);
+        args.putString(IntentConstants.ARGS_LEAGUE_JSON, leagueJson);
 
         LeagueDetailsFragment frag = new LeagueDetailsFragment();
         frag.setArguments(args);
@@ -90,7 +86,7 @@ public class LeagueDetailsFragment extends BaseFragment {
 
     private void loadArgs() {
         Bundle args = getArguments();
-        mLeague = GsonUtils.fromJson(args.getString(ARGS_LEAGUE), League.class);
+        mLeague = GsonUtils.fromJson(args.getString(IntentConstants.ARGS_LEAGUE_JSON), League.class);
     }
 
     @Nullable
@@ -130,6 +126,9 @@ public class LeagueDetailsFragment extends BaseFragment {
         MatchDbUtils.getUpcomingMatch(mLeague.id, new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!isAdded()){
+                    return;
+                }
                 for (DataSnapshot next : dataSnapshot.getChildren()) {
                     mMatch = next.getValue(Match.class);
                     if (mMatch != null) {
@@ -206,9 +205,9 @@ public class LeagueDetailsFragment extends BaseFragment {
         String currentUserId = getBaseActivity().getCurrentUser().getUid();
 
         Intent intent = getMatchDetailsIntent();
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeague.id);
-        intent.putExtra(BaseActivity.ARGS_MATCH_ID, mMatch.id);
-        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, currentUserId);
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, mLeague.id);
+        intent.putExtra(IntentConstants.ARGS_MATCH_ID, mMatch.id);
+        intent.putExtra(IntentConstants.ARGS_PLAYER_ID, currentUserId);
         startActivity(intent);
     }
 

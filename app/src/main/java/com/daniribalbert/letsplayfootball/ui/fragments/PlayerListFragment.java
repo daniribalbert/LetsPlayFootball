@@ -14,6 +14,7 @@ import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.adapters.PlayerListAdapter;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 
@@ -32,8 +33,6 @@ import butterknife.ButterKnife;
 public class PlayerListFragment extends BaseFragment {
 
     public static final String TAG = PlayerListFragment.class.getSimpleName();
-
-    public static final String LEAGUE_ID = "LEAGUE_ID";
 
     @BindView(R.id.players_recyclerview)
     RecyclerView mRecyclerView;
@@ -60,7 +59,7 @@ public class PlayerListFragment extends BaseFragment {
      */
     public static PlayerListFragment newInstance(String leagueId) {
         Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
+        args.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
         PlayerListFragment fragment = new PlayerListFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
@@ -78,7 +77,7 @@ public class PlayerListFragment extends BaseFragment {
      */
     public static PlayerListFragment newInstance(String leagueId, String matchId) {
         Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
+        args.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
         PlayerListFragment fragment = new PlayerListFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
@@ -96,7 +95,7 @@ public class PlayerListFragment extends BaseFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            mLeagueId = args.getString(LEAGUE_ID);
+            mLeagueId = args.getString(IntentConstants.ARGS_LEAGUE_ID);
         }
     }
 

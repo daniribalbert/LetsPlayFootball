@@ -20,6 +20,7 @@ import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.activities.LeagueActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.EditLeagueEvent;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.events.OpenLeagueEvent;
@@ -152,8 +153,8 @@ public class MyLeaguesFragment extends BaseFragment {
         SimpleLeague currentLeague = event.getLeague();
 
         Intent intent = new Intent(getActivity(), LeagueActivity.class);
-        intent.putExtra(LeagueActivity.ARGS_LEAGUE_ID, currentLeague.league_id);
-        intent.putExtra(LeagueActivity.LEAGUE_TITLE, currentLeague.title);
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, currentLeague.league_id);
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_TITLE, currentLeague.title);
         startActivity(intent);
     }
 

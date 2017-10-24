@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.MatchDetailsFragment;
 
 import butterknife.BindView;
@@ -45,9 +46,9 @@ public class MatchDetailsActivity extends BaseActivity  {
 
     private void loadArgs(final Intent intent) {
         if (intent != null) {
-            mMatchId = intent.getStringExtra(ARGS_MATCH_ID);
-            mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
-            mPlayerId = intent.getStringExtra(ARGS_PLAYER_ID);
+            mMatchId = intent.getStringExtra(IntentConstants.ARGS_MATCH_ID);
+            mLeagueId = intent.getStringExtra(IntentConstants.ARGS_LEAGUE_ID);
+            mPlayerId = intent.getStringExtra(IntentConstants.ARGS_PLAYER_ID);
         }
     }
 

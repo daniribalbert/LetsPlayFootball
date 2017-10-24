@@ -4,32 +4,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
-import com.daniribalbert.letsplayfootball.ui.activities.TeamsActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.TeamsManagerActivity;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
-import com.google.firebase.database.DataSnapshot;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Fragment to show a Match details options.
@@ -40,9 +28,9 @@ public class MatchDetailsManagerFragment extends MatchDetailsFragment {
     public static MatchDetailsManagerFragment newInstance(String matchId, String leagueId,
                                                           String playerId) {
         Bundle args = new Bundle();
-        args.putString(BaseActivity.ARGS_MATCH_ID, matchId);
-        args.putString(BaseActivity.ARGS_LEAGUE_ID, leagueId);
-        args.putString(BaseActivity.ARGS_PLAYER_ID, playerId);
+        args.putString(IntentConstants.ARGS_MATCH_ID, matchId);
+        args.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
+        args.putString(IntentConstants.ARGS_PLAYER_ID, playerId);
 
         MatchDetailsManagerFragment fragment = new MatchDetailsManagerFragment();
         fragment.setArguments(args);
@@ -73,8 +61,8 @@ public class MatchDetailsManagerFragment extends MatchDetailsFragment {
     @Override
     protected Intent getTeamsActivityIntent() {
         Intent intent = new Intent(getActivity(), TeamsManagerActivity.class);
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeagueId);
-        intent.putExtra(TeamsActivity.ARG_MATCH, GsonUtils.toJson(mMatch));
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, mLeagueId);
+        intent.putExtra(IntentConstants.ARGS_MATCH_JSON, GsonUtils.toJson(mMatch));
         return intent;
     }
 

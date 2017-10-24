@@ -2,49 +2,53 @@ package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
-import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
-import com.daniribalbert.letsplayfootball.utils.GsonUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class TeamsManagerActivity extends TeamsActivity implements View.OnClickListener {
+public class TeamsManagerActivity extends TeamsActivity {
 
     private boolean mSelectionMode;
 
+    @BindView(R.id.teams_fab_toggle)
+    FloatingActionButton mFabMain;
+
+    @BindView(R.id.teams_fab_random)
+    FloatingActionButton mFabRandom;
+
+    @BindView(R.id.teams_fab_new_team)
+    FloatingActionButton mFabNewTeam;
+
     @Override
     protected void setupViewMode() {
-        mFab.setVisibility(View.VISIBLE);
-        mFab.setOnClickListener(this);
+        mFabLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -59,17 +63,56 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.fab:
-                if (mSelectionMode) {
-                    promptSelectTeamToAddPlayers();
-                } else {
-                    promptAddTeam();
-                }
-                break;
+    @OnClick(R.id.teams_fab_toggle)
+    public void onFabMainButton() {
+        if (mSelectionMode) {
+            PlayerListFragment currentFragment = mSectionsPagerAdapter.getCurrentFragment();
+            List<Integer> selectedPlayersIndexes = currentFragment.getSelectedPlayers();
+            if (selectedPlayersIndexes.size() > 0) {
+                promptSelectTeamToAddPlayers(selectedPlayersIndexes);
+            } else {
+                updateSelectionMode(false);
+            }
+        } else {
+            toggleFabMenu(!(mFabNewTeam.getVisibility() == View.VISIBLE));
         }
+    }
+
+    private void toggleFabMenu(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.GONE;
+        mFabNewTeam.setVisibility(visibility);
+        mFabRandom.setVisibility(visibility);
+
+        int drawable = visible ? R.drawable.ic_close : R.drawable.ic_add;
+        mFabMain.setImageResource(drawable);
+    }
+
+
+    @OnClick(R.id.teams_fab_random)
+    protected void promptRandomTeams() {
+        toggleFabMenu(false);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_sort_teams_title)
+                .setMessage(R.string.dialog_sort_teams_message)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sortTeams(true);
+                    }
+                }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sortTeams(false);
+                    }
+                }).setNeutralButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    private void sortTeams(boolean includeGoalkeepers) {
+        mMatch.sortTeams(includeGoalkeepers);
+        mSectionsPagerAdapter.notifyDataSetChanged();
+        mViewPager.setCurrentItem(1);
     }
 
     @Override
@@ -101,7 +144,9 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
         builder.show();
     }
 
-    private void promptAddTeam() {
+    @OnClick(R.id.teams_fab_new_team)
+    protected void promptAddTeam() {
+        toggleFabMenu(false);
         final EditText teamNameInput = new EditText(this);
         teamNameInput.setLines(1);
         teamNameInput.setMaxLines(1);
@@ -129,9 +174,7 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
         mSectionsPagerAdapter.getCurrentFragment().setPlayerSelectionEnabled(true);
     }
 
-    private void addSelectionToTeam(String teamName) {
-        PlayerListFragment currentFragment = mSectionsPagerAdapter.getCurrentFragment();
-        List<Integer> selectedPlayersIndexes = currentFragment.getSelectedPlayers();
+    private void addSelectionToTeam(String teamName, List<Integer> selectedPlayersIndexes) {
         List<Player> selectedPlayersList = new ArrayList<>();
         Collections.sort(selectedPlayersIndexes);
         for (int i = selectedPlayersIndexes.size() - 1; i >= 0; i--) {
@@ -143,11 +186,13 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
             mMatch.teams.get(teamName).add(player.id);
         }
         updateSelectionMode(false);
+
+        PlayerListFragment currentFragment = mSectionsPagerAdapter.getCurrentFragment();
         currentFragment.setPlayers(mAllPlayersList);
         currentFragment.teamSelected();
     }
 
-    private void promptSelectTeamToAddPlayers() {
+    private void promptSelectTeamToAddPlayers(final List<Integer> selectedPlayersIndexes) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
@@ -158,7 +203,7 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
             @Override
             public void onClick(DialogInterface dialogInterface, int selection) {
                 String selectedTeamName = teamNames.get(selection);
-                addSelectionToTeam(selectedTeamName);
+                addSelectionToTeam(selectedTeamName, selectedPlayersIndexes);
                 dialogInterface.dismiss();
             }
         });
@@ -172,81 +217,13 @@ public class TeamsManagerActivity extends TeamsActivity implements View.OnClickL
     }
 
     private void updateSelectionMode(boolean isInSelectionMode) {
+        toggleFabMenu(false);
         mSelectionMode = isInSelectionMode;
         if (isInSelectionMode) {
-            mFab.setImageResource(R.drawable.ic_check);
+            mFabMain.setImageResource(R.drawable.ic_check);
         } else {
-            mFab.setImageResource(R.drawable.ic_add);
+            mFabMain.setImageResource(R.drawable.ic_add);
             mSectionsPagerAdapter.getCurrentFragment().teamSelected();
-        }
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        private PlayerListFragment mCurrentFragment;
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        public PlayerListFragment getCurrentFragment() {
-            return mCurrentFragment;
-        }
-
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            if (getCurrentFragment() != object) {
-                mCurrentFragment = ((PlayerListFragment) object);
-                mCurrentFragment.setPlayers(getPlayerListForPosition(position));
-                boolean canSelectPlayers = position == 0 && getCount() > 1;
-                mCurrentFragment.setPlayerSelectionEnabled(canSelectPlayers);
-            }
-            super.setPrimaryItem(container, position, object);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            PlayerListFragment playerListFragment = PlayerListFragment.newInstance(mLeagueId);
-            playerListFragment.setPlayers(getPlayerListForPosition(position));
-            return playerListFragment;
-        }
-
-        private List<Player> getPlayerListForPosition(int position) {
-            List<Player> playerList = new ArrayList<>();
-            if (position == 0) {
-                playerList.addAll(mAllPlayersList);
-            } else {
-                List<String> playersIdsInPosition = mMatch.teams.get(getPageTitle(position));
-                for (String id : playersIdsInPosition) {
-                    boolean isCheckedIn = mMatch.isCheckedIn(id);
-                    if (isCheckedIn) { // Avoid adding players who didn't check-in.
-                        playerList.add(PlayersCache.getPlayerInfo(id));
-                    }
-                }
-            }
-            return playerList;
-        }
-
-        @Override
-        public int getCount() {
-            return 1 + mMatch.teams.size();
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            String teamName = getString(R.string.all_players);
-            if (position == 0) {
-                return teamName;
-            }
-
-            List<String> teamNames = new ArrayList<String>(mMatch.teams.keySet());
-            return teamNames.get(position - 1);
         }
     }
 }

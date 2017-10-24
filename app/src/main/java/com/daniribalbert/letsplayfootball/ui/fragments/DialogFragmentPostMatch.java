@@ -1,15 +1,12 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +21,7 @@ import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadList
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
@@ -39,10 +37,6 @@ import butterknife.ButterKnife;
 public class DialogFragmentPostMatch extends BaseDialogFragment implements View.OnClickListener {
 
     public static final String TAG = DialogFragmentPostMatch.class.getSimpleName();
-
-    public static final String ARGS_MATCH_ID = "ARGS_MATCH_ID";
-    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
-    public static final String ARGS_PLAYER_ID = "ARGS_PLAYER_ID";
 
     @BindView(R.id.edit_match_pic)
     ImageView mMatchImage;
@@ -69,7 +63,7 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
 
     public static DialogFragmentPostMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
 
         DialogFragmentPostMatch dFrag = new DialogFragmentPostMatch();
         dFrag.setRetainInstance(true);
@@ -80,9 +74,9 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
     public static DialogFragmentPostMatch newInstance(String leagueId, String matchId,
                                                       String playerId) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
-        bundle.putString(ARGS_MATCH_ID, matchId);
-        bundle.putString(ARGS_PLAYER_ID, playerId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_MATCH_ID, matchId);
+        bundle.putString(IntentConstants.ARGS_PLAYER_ID, playerId);
 
         DialogFragmentPostMatch dFrag = new DialogFragmentPostMatch();
         dFrag.setArguments(bundle);
@@ -99,9 +93,9 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
     private void loadArgs() {
         Bundle args = getArguments();
         if (args != null) {
-            mMatchId = args.getString(ARGS_MATCH_ID);
-            mLeagueId = args.getString(ARGS_LEAGUE_ID);
-            mPlayerId = args.getString(ARGS_PLAYER_ID);
+            mMatchId = args.getString(IntentConstants.ARGS_MATCH_ID);
+            mLeagueId = args.getString(IntentConstants.ARGS_LEAGUE_ID);
+            mPlayerId = args.getString(IntentConstants.ARGS_PLAYER_ID);
         }
     }
 

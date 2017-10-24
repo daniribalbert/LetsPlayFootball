@@ -1,7 +1,6 @@
 package com.daniribalbert.letsplayfootball.ui.fragments;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,11 +19,10 @@ import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.RatingsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -38,9 +35,6 @@ import butterknife.ButterKnife;
 public class DialogFragmentViewPlayer extends BaseDialogFragment implements View.OnClickListener {
 
     public static final String TAG = DialogFragmentViewPlayer.class.getSimpleName();
-
-    public static final String ARGS_LEAGUE_ID = "ARGS_LEAGUE_ID";
-    public static final String ARGS_PLAYER = "ARGS_PLAYER";
 
     @BindView(R.id.edit_player_pic)
     ImageView mPlayerImage;
@@ -69,7 +63,7 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     public static DialogFragmentViewPlayer newInstance(String leagueId) {
         Bundle bundle = new Bundle();
         DialogFragmentViewPlayer dFrag = new DialogFragmentViewPlayer();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -78,8 +72,8 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
     public static DialogFragmentViewPlayer newInstance(String leagueId, String playerId) {
         Bundle bundle = new Bundle();
         DialogFragmentViewPlayer dFrag = new DialogFragmentViewPlayer();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
-        bundle.putString(ARGS_PLAYER, playerId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_PLAYER_ID, playerId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -90,8 +84,8 @@ public class DialogFragmentViewPlayer extends BaseDialogFragment implements View
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            mLeagueId = args.getString(ARGS_LEAGUE_ID);
-            mPlayerId = args.getString(ARGS_PLAYER);
+            mLeagueId = args.getString(IntentConstants.ARGS_LEAGUE_ID);
+            mPlayerId = args.getString(IntentConstants.ARGS_PLAYER_ID);
         }
     }
 

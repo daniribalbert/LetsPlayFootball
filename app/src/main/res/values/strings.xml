@@ -33,6 +33,8 @@
     <string name="request_player_join_league">Join %1$s?</string>
     <string name="request_manage_player_join_league">Add %1$s to %2$s?</string>
     <string name="accept">Accept</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 
     <!-- Strings related to user Profile -->
@@ -57,6 +59,7 @@
     <string name="error_cannot_remove_last_league_admin">League must have at least one Admin.</string>
     <string name="error_add_guest_as_manager">This player does not have an account on the app!</string>
     <string name="error_league_no_title">Error! Missing League title</string>
+    <string name="error_no_teams">Error! You don\'t have any teams!</string>
 
     <!-- Strings related to settings screen -->
     <string name="settings_category_social">Social</string>
@@ -108,6 +111,8 @@
     <string name="dialog_choose_max_players">Select maximum number of players</string>
     <string name="dialog_confirm_check_in">Confirm check-in for %1$s?</string>
     <string name="dialog_confirm_check_out">Confirm remove %1$s from current match?</string>
+    <string name="dialog_sort_teams_title">Sort Teams</string>
+    <string name="dialog_sort_teams_message">Sorting should include goalkeepers?</string>
 
     <!-- Content description strings -->
     <string name="content_desc_search">Search</string>

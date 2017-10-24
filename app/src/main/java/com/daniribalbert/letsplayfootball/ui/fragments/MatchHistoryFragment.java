@@ -14,9 +14,9 @@ import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsActivity;
 import com.daniribalbert.letsplayfootball.ui.adapters.MatchListAdapter;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -113,9 +113,9 @@ public class MatchHistoryFragment extends BaseFragment {
     public void onMatchSelected(OpenMatchEvent event){
         String playerId = getBaseActivity().getCurrentUser().getUid();
         Intent intent = new Intent(getActivity(), MatchDetailsActivity.class);
-        intent.putExtra(BaseActivity.ARGS_MATCH_ID, event.matchId);
-        intent.putExtra(BaseActivity.ARGS_PLAYER_ID, playerId);
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, event.leagueId);
+        intent.putExtra(IntentConstants.ARGS_MATCH_ID, event.matchId);
+        intent.putExtra(IntentConstants.ARGS_PLAYER_ID, playerId);
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, event.leagueId);
         startActivity(intent);
     }
 

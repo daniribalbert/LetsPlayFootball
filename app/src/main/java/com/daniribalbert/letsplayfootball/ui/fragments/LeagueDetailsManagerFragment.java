@@ -17,9 +17,9 @@ import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
-import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsManagerActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.SearchActivity;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
@@ -34,12 +34,10 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
 
     public static final String TAG = LeagueDetailsManagerFragment.class.getSimpleName();
 
-    private static final String ARGS_LEAGUE = "ARGS_LEAGUE";
-
     public static LeagueDetailsManagerFragment newInstance(League league) {
         Bundle args = new Bundle();
         String leagueJson = GsonUtils.toJson(league);
-        args.putString(ARGS_LEAGUE, leagueJson);
+        args.putString(IntentConstants.ARGS_LEAGUE_JSON, leagueJson);
 
         LeagueDetailsManagerFragment frag = new LeagueDetailsManagerFragment();
         frag.setArguments(args);
@@ -211,7 +209,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
     public void onSearchForPlayers(){
         Intent intent = new Intent(getActivity(), SearchActivity.class);
         intent.putExtra(SearchActivity.ARGS_TAG, PlayerSearchFragment.TAG);
-        intent.putExtra(BaseActivity.ARGS_LEAGUE_ID, mLeague.id);
+        intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, mLeague.id);
         startActivity(intent);
     }
 

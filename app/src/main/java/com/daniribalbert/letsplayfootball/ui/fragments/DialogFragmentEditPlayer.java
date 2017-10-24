@@ -3,27 +3,22 @@ package com.daniribalbert.letsplayfootball.ui.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.storage.UploadTask;
 
 import butterknife.ButterKnife;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Dialog fragment used to add/edit a new league.
@@ -37,7 +32,7 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     public static DialogFragmentEditPlayer newInstance(String leagueId) {
         Bundle bundle = new Bundle();
         DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -46,8 +41,8 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
     public static DialogFragmentEditPlayer newInstance(String leagueId, String playerId) {
         Bundle bundle = new Bundle();
         DialogFragmentEditPlayer dFrag = new DialogFragmentEditPlayer();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
-        bundle.putString(ARGS_PLAYER, playerId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_PLAYER_ID, playerId);
         dFrag.setArguments(bundle);
         dFrag.setRetainInstance(true);
         return dFrag;
@@ -58,8 +53,8 @@ public class DialogFragmentEditPlayer extends DialogFragmentViewPlayer implement
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            mLeagueId = args.getString(ARGS_LEAGUE_ID);
-            mPlayerId = args.getString(ARGS_PLAYER);
+            mLeagueId = args.getString(IntentConstants.ARGS_LEAGUE_ID);
+            mPlayerId = args.getString(IntentConstants.ARGS_PLAYER_ID);
         }
     }
 

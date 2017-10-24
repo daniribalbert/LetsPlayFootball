@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerSearchFragment;
 
@@ -34,7 +35,7 @@ public class SearchActivity extends BaseActivity {
             return;
         }
         mFragTag = intent.getStringExtra(ARGS_TAG);
-        mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
+        mLeagueId = intent.getStringExtra(IntentConstants.ARGS_LEAGUE_ID);
     }
 
     private void setupSearchFragment() {

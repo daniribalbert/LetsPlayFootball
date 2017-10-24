@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -19,12 +18,10 @@ import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
-import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.activities.LoginActivity;
-import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
@@ -35,8 +32,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import butterknife.BindView;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * Dialog fragment used to add/edit the next match.
@@ -60,7 +55,7 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
 
     public static DialogFragmentEditMatch newInstance(String leagueId) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
 
         DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
         dFrag.setRetainInstance(true);
@@ -71,9 +66,9 @@ public class DialogFragmentEditMatch extends DialogFragmentViewMatch implements
     public static DialogFragmentEditMatch newInstance(String leagueId, String matchId,
                                                       String playerId) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARGS_LEAGUE_ID, leagueId);
-        bundle.putString(ARGS_MATCH_ID, matchId);
-        bundle.putString(ARGS_PLAYER_ID, playerId);
+        bundle.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
+        bundle.putString(IntentConstants.ARGS_MATCH_ID, matchId);
+        bundle.putString(IntentConstants.ARGS_PLAYER_ID, playerId);
 
         DialogFragmentEditMatch dFrag = new DialogFragmentEditMatch();
         dFrag.setArguments(bundle);

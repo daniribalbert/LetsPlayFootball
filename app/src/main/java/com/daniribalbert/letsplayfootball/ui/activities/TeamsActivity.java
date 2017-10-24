@@ -16,6 +16,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
@@ -28,8 +29,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class TeamsActivity extends BaseActivity {
-
-    public static final String ARG_MATCH = "ARG_MATCH";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -49,8 +48,8 @@ public class TeamsActivity extends BaseActivity {
     @BindView(R.id.container)
     ViewPager mViewPager;
 
-    @BindView(R.id.fab)
-    FloatingActionButton mFab;
+    @BindView(R.id.teams_fab_layout)
+    View mFabLayout;
 
     @BindView(R.id.tabs)
     TabLayout mTabLayout;
@@ -79,7 +78,7 @@ public class TeamsActivity extends BaseActivity {
     }
 
     protected void setupViewMode() {
-        mFab.setVisibility(View.GONE);
+        mFabLayout.setVisibility(View.GONE);
     }
 
     protected void loadPlayers() {
@@ -116,8 +115,8 @@ public class TeamsActivity extends BaseActivity {
 
     protected void loadArgs(Intent intent) {
         if (intent != null) {
-            mLeagueId = intent.getStringExtra(ARGS_LEAGUE_ID);
-            String matchJsonStr = intent.getStringExtra(ARG_MATCH);
+            mLeagueId = intent.getStringExtra(IntentConstants.ARGS_LEAGUE_ID);
+            String matchJsonStr = intent.getStringExtra(IntentConstants.ARGS_MATCH_JSON);
             mMatch = GsonUtils.fromJson(matchJsonStr, Match.class);
         }
     }
@@ -160,7 +159,7 @@ public class TeamsActivity extends BaseActivity {
         private List<Player> getPlayerListForPosition(int position) {
             List<Player> playerList = new ArrayList<>();
             if (position == 0) {
-                playerList.addAll(mAllPlayersList);
+                playerList.addAll(mMatch.getPlayersWithNoTeam());
             } else {
                 List<String> playersIdsInPosition = mMatch.teams.get(getPageTitle(position));
                 for (String id : playersIdsInPosition) {

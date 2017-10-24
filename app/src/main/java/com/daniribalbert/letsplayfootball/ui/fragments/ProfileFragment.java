@@ -15,6 +15,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseUploadListener;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.ActivityUtils;
 import com.daniribalbert.letsplayfootball.utils.FileUtils;
@@ -55,7 +56,7 @@ public class ProfileFragment extends ProfileViewFragment
         Bundle args = new Bundle();
 
         String playerJson = GsonUtils.toJson(Player.fromFirebase(user));
-        args.putString(ARGS_PLAYER, playerJson);
+        args.putString(IntentConstants.ARGS_PLAYER_JSON, playerJson);
 
         ProfileFragment fragment = new ProfileFragment();
         fragment.setArguments(args);
@@ -68,7 +69,7 @@ public class ProfileFragment extends ProfileViewFragment
 
         Bundle args = getArguments();
         if (args != null) {
-            String playerJsonStr = args.getString(ARGS_PLAYER);
+            String playerJsonStr = args.getString(IntentConstants.ARGS_PLAYER_JSON);
             this.mPlayer = GsonUtils.fromJson(playerJsonStr, Player.class);
         }
     }

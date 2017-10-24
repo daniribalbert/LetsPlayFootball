@@ -14,13 +14,13 @@ import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
-import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerClickedEvent;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,7 +61,7 @@ public class PlayerSearchFragment extends PlayerListFragment
      */
     public static PlayerSearchFragment newInstance(String leagueId) {
         Bundle args = new Bundle();
-        args.putString(LEAGUE_ID, leagueId);
+        args.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
         PlayerSearchFragment fragment = new PlayerSearchFragment();
         fragment.setRetainInstance(true);
         fragment.setArguments(args);
