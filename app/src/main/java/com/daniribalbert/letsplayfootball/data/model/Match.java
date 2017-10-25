@@ -10,6 +10,7 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.application.App;
 import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
+import com.daniribalbert.letsplayfootball.data.model.utils.Teams;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 import com.google.firebase.database.Exclude;
@@ -77,6 +78,13 @@ public class Match implements Comparable {
      */
     public HashMap<String, List<String>> teams = new HashMap<>();
 
+    /**
+     * Additional and easier to use team list.
+     * Teams map should only be used for Firebase.
+     */
+    @Exclude
+    private List<Team> teamList = new ArrayList<>();
+
     public Match() {
         //Firebase constructor.
     }
@@ -93,6 +101,17 @@ public class Match implements Comparable {
         this.time = now.getTime();
         now.setTime(now.getTime() - TimeUnit.HOURS.toMillis(4));
         this.checkInEnds = now.getTime();
+    }
+
+    public void setupTeamsList() {
+        teamList.clear();
+        for (Map.Entry<String, List<String>> entry : teams.entrySet()) {
+            List<Player> teamPlayers = new ArrayList<>();
+            for (String playerId : entry.getValue()) {
+                teamPlayers.add(PlayersCache.getPlayerInfo(playerId));
+            }
+            teamList.add(new Team(entry.getKey(), leagueId, teamPlayers));
+        }
     }
 
     @Exclude
@@ -205,85 +224,31 @@ public class Match implements Comparable {
 
     public List<Player> getCheckedInPlayers() {
         LinkedList<Player> checkedInPlayers = new LinkedList<>();
-        HashMap<String, Player> leaguePlayers = PlayersCache.getCurrentLeaguePlayers();
         for (Map.Entry<String, Long> entry : players.entrySet()) {
             if (entry.getValue() > 0) {
-                Player player = leaguePlayers.get(entry.getKey());
-                if (!player.isGoalkeeper()) {
-                    checkedInPlayers.add(player);
-                }
+                Player player = PlayersCache.getPlayerInfo(entry.getKey());
+                checkedInPlayers.add(player);
             }
         }
         return checkedInPlayers;
     }
 
-    public List<Player> getGoalkeepers() {
-        List<Player> goalkeepers = new LinkedList<>();
-        HashMap<String, Player> leaguePlayers = PlayersCache.getCurrentLeaguePlayers();
-        for (Map.Entry<String, Long> entry : players.entrySet()) {
-            if (entry.getValue() > 0) {
-                Player player = leaguePlayers.get(entry.getKey());
-                if (player.isGoalkeeper()) {
-                    goalkeepers.add(player);
-                }
-            }
-        }
-        return goalkeepers;
-    }
-
     public void sortTeams(boolean sortGoalkeepers) {
         LinkedList<Player> players = (LinkedList<Player>) getCheckedInPlayers();
-        players = (LinkedList<Player>) sortPlayersByRating(players);
-
-        int nTeams = teams.size();
-        if (nTeams == 0) {
-            ToastUtils.show(R.string.error_no_teams, Toast.LENGTH_SHORT);
-            return;
+        setupTeamsList();
+        Teams.sortTeams(teamList, players, sortGoalkeepers);
+        // Update Firebase values.
+        for (Team team : teamList) {
+            List<String> playerIds = new ArrayList<>();
+            for (Player player : team.getPlayers()){
+                playerIds.add(player.id);
+            }
+            teams.put(team.getTitle(), playerIds);
         }
-        while (!players.isEmpty()) {
-            List<String> teamNames = new ArrayList<>(teams.keySet());
-            Collections.shuffle(teamNames);
-            for (int i = 0; i < nTeams && !players.isEmpty(); i++) {
-                Player player = players.pollFirst();
-                teams.get(teamNames.get(i)).add(player.id);
-            }
-
-            Collections.shuffle(teamNames);
-            for (int i = 0; i < nTeams && !players.isEmpty(); i++) {
-                Player player = players.pollLast();
-                teams.get(teamNames.get(i)).add(player.id);
-            }
-        }
-
-        if (sortGoalkeepers) {
-            List<Player> goalkeepers = getGoalkeepers();
-            Collections.shuffle(goalkeepers);
-            while (!goalkeepers.isEmpty()) {
-                for (String teamName : teams.keySet()) {
-                    if (goalkeepers.isEmpty()) {
-                        break;
-                    }
-                    teams.get(teamName).add(goalkeepers.remove(0).id);
-                }
-            }
-        }
-
-    }
-
-    public List<Player> sortPlayersByRating(List<Player> players) {
-        Collections.sort(players, new Comparator<Player>() {
-            @Override
-            public int compare(Player player1, Player player2) {
-                float diff = player1.rating.get(leagueId) - player2.rating.get(leagueId);
-                return diff > 0 ? 1 : -1;
-            }
-        });
-        return players;
     }
 
     public List<Player> getPlayersWithNoTeam() {
         List<Player> playersWithNoTeam = getCheckedInPlayers();
-        playersWithNoTeam.addAll(getGoalkeepers());
         for (int i = playersWithNoTeam.size() - 1; i >= 0; i--) {
             Player player = playersWithNoTeam.get(i);
             for (List<String> idList : teams.values()) {
@@ -296,5 +261,21 @@ public class Match implements Comparable {
             }
         }
         return sortPlayersByCheckIn(playersWithNoTeam);
+    }
+
+    public String getTeamsString() {
+        String toString = "";
+        if (teamList.isEmpty()){
+            setupTeamsList();
+        }
+        for (int i = 0; i < teamList.size(); i++){
+            Team team = teamList.get(i);
+            toString += team.toString();
+            // Skip last item.
+            if (i != teamList.size()-1) {
+                toString += "\n----------\n";
+            }
+        }
+        return toString;
     }
 }

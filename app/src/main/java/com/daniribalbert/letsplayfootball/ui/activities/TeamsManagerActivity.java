@@ -3,25 +3,16 @@ package com.daniribalbert.letsplayfootball.ui.activities;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.daniribalbert.letsplayfootball.R;
-import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.MatchDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.PlayerLongClickEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
-import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -112,7 +103,10 @@ public class TeamsManagerActivity extends TeamsActivity {
     private void sortTeams(boolean includeGoalkeepers) {
         mMatch.sortTeams(includeGoalkeepers);
         mSectionsPagerAdapter.notifyDataSetChanged();
-        mViewPager.setCurrentItem(1);
+        if (mViewPager.getCurrentItem() == 0) {
+            mViewPager.setCurrentItem(1);
+        }
+        updateShareIntent();
     }
 
     @Override
@@ -190,6 +184,7 @@ public class TeamsManagerActivity extends TeamsActivity {
         PlayerListFragment currentFragment = mSectionsPagerAdapter.getCurrentFragment();
         currentFragment.setPlayers(mAllPlayersList);
         currentFragment.teamSelected();
+        updateShareIntent();
     }
 
     private void promptSelectTeamToAddPlayers(final List<Integer> selectedPlayersIndexes) {

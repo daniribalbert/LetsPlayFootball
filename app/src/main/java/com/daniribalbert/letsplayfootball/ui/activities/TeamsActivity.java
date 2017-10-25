@@ -2,13 +2,16 @@ package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,6 +22,7 @@ import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.PlayerListFragment;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +52,9 @@ public class TeamsActivity extends BaseActivity {
     @BindView(R.id.container)
     ViewPager mViewPager;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     @BindView(R.id.teams_fab_layout)
     View mFabLayout;
 
@@ -57,6 +64,8 @@ public class TeamsActivity extends BaseActivity {
 
     protected Match mMatch;
 
+    private ShareActionProvider mShareActionProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +73,7 @@ public class TeamsActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         loadArgs(getIntent());
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -80,6 +88,33 @@ public class TeamsActivity extends BaseActivity {
     protected void setupViewMode() {
         mFabLayout.setVisibility(View.GONE);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu resource file.
+        getMenuInflater().inflate(R.menu.share_menu, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        updateShareIntent();
+        // Return true to display menu
+        return true;
+    }
+
+    protected void updateShareIntent() {
+        LogUtils.w("TEAMS TO STRING: \n" + mMatch.getTeamsString());
+        if (mShareActionProvider != null) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, mMatch.getTeamsString());
+            shareIntent.setType("text/plain");
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
 
     protected void loadPlayers() {
         HashMap<String, Player> allPlayersMap = new HashMap<>(
@@ -156,6 +191,18 @@ public class TeamsActivity extends BaseActivity {
             return playerListFragment;
         }
 
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            updateCurrentItem();
+        }
+
+        public void updateCurrentItem() {
+            if (mCurrentFragment != null) {
+                mCurrentFragment.setPlayers(getPlayerListForPosition(mViewPager.getCurrentItem()));
+            }
+        }
+
         private List<Player> getPlayerListForPosition(int position) {
             List<Player> playerList = new ArrayList<>();
             if (position == 0) {
@@ -188,4 +235,5 @@ public class TeamsActivity extends BaseActivity {
             return teamNames.get(position - 1);
         }
     }
+
 }

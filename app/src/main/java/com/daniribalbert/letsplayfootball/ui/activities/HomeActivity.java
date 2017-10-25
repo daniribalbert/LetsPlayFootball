@@ -55,6 +55,9 @@ public class HomeActivity extends BaseActivity
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
 
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
     private int mSelectedDrawerItemId;
 
     @Override
@@ -62,11 +65,10 @@ public class HomeActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open,
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
