@@ -74,6 +74,12 @@
             android:label="@string/teams"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <activity
+            android:name=".ui.activities.RulesActivity"
+            android:label="@string/rules"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

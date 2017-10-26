@@ -1,19 +1,12 @@
 package com.daniribalbert.letsplayfootball.ui.adapters.viewholders;
 
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Match;
-import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
-import com.daniribalbert.letsplayfootball.utils.GlideUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

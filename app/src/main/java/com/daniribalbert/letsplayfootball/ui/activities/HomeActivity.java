@@ -151,7 +151,7 @@ public class HomeActivity extends BaseActivity
                 mFab.setVisibility(View.GONE);
                 break;
             case R.id.nav_settings:
-                //frag = SettingsFragment.newInstance();
+                //frag = SettingsFragment.newIntent();
                 //tag = SettingsFragment.TAG;
                 break;
             case R.id.nav_logout:

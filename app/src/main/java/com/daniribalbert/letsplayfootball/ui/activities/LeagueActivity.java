@@ -64,15 +64,15 @@ public class LeagueActivity extends BaseActivity {
                 BaseFragment frag;
                 String tag;
                 if (viewMode) {
-                    frag = LeagueDetailsFragment.newInstance(mLeague);
+                    frag = LeagueDetailsFragment.newInstance(mLeagueId);
                     tag = LeagueDetailsFragment.TAG;
                 } else {
-                    frag = LeagueDetailsManagerFragment.newInstance(mLeague);
+                    frag = LeagueDetailsManagerFragment.newInstance(mLeagueId);
                     tag = LeagueDetailsManagerFragment.TAG;
                 }
                 frag.setProgress(mProgressBar);
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, frag, tag)
-                                    .commit();
+                getSupportFragmentManager().beginTransaction()
+                                           .add(R.id.fragment_container, frag, tag).commit();
             }
         });
     }

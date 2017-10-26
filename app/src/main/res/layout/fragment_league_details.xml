@@ -81,6 +81,13 @@
             android:layout_height="wrap_content"
             android:text="@string/league_schedule_match"/>
 
+        <Button
+            android:id="@+id/league_rules_bt"
+            style="@style/MenuButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/rules"/>
+
     </LinearLayout>
 
 </ScrollView>

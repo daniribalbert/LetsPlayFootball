@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.ui.events.OpenMatchEvent;
-import com.daniribalbert.letsplayfootball.ui.events.RemoveMatchEvent;
 import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 
 import org.greenrobot.eventbus.EventBus;

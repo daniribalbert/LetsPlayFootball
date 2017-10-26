@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.HistoryMatchViewHolder;
-import com.daniribalbert.letsplayfootball.ui.adapters.viewholders.MatchViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;

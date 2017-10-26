@@ -1,13 +1,8 @@
 package com.daniribalbert.letsplayfootball.data.model.utils;
 
-import android.widget.Toast;
-
-import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.Team;
-import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;

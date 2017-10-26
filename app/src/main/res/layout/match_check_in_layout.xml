@@ -20,13 +20,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@drawable/shape_button_border_pos"
         android:layout_marginEnd="@dimen/margin_medium"
+        style="@style/DefaultButtonStyle"
         android:text="@string/check_in"/>
 
     <Button
         android:id="@+id/bt_not_going"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/shape_button_border_neg"
+        style="@style/DefaultButtonStyle"
         android:layout_gravity="center"
         android:layout_marginStart="@dimen/margin_medium"
         android:text="@string/cant_go"/>

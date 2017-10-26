@@ -1,30 +1,16 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.CompletionListener;
-import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
-import com.daniribalbert.letsplayfootball.data.model.League;
-import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Utility class for Player database operations.

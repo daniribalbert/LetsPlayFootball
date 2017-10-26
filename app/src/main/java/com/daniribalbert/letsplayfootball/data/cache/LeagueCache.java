@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import com.daniribalbert.letsplayfootball.application.App;
 import com.daniribalbert.letsplayfootball.data.model.League;
-import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 
 import java.util.HashMap;

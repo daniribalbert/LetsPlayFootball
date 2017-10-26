@@ -16,7 +16,6 @@ import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.ui.adapters.MyLeagueAdapter;
 import com.daniribalbert.letsplayfootball.ui.adapters.PendingRequestsAdapter;
 
 import java.util.LinkedList;

@@ -1,6 +1,5 @@
 package com.daniribalbert.letsplayfootball.data.model;
 
-import com.daniribalbert.letsplayfootball.application.App;
 import com.google.firebase.database.Exclude;
 
 /**

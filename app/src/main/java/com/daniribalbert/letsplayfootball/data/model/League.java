@@ -35,6 +35,12 @@ public class League {
     public String description;
 
     /**
+     * League rules.
+     */
+    public String rules;
+
+
+    /**
      * League description.
      */
     public String image;

@@ -18,9 +18,9 @@ import com.daniribalbert.letsplayfootball.data.model.Match;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.activities.MatchDetailsManagerActivity;
+import com.daniribalbert.letsplayfootball.ui.activities.RulesActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.SearchActivity;
 import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
-import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.ToastUtils;
 
 import java.util.HashMap;
@@ -34,10 +34,9 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
 
     public static final String TAG = LeagueDetailsManagerFragment.class.getSimpleName();
 
-    public static LeagueDetailsManagerFragment newInstance(League league) {
+    public static LeagueDetailsManagerFragment newInstance(String leagueId) {
         Bundle args = new Bundle();
-        String leagueJson = GsonUtils.toJson(league);
-        args.putString(IntentConstants.ARGS_LEAGUE_JSON, leagueJson);
+        args.putString(IntentConstants.ARGS_LEAGUE_ID, leagueId);
 
         LeagueDetailsManagerFragment frag = new LeagueDetailsManagerFragment();
         frag.setArguments(args);
@@ -116,7 +115,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
                                         Toast.LENGTH_LONG);
                     }
                 } else {
-                    if (player.isGuest()){
+                    if (player.isGuest()) {
                         ToastUtils.show(R.string.error_add_guest_as_manager, Toast.LENGTH_SHORT);
                     } else {
                         promptAddAdmin(player);
@@ -192,7 +191,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
     }
 
     @OnClick(R.id.league_add_new_guest_player)
-    public void onAddNewGuestPlayer(){
+    public void onAddNewGuestPlayer() {
         DialogFragmentEditPlayer dFrag = DialogFragmentEditPlayer.newInstance(mLeague.id);
         dFrag.setListener(new DialogFragmentEditPlayer.EditPlayerListener() {
             @Override
@@ -206,10 +205,17 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
     }
 
     @OnClick(R.id.league_search_players_bt)
-    public void onSearchForPlayers(){
+    public void onSearchForPlayers() {
         Intent intent = new Intent(getActivity(), SearchActivity.class);
         intent.putExtra(SearchActivity.ARGS_TAG, PlayerSearchFragment.TAG);
         intent.putExtra(IntentConstants.ARGS_LEAGUE_ID, mLeague.id);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.league_rules_bt)
+    @Override
+    public void showLeagueRules() {
+        Intent intent = RulesActivity.newIntent(getActivity(), mLeague.id, mLeague.rules, true);
         startActivity(intent);
     }
 

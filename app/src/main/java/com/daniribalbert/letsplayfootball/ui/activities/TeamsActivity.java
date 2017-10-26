@@ -105,7 +105,7 @@ public class TeamsActivity extends BaseActivity {
     }
 
     protected void updateShareIntent() {
-        LogUtils.w("TEAMS TO STRING: \n" + mMatch.getTeamsString());
+        LogUtils.d("TEAMS TO STRING: \n" + mMatch.getTeamsString());
         if (mShareActionProvider != null) {
             Intent shareIntent = new Intent();
             shareIntent.setAction(Intent.ACTION_SEND);

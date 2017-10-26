@@ -35,6 +35,10 @@
     <string name="accept">Accept</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="rules">Rules</string>
+    <string name="rules_empty_text">Ops, there are no rules.</string>
+    <string name="rules_empty_text_edit">Ops, there are no rules. Click here to edit your rules.</string>
+    <string name="edit">Edit</string>
 
 
     <!-- Strings related to user Profile -->

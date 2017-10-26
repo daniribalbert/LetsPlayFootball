@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Utility class for League database operations.
@@ -85,12 +84,19 @@ public class LeagueDbUtils {
                              }
                          }
                      }
-                    listener.onLeagueSearchResult(searchResults);
+                     listener.onLeagueSearchResult(searchResults);
                  }
              });
     }
 
-    public interface LeagueSearchListener{
+    public static void saveLeagueRules(String leagueId, String rulesText) {
+        DatabaseReference dbRef = getRef();
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("rules", rulesText);
+        dbRef.child(leagueId).updateChildren(updateMap);
+    }
+
+    public interface LeagueSearchListener {
         void onLeagueSearchResult(List<SimpleLeague> leagues);
     }
 }
