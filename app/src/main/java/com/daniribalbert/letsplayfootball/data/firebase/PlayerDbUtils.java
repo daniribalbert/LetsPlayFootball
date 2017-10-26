@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.CompletionListener;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.SearchListener;
@@ -40,7 +41,8 @@ public class PlayerDbUtils {
      * @param firebaseUser new player to be added to the database with info gathered from the
      *                     Firebase login info.
      */
-    public static void createPlayer(final FirebaseUser firebaseUser, final CompletionListener listener) {
+    public static void createPlayer(final FirebaseUser firebaseUser,
+                                    final CompletionListener listener) {
         final Player player = Player.fromFirebase(firebaseUser);
         final DatabaseReference dbRef = getRef();
         dbRef.child(player.id).addListenerForSingleValueEvent(new BaseValueEventListener() {
@@ -190,5 +192,17 @@ public class PlayerDbUtils {
     public static void updatePlayerRating(String playerId, String leagueId, float playerRating) {
         DatabaseReference ref = getRef();
         ref.child(playerId).child("rating").child(leagueId).setValue(playerRating);
+    }
+
+    public static void updateCurrentPlayerPushToken(String refreshedToken) {
+        DatabaseReference ref = getRef();
+
+        Player currentUser = PlayersCache.getCurrentPlayerInfo();
+        currentUser.pushToken = refreshedToken;
+        PlayersCache.saveCurrentPlayerInfo(currentUser);
+
+        Map<String, Object> updateMap = new HashMap<String, Object>();
+        updateMap.put("pushToken", refreshedToken);
+        ref.child(currentUser.id).updateChildren(updateMap);
     }
 }

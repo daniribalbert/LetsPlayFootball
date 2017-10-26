@@ -116,7 +116,8 @@ public class MyLeaguesFragment extends BaseFragment {
                                             LogUtils.e("Failed to load user data!");
                                             return;
                                         }
-                                        PlayersCache.savePlayerInfo(currentPlayer);
+                                        PlayersCache.saveCurrentPlayerInfo(currentPlayer);
+                                        getBaseActivity().checkPlayerPushToken(currentPlayer);
                                         ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
                                         HashMap<String, SimpleLeague> leagues = currentPlayer.leagues;
 

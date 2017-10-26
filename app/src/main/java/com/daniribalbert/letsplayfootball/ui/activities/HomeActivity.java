@@ -24,6 +24,8 @@ import com.daniribalbert.letsplayfootball.ui.fragments.MatchUpcomingFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
+import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.greenrobot.eventbus.EventBus;
 

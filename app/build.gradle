@@ -37,6 +37,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.2.2' // Authentication
     compile 'com.google.firebase:firebase-database:11.2.2' // Database
     compile 'com.google.firebase:firebase-storage:11.2.2' // Storage
+    compile 'com.google.firebase:firebase-messaging:11.2.2' // Push Notifications
 
     // EventBus | ref: https://github.com/greenrobot/EventBus
     compile 'org.greenrobot:eventbus:3.0.0'

@@ -24,6 +24,11 @@ public class Player {
      */
     public String id;
 
+    /**
+     * Player Push Token to receive notifications from Firebase Cloud Messaging.
+     */
+    public String pushToken;
+
     /*
     * Player name.
     */

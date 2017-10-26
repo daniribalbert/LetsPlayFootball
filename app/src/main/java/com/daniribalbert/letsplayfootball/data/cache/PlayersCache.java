@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class PlayersCache {
 
     private static final String PLAYERS_CACHE_FILE = "PLAYERS_CACHE_FILE";
+    private static final String CURRENT_USER_CACHE_FILE = "CURRENT_USER_CACHE_FILE";
     private static final String PLAYER_PREF = "PLAYER_PREF_";
 
     private static HashMap<String, Player> sMemoryCache = new HashMap<>();
@@ -43,6 +44,23 @@ public class PlayersCache {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PLAYER_PREF + player.id, GsonUtils.toJson(player));
         editor.apply();
+    }
+
+    public static void saveCurrentPlayerInfo(Player player) {
+        savePlayerInfo(player);
+        final SharedPreferences prefs = getPrefs();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(CURRENT_USER_CACHE_FILE, GsonUtils.toJson(player));
+        editor.apply();
+    }
+
+    public static Player getCurrentPlayerInfo(){
+        final SharedPreferences prefs = getPrefs();
+        String playerJson = prefs.getString(CURRENT_USER_CACHE_FILE, "");
+        if (TextUtils.isEmpty(playerJson)) {
+            return null;
+        }
+        return GsonUtils.fromJson(playerJson, Player.class);
     }
 
     public static void saveLeaguePlayersInfo(Collection<Player> playerList){
