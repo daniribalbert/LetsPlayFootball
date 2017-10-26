@@ -117,10 +117,9 @@
     <string name="dialog_confirm_check_out">Confirm remove %1$s from current match?</string>
     <string name="dialog_sort_teams_title">Sort Teams</string>
     <string name="dialog_sort_teams_message">Sorting should include goalkeepers?</string>
+    <string name="dialog_join_league_msg">Send request to join league?</string>
 
     <!-- Content description strings -->
     <string name="content_desc_search">Search</string>
-    <string name="dialog_join_league_title">Join</string>
-    <string name="dialog_join_league_msg">Send request to join league?</string>
 
 </resources>

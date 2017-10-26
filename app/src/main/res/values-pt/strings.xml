@@ -81,4 +81,27 @@
     <string name="not_available_small">-/-</string>
     <string name="players">Jogadores</string>
     <string name="search_players">Buscar Jogadores</string>
+    <string name="accept">Aceitar</string>
+    <string name="content_desc_search">Buscar</string>
+    <string name="dialog_confirm_check_in">Confirmar check-in para %1$s?</string>
+    <string name="dialog_join_league_msg">Enviar pedido para se juntar ao racha?</string>
+    <string name="dialog_confirm_check_out">Confirma remover %1$s da partida?</string>
+    <string name="dialog_join_league_title"></string>
+    <string name="dialog_sort_teams_message">Tirar times incluindo os goleiros?</string>
+    <string name="dialog_sort_teams_title">Tirar Times</string>
+    <string name="drawer_pending_requests">Solicitações Pendentes</string>
+    <string name="edit">Editar</string>
+    <string name="no">Não</string>
+    <string name="manage_match_guests">Gerenciar convidados</string>
+    <string name="hint_search_league">Buscar Pelada</string>
+    <string name="hint_league_search">Melhor racha da cidade</string>
+    <string name="error_no_teams">Erro! Não tem nenhum time!</string>
+    <string name="error_league_no_title">Erro! Qual nome do rachinha?</string>
+    <string name="request_manage_player_join_league">Adiciona %1$s no %2$s?</string>
+    <string name="request_player_join_league">Se juntar ao %1$s?</string>
+    <string name="rules">Regras</string>
+    <string name="rules_empty_text">Opa, não tem regras!</string>
+    <string name="rules_empty_text_edit">Opa, não tem regras, aperta aqui para adicionar as regras.</string>
+    <string name="waiting_list">Lista de espera</string>
+    <string name="yes">Sim</string>
 </resources>

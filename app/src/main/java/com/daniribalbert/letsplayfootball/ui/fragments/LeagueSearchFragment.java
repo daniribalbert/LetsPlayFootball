@@ -121,7 +121,6 @@ public class LeagueSearchFragment extends MyLeaguesFragment
     @Subscribe
     public void OnLeagueSelectedEvent(final OpenLeagueEvent event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_join_league_title);
         builder.setMessage(R.string.dialog_join_league_msg);
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
