@@ -42,7 +42,7 @@ public class RatingsDbUtils {
 
     private static DatabaseReference getRef() {
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        return dbRef.child(DbUtils.getRoot()).child(PATH);
+        return dbRef.child(PATH);
     }
 
     /**

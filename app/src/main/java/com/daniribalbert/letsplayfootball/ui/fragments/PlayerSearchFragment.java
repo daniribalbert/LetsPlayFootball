@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
@@ -43,6 +44,9 @@ public class PlayerSearchFragment extends PlayerListFragment
 
     @BindView(R.id.search_edit_text)
     EditText mSearchText;
+
+    @BindView(R.id.app_progress)
+    ProgressBar mProgressBar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

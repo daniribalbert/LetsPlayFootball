@@ -106,14 +106,15 @@ public class MyLeaguesFragment extends BaseFragment {
 
     protected void loadData() {
         showProgress(true);
-        PlayerDbUtils.getPlayer(getBaseActivity().getCurrentUser().getUid(),
+        final String userId = getBaseActivity().getCurrentUser().getUid();
+        PlayerDbUtils.getPlayer(userId,
                                 new BaseValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         showProgress(false);
                                         Player currentPlayer = dataSnapshot.getValue(Player.class);
                                         if (currentPlayer == null) {
-                                            LogUtils.e("Failed to load user data!");
+                                            LogUtils.e("Failed to load user data! " + userId);
                                             return;
                                         }
                                         PlayersCache.saveCurrentPlayerInfo(currentPlayer);

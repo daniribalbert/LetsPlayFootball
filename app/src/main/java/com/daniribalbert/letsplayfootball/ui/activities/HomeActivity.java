@@ -125,6 +125,7 @@ public class HomeActivity extends BaseActivity
                 frag = MyLeaguesFragment.newInstance();
                 ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = MyLeaguesFragment.TAG;
+                mFab.setImageResource(R.drawable.ic_add);
                 mFab.setVisibility(View.VISIBLE);
                 break;
             case R.id.nav_profile:

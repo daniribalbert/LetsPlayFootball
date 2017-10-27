@@ -119,6 +119,13 @@
     <string name="dialog_sort_teams_message">Sorting should include goalkeepers?</string>
     <string name="dialog_join_league_msg">Send request to join league?</string>
 
+
+    <!-- Strings regarding notifications -->
+    <string name="notification_title_request">Pending Request</string>
+    <string name="notification_add_to_league">%1$s has requested to join %2$s</string>
+    <string name="notification_join_league">%1$s has invited you to join %2$s</string>
+
+
     <!-- Content description strings -->
     <string name="content_desc_search">Search</string>
 

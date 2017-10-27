@@ -72,7 +72,8 @@ public class LeagueActivity extends BaseActivity {
                 }
                 frag.setProgress(mProgressBar);
                 getSupportFragmentManager().beginTransaction()
-                                           .add(R.id.fragment_container, frag, tag).commit();
+                                           .add(R.id.fragment_container, frag, tag)
+                                           .commitAllowingStateLoss();
             }
         });
     }

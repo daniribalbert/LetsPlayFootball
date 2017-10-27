@@ -21,12 +21,12 @@ public class RequestsDbUtils {
 
     private static DatabaseReference getRef() {
         final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        return dbRef.child(DbUtils.getRoot()).child(PATH);
+        return dbRef.child(PATH);
     }
 
     public static void sendRequestToJoinLeague(JoinLeagueRequest request) {
         DatabaseReference ref = getRef();
-        if (request.playerId.equalsIgnoreCase(request.playerId)) {
+        if (request.isPlayerRequest()) {
             // Player sends request to join league.
             String requestId = request.league.league_id + "_" + request.senderId;
             ref.child(request.league.league_id).child(requestId).setValue(request);

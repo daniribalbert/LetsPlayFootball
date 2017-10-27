@@ -12,6 +12,6 @@ public class StorageUtils {
 
     public static StorageReference getRef(){
         final StorageReference ref = FirebaseStorage.getInstance().getReference();
-        return ref.child(DbUtils.getRoot()).child(PATH);
+        return ref.child(PATH);
     }
 }

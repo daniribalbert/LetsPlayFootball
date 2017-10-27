@@ -10,3 +10,9 @@
 /.idea/markdown-navigator/
 /.idea/markdown-navigator.xml
 /app/src/main/res/values/strings_not_share.xml
+/firebase/functions/node_modules/
+/keys/
+/app/src/dev/google-services.json
+/app/src/prod/google-services.json
+/firebase/.firebaserc
+/firebase/firebase-debug.log

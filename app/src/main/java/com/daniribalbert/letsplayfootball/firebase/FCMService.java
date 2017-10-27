@@ -11,8 +11,10 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.ui.activities.BaseActivity;
 import com.daniribalbert.letsplayfootball.ui.activities.HomeActivity;
+import com.daniribalbert.letsplayfootball.utils.GsonUtils;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -35,14 +37,28 @@ public class FCMService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             LogUtils.d("Message data payload: " + remoteMessage.getData());
-        }
+            String dataStr = remoteMessage.getData().get("content");
 
-        // Check if message contains a notification payload.
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        if (notification != null) {
-            LogUtils.d("Message Notification Title: " + notification.getTitle());
-            LogUtils.d("Message Notification Body: " + notification.getBody());
-            sendNotification(notification.getTitle(), notification.getBody());
+            JoinLeagueRequest request = GsonUtils.fromJson(dataStr, JoinLeagueRequest.class);
+            String title = getString(R.string.notification_title_request);
+            String msg;
+            if (request.isPlayerRequest()) {
+                msg = getString(R.string.notification_add_to_league, request.senderName,
+                                request.league.title);
+            } else {
+                msg = getString(R.string.notification_join_league, request.senderName,
+                                request.league.title);
+            }
+            sendNotification(title, msg);
+        } else {
+            // Check if message contains a notification payload.
+            RemoteMessage.Notification notification = remoteMessage.getNotification();
+            if (notification != null) {
+                LogUtils.d("Message Notification Title: " + notification.getTitle());
+                LogUtils.d("Message Notification Body: " + notification.getBody());
+                sendNotification(getString(R.string.notification_title_request),
+                                 notification.getBody());
+            }
         }
 
     }
@@ -51,7 +67,7 @@ public class FCMService extends FirebaseMessagingService {
      * Create and show a simple notification containing the received FCM message.
      *
      * @param messageTitle FCM message title received.
-     * @param messageBody FCM message body received.
+     * @param messageBody  FCM message body received.
      */
     private void sendNotification(String messageTitle, String messageBody) {
         Intent intent = new Intent(this, HomeActivity.class);
@@ -61,7 +77,9 @@ public class FCMService extends FirebaseMessagingService {
 
         String channelId = "Default";
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        String notificationTitle = TextUtils.isEmpty(messageTitle) ? getString(R.string.app_name) : messageTitle;
+        String notificationTitle = TextUtils.isEmpty(messageTitle)
+                                   ? getString(R.string.app_name)
+                                   : messageTitle;
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.mipmap.ic_launcher)
