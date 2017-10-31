@@ -5,6 +5,7 @@ import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEvent
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +48,7 @@ public class RequestsDbUtils {
 
     public static void removeJoinLeagueRequest(JoinLeagueRequest request) {
         DatabaseReference ref = getRef();
-        if (request.playerId.equalsIgnoreCase(request.playerId)) {
+        if (request.playerId.equalsIgnoreCase(request.senderId)) {
             // Player sends request to join league.
             ref.child(request.league.league_id).removeValue();
         } else {
@@ -61,9 +62,14 @@ public class RequestsDbUtils {
 
         if (player.leagues != null) {
             for (String leagueId : player.leagues.keySet()) {
-                League league = LeagueCache.getLeagueInfo(leagueId);
-                if (league.isOwner(player.id)) {
-                    myManagedLeagues.add(leagueId);
+                SimpleLeague playerLeague = player.leagues.get(leagueId);
+                if (playerLeague.manager) {
+                    myManagedLeagues.add(playerLeague.league_id);
+                } else { // Check cache
+                    League league = LeagueCache.getLeagueInfo(leagueId);
+                    if (league != null && league.isManager(player.id)) {
+                        myManagedLeagues.add(leagueId);
+                    }
                 }
             }
         }
@@ -75,9 +81,7 @@ public class RequestsDbUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 LogUtils.d("My Requests: " + dataSnapshot);
-                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()) {
-                    DataSnapshot next = iterator.next();
+                for (DataSnapshot next : dataSnapshot.getChildren()) {
                     JoinLeagueRequest request = next.getValue(JoinLeagueRequest.class);
                     if (request != null) {
                         pendingRequests.add(request);
@@ -95,9 +99,7 @@ public class RequestsDbUtils {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     LogUtils.d("My League " + leagueId + " request: " + dataSnapshot);
-                    Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                    while (iterator.hasNext()) {
-                        DataSnapshot next = iterator.next();
+                    for (DataSnapshot next : dataSnapshot.getChildren()) {
                         JoinLeagueRequest request = next.getValue(JoinLeagueRequest.class);
                         if (request != null) {
                             pendingRequests.add(request);

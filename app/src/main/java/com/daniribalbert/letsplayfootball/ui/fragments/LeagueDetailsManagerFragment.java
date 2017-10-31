@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 
@@ -100,15 +101,15 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
                             .addToBackStack(PlayerListFragment.TAG).commit();
     }
 
-    @OnClick(R.id.league_manage_owners)
-    public void onSelectedOwners() {
+    @OnClick(R.id.league_manage_admins)
+    public void onSelectManagers() {
         PlayerListFragment playerListFragment = PlayerListFragment.newInstance(mLeague.id);
         playerListFragment.loadPlayersFromCache();
         playerListFragment.setListener(new PlayerListFragment.OnPlayerSelectedListener() {
             @Override
             public void onPlayerSelected(Player player) {
-                if (mLeague.isOwner(player.id)) {
-                    if (mLeague.managerIds.size() > 1) {
+                if (mLeague.isManager(player.id)) {
+                    if (mLeague.hasMultipleManagers()) {
                         promptRemoveAdmin(player);
                     } else {
                         ToastUtils.show(R.string.error_cannot_remove_last_league_admin,
@@ -137,13 +138,26 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mLeague.managerIds.put(player.id, true);
-                LeagueDbUtils.updateLeagueOwners(mLeague);
-                dialogInterface.dismiss();
+                mLeague.managerIds.put(player.id, false);
+                LeagueDbUtils.updateLeagueManagers(mLeague);
+                Fragment frag = getFragmentManager().findFragmentByTag(PlayerListFragment.TAG);
+                ((PlayerListFragment) frag).loadPlayersFromCache();
+                // Check if current user is still admin.
+                checkCurrentPlayerAdminPrivileges(player.id);
             }
         });
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.show();
+    }
+
+    /**
+     * Checks if current player remains admin of the league after removing one of the player admins.
+     * @param latestAdminRemovedId latest
+     */
+    private void checkCurrentPlayerAdminPrivileges(String latestAdminRemovedId) {
+        if (latestAdminRemovedId.equalsIgnoreCase(getBaseActivity().getCurrentUser().getUid())) {
+            getActivity().finish();
+        }
     }
 
     private void promptAddAdmin(final Player player) {
@@ -154,9 +168,10 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mLeague.managerIds.remove(player.id);
-                LeagueDbUtils.updateLeagueOwners(mLeague);
-                dialogInterface.dismiss();
+                mLeague.managerIds.put(player.id, true);
+                LeagueDbUtils.updateLeagueManagers(mLeague);
+                Fragment frag = getFragmentManager().findFragmentByTag(PlayerListFragment.TAG);
+                ((PlayerListFragment) frag).loadPlayersFromCache();
             }
         });
         builder.setNegativeButton(android.R.string.cancel, null);

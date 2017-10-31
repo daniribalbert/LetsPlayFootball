@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -19,11 +20,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.Player;
+import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
@@ -33,9 +37,13 @@ import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -104,7 +112,41 @@ public class HomeActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        checkPendingRequests();
+        loadPlayer();
+    }
+
+    private void loadPlayer() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        final String userId = getCurrentUser().getUid();
+        PlayerDbUtils.getPlayer(userId,
+                                new BaseValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        mProgressBar.setVisibility(View.GONE);
+                                        Player currentPlayer = dataSnapshot.getValue(Player.class);
+                                        if (currentPlayer == null) {
+                                            LogUtils.e("Failed to load user data! " + userId);
+                                            return;
+                                        }
+                                        PlayersCache.saveCurrentPlayerInfo(currentPlayer);
+                                        updateMyLeagueFragment();
+                                        checkPlayerPushToken(currentPlayer);
+                                        checkPendingRequests();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        super.onCancelled(databaseError);
+                                        mProgressBar.setVisibility(View.GONE);
+                                    }
+                                });
+    }
+
+    private void updateMyLeagueFragment() {
+        Fragment frag = getSupportFragmentManager().findFragmentByTag(MyLeaguesFragment.TAG);
+        if (frag != null) {
+            ((MyLeaguesFragment) frag).loadPlayerLeagueInfo();
+        }
     }
 
     private void checkPendingRequests() {
@@ -239,6 +281,8 @@ public class HomeActivity extends BaseActivity
     private void logout() {
         mAuth.signOut();
         PlayerDbUtils.updateCurrentPlayerPushToken("");
+        PlayersCache.clear();
+        LeagueCache.clear();
         final Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();

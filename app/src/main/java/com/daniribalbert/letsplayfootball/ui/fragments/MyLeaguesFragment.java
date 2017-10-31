@@ -3,6 +3,7 @@ package com.daniribalbert.letsplayfootball.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -105,36 +106,9 @@ public class MyLeaguesFragment extends BaseFragment {
     }
 
     protected void loadData() {
-        showProgress(true);
-        final String userId = getBaseActivity().getCurrentUser().getUid();
-        PlayerDbUtils.getPlayer(userId,
-                                new BaseValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        showProgress(false);
-                                        Player currentPlayer = dataSnapshot.getValue(Player.class);
-                                        if (currentPlayer == null) {
-                                            LogUtils.e("Failed to load user data! " + userId);
-                                            return;
-                                        }
-                                        PlayersCache.saveCurrentPlayerInfo(currentPlayer);
-                                        getBaseActivity().checkPlayerPushToken(currentPlayer);
-                                        ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
-                                        HashMap<String, SimpleLeague> leagues = currentPlayer.leagues;
-
-                                        if (leagues != null) {
-                                            myLeagues.addAll(leagues.values());
-                                        }
-                                        mAdapter.addItems(myLeagues);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-                                        super.onCancelled(databaseError);
-                                        showProgress(false);
-                                    }
-                                });
+        loadPlayerLeagueInfo();
     }
+
 
     @Subscribe
     public void onFabClicked(FabClickedEvent event) {
@@ -173,4 +147,48 @@ public class MyLeaguesFragment extends BaseFragment {
         dFrag.show(getFragmentManager(), DialogFragmentEditLeague.TAG);
     }
 
+    public void loadPlayerLeagueInfo() {
+        showProgress(true);
+        Player player = PlayersCache.getCurrentPlayerInfo();
+        if (player != null) {
+            updateAdapter(player);
+        }
+        showProgress(false);
+    }
+
+    private void updateAdapter(@NonNull Player player){
+        mAdapter.clear();
+        ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
+        HashMap<String, SimpleLeague> leagues = player.leagues;
+
+        if (leagues != null) {
+            myLeagues.addAll(leagues.values());
+        }
+        mAdapter.addItems(myLeagues);
+    }
+
+    private void loadPlayerLeagues() {
+        final String userId = getBaseActivity().getCurrentUser().getUid();
+        PlayerDbUtils.getPlayer(userId,
+                                new BaseValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        showProgress(false);
+                                        Player currentPlayer = dataSnapshot.getValue(Player.class);
+                                        if (currentPlayer == null) {
+                                            LogUtils.e("Failed to load user data! " + userId);
+                                            return;
+                                        }
+                                        PlayersCache.saveCurrentPlayerInfo(currentPlayer);
+                                        getBaseActivity().checkPlayerPushToken(currentPlayer);
+                                        updateAdapter(currentPlayer);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        super.onCancelled(databaseError);
+                                        showProgress(false);
+                                    }
+                                });
+    }
 }

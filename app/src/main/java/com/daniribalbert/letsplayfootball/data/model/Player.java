@@ -186,4 +186,16 @@ public class Player {
     public boolean isGoalkeeper() {
         return goalkeeper;
     }
+
+    @Exclude
+    public boolean isManager(String leagueId) {
+        if (leagues == null) {
+            return false;
+        }
+        SimpleLeague league = leagues.get(leagueId);
+        if (league == null){
+            return false;
+        }
+        return league.manager;
+    }
 }

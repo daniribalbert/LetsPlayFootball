@@ -44,6 +44,9 @@ public class PlayersCache {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PLAYER_PREF + player.id, GsonUtils.toJson(player));
         editor.apply();
+        if (sMemoryCache.containsKey(player.id)){
+            sMemoryCache.put(player.id, player);
+        }
     }
 
     public static void saveCurrentPlayerInfo(Player player) {
@@ -72,5 +75,9 @@ public class PlayersCache {
 
     public static HashMap<String, Player> getCurrentLeaguePlayers(){
         return sMemoryCache;
+    }
+
+    public static void clear() {
+        getPrefs().edit().clear().apply();
     }
 }

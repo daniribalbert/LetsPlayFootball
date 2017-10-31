@@ -7,6 +7,7 @@ public class SimpleLeague {
     public String league_id;
     public String title;
     public String image;
+    public boolean manager;
 
     public SimpleLeague() {//Firebase constructor
     }
@@ -24,6 +25,14 @@ public class SimpleLeague {
         this.league_id = league.id;
         this.title = league.title;
         this.image = league.image;
+        this.manager = false;
+    }
+
+    public SimpleLeague(League league, boolean isManager) {
+        this.league_id = league.id;
+        this.title = league.title;
+        this.image = league.image;
+        this.manager = isManager;
     }
 
     @Override

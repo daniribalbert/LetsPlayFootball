@@ -60,7 +60,7 @@ public class LeagueActivity extends BaseActivity {
                 mLeague = dataSnapshot.getValue(League.class);
                 LeagueCache.saveLeagueInfo(mLeague);
                 String userId = mAuth.getCurrentUser().getUid();
-                boolean viewMode = !mLeague.isOwner(userId);
+                boolean viewMode = !mLeague.isManager(userId);
                 BaseFragment frag;
                 String tag;
                 if (viewMode) {

@@ -47,4 +47,8 @@ public class LeagueCache {
         editor.putString(LEAGUE_PREFS + league.id, GsonUtils.toJson(league));
         editor.apply();
     }
+
+    public static void clear() {
+        getPrefs().edit().clear().apply();
+    }
 }

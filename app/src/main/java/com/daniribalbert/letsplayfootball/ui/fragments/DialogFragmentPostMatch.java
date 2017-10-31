@@ -141,7 +141,7 @@ public class DialogFragmentPostMatch extends BaseDialogFragment implements View.
         League league = LeagueCache.getLeagueInfo(mMatch.leagueId);
         mSaveMatch.setOnClickListener(this);
         mMatchDescription.setText(mMatch.description);
-        if (league != null && league.isOwner(mPlayerId)) {
+        if (league != null && league.isManager(mPlayerId)) {
             mMatchDescription.setEnabled(true);
             mMatchImage.setOnClickListener(this);
             mSaveMatch.setText(R.string.save);

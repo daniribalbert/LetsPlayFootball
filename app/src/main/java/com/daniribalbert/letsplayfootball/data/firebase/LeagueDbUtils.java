@@ -1,5 +1,6 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.League;
 import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
@@ -54,11 +55,18 @@ public class LeagueDbUtils {
         dbRef.child(league.id).setValue(league);
     }
 
-    public static void updateLeagueOwners(League league) {
+    public static void updateLeagueManagers(League league) {
         DatabaseReference dbRef = getRef();
         Map<String, Object> updateMap = new HashMap<>();
         updateMap.put("managerIds", league.managerIds);
         dbRef.child(league.id).updateChildren(updateMap);
+
+        LeagueCache.saveLeagueInfo(league);
+        // Update player league.
+        for (String playerId : league.managerIds.keySet()) {
+            PlayerDbUtils.updatePlayerLeagueManager(playerId, league.id,
+                                                    league.managerIds.get(playerId));
+        }
     }
 
     /**

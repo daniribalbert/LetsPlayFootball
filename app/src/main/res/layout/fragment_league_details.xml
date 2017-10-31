@@ -68,7 +68,7 @@
             android:text="@string/Add_non_registered_player"/>
 
         <Button
-            android:id="@+id/league_manage_owners"
+            android:id="@+id/league_manage_admins"
             style="@style/MenuButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -17,6 +17,7 @@ import com.daniribalbert.letsplayfootball.utils.GlideUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import butterknife.BindView;
@@ -92,7 +93,7 @@ public class MyLeagueAdapter extends RecyclerView.Adapter<MyLeagueAdapter.ViewHo
         }
     }
 
-    public void addItems(List<SimpleLeague> leagues) {
+    public void addItems(Collection<SimpleLeague> leagues) {
         int itemCount = getItemCount();
         mValues.addAll(leagues);
         notifyItemRangeInserted(itemCount, leagues.size());

@@ -52,7 +52,7 @@ public abstract class PlayerCardViewHolder extends RecyclerView.ViewHolder
         setImage(player.image);
         setRating(player.getRating(league.id));
         setPositionIcon(player.isGoalkeeper());
-        setManagerIcon(league.isOwner(player.id));
+        setManagerIcon(league.isManager(player.id));
     }
 
     private void setManagerIcon(boolean isManager) {

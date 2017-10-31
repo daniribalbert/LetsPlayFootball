@@ -54,7 +54,7 @@ public class LeagueDetailsFragment extends BaseFragment {
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
 
-    @BindView(R.id.league_manage_owners)
+    @BindView(R.id.league_manage_admins)
     View mManageLeagueOwners;
     @BindView(R.id.league_schedule_match_bt)
     View mScheduleMatchView;
@@ -215,8 +215,8 @@ public class LeagueDetailsFragment extends BaseFragment {
         startActivity(intent);
     }
 
-    @OnClick(R.id.league_manage_owners)
-    public void onSelectedOwners() {
+    @OnClick(R.id.league_manage_admins)
+    public void onSelectManagers() {
         PlayerListFragment playerListFragment = PlayerListFragment.newInstance(mLeague.id);
         HashMap<String, Boolean> ownersId = mLeague.managerIds;
         List<Player> players = new ArrayList<>();

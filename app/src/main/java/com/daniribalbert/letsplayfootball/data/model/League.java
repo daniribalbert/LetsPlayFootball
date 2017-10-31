@@ -7,6 +7,7 @@ import com.google.firebase.database.Exclude;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * League model class.
@@ -55,8 +56,8 @@ public class League {
     }
 
     @Exclude
-    public boolean isOwner(String userId){
-        return managerIds.containsKey(userId);
+    public boolean isManager(String userId){
+        return managerIds.containsKey(userId) && managerIds.get(userId);
     }
 
     @Override
@@ -80,5 +81,20 @@ public class League {
     @Override
     public int hashCode() {
         return managerIds.size() + players.size(); // Java... -_-
+    }
+
+    public boolean hasMultipleManagers() {
+        if (managerIds.size() > 0){
+            int count = 0;
+            for (boolean possibleManager : managerIds.values()){
+                if (possibleManager) {
+                    count++;
+                }
+                if (count > 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

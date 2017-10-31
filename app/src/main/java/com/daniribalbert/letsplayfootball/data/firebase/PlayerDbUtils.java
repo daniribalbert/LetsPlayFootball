@@ -142,7 +142,8 @@ public class PlayerDbUtils {
 
     public static void addLeague(String playerId, League league) {
         DatabaseReference ref = getRef();
-        ref.child(playerId).child("leagues").child(league.id).setValue(new SimpleLeague(league));
+        ref.child(playerId).child("leagues").child(league.id)
+           .setValue(new SimpleLeague(league, true));
     }
 
     public static void addLeague(final String playerId, final String leagueId) {
@@ -204,5 +205,23 @@ public class PlayerDbUtils {
         Map<String, Object> updateMap = new HashMap<String, Object>();
         updateMap.put("pushToken", refreshedToken);
         ref.child(currentUser.id).updateChildren(updateMap);
+    }
+
+    public static void updatePlayerLeagueManager(String playerId, String leagueId,
+                                                 boolean isManager) {
+        Player player = PlayersCache.getPlayerInfo(playerId);
+        if (player == null) {
+            return;
+        }
+
+        if (player.isManager(leagueId) != isManager) {
+            Map<String, Object> updateMap = new HashMap<String, Object>();
+            updateMap.put("manager", isManager);
+
+            DatabaseReference ref = getRef();
+            ref.child(player.id).child("leagues").child(leagueId).updateChildren(updateMap);
+            player.leagues.get(leagueId).manager = isManager;
+            PlayersCache.savePlayerInfo(player);
+        }
     }
 }
