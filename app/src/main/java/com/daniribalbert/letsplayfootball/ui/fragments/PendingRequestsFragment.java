@@ -75,16 +75,8 @@ public class PendingRequestsFragment extends BaseFragment {
 
     private void loadData() {
         showProgress(true);
-        String playerId = getBaseActivity().getCurrentUser().getUid();
-        Player player = PlayersCache.getPlayerInfo(playerId);
-        List<String> myManagedLeagues = new LinkedList<>();
-        for (String leagueId : player.leagues.keySet()) {
-            League league = LeagueCache.getLeagueInfo(leagueId);
-            if (league.isOwner(playerId)) {
-                myManagedLeagues.add(leagueId);
-            }
-        }
-        RequestsDbUtils.loadMyRequests(playerId, myManagedLeagues, new RequestsDbUtils.Listener() {
+        Player player = PlayersCache.getCurrentPlayerInfo();
+        RequestsDbUtils.loadMyRequests(player, new RequestsDbUtils.Listener() {
             @Override
             public void onLoadFinished(List<JoinLeagueRequest> pendingRequests) {
                 mAdapter.clear();

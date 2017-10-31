@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_home"
-            android:title="@string/drawer_home" />
+            android:title="@string/drawer_home"/>
 
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_menu_profile"
-            android:title="@string/drawer_profile" />
+            android:title="@string/drawer_profile"/>
 
         <item
             android:id="@+id/nav_pending_requests"
-            android:title="@string/drawer_pending_requests" />
+            app:actionViewClass="android.widget.TextView"
+            android:icon="@drawable/ic_notifications"
+            android:title="@string/drawer_pending_requests"/>
 
         <item
             android:id="@+id/nav_upcoming_matches"
             android:icon="@drawable/ic_schedule"
-            android:title="@string/drawer_upcoming_matches" />
+            android:title="@string/drawer_upcoming_matches"/>
 
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history_black"
-            android:title="@string/drawer_history" />
+            android:title="@string/drawer_history"/>
 
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
-            android:title="@string/drawer_settings" />
+            android:title="@string/drawer_settings"/>
 
 
     </group>
@@ -38,15 +41,16 @@
         android:id="@+id/nav_group_logout"
         android:checkableBehavior="single">
 
-        <item android:enabled="false"
-            android:title=""
+        <item
+            android:checkable="false"
+            android:enabled="false"
 
-            android:checkable="false"/>
+            android:title=""/>
 
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_logout"
-            android:title="@string/com_facebook_loginview_log_out_action" />
+            android:title="@string/com_facebook_loginview_log_out_action"/>
     </group>
 
 </menu>

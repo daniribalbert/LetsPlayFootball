@@ -1,6 +1,7 @@
 package com.daniribalbert.letsplayfootball.ui.activities;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -11,11 +12,18 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.daniribalbert.letsplayfootball.R;
+import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
+import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
+import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
+import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
@@ -25,9 +33,10 @@ import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +69,9 @@ public class HomeActivity extends BaseActivity
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
+    @BindView(R.id.nav_view)
+    NavigationView mNavigationDrawer;
+
     private int mSelectedDrawerItemId;
 
     @Override
@@ -75,9 +87,8 @@ public class HomeActivity extends BaseActivity
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_home);
+        mNavigationDrawer.setNavigationItemSelectedListener(this);
+        mNavigationDrawer.setCheckedItem(R.id.nav_home);
         mSelectedDrawerItemId = R.id.nav_home;
 
         // Add first fragment.
@@ -88,6 +99,33 @@ public class HomeActivity extends BaseActivity
                                        .add(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
                                        .commit();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPendingRequests();
+    }
+
+    private void checkPendingRequests() {
+        Player player = PlayersCache.getCurrentPlayerInfo();
+
+        RequestsDbUtils.loadMyRequests(player, new RequestsDbUtils.Listener() {
+            @Override
+            public void onLoadFinished(List<JoinLeagueRequest> pendingRequests) {
+                MenuItem item = mNavigationDrawer.getMenu().findItem(R.id.nav_pending_requests);
+                TextView textView = (TextView) item.getActionView();
+                textView.setGravity(Gravity.CENTER_VERTICAL);
+                textView.setTypeface(null, Typeface.BOLD);
+                int nRequests = pendingRequests.size();
+                LogUtils.d("User has " + nRequests + " pending requests");
+                if (nRequests == 0) {
+                    textView.setText("");
+                } else {
+                    textView.setText(String.valueOf(nRequests));
+                }
+            }
+        });
     }
 
     @Override
@@ -158,10 +196,7 @@ public class HomeActivity extends BaseActivity
                 //tag = SettingsFragment.TAG;
                 break;
             case R.id.nav_logout:
-                mAuth.signOut();
-                final Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                logout();
                 break;
         }
 
@@ -178,7 +213,7 @@ public class HomeActivity extends BaseActivity
 
     @OnClick(R.id.fab)
     public void toggleFabMenu() {
-        if (mFabMenuLayout.getVisibility() == View.VISIBLE){
+        if (mFabMenuLayout.getVisibility() == View.VISIBLE) {
             mFabMenuLayout.setVisibility(View.GONE);
             mFab.setImageResource(R.drawable.ic_add);
         } else {
@@ -201,4 +236,11 @@ public class HomeActivity extends BaseActivity
         EventBus.getDefault().post(new FabClickedEvent(mFab));
     }
 
+    private void logout() {
+        mAuth.signOut();
+        PlayerDbUtils.updateCurrentPlayerPushToken("");
+        final Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

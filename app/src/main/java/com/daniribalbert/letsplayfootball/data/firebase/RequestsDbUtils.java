@@ -1,7 +1,10 @@
 package com.daniribalbert.letsplayfootball.data.firebase;
 
+import com.daniribalbert.letsplayfootball.data.cache.LeagueCache;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
+import com.daniribalbert.letsplayfootball.data.model.League;
+import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -53,12 +56,19 @@ public class RequestsDbUtils {
         }
     }
 
-    public static void loadMyRequests(String playerId, List<String> myLeagues,
-                                      final Listener listener) {
-        final CountDownLatch counter = new CountDownLatch(1 + myLeagues.size());
+    public static void loadMyRequests(Player player, final Listener listener) {
+        List<String> myManagedLeagues = new LinkedList<>();
+        for (String leagueId : player.leagues.keySet()) {
+            League league = LeagueCache.getLeagueInfo(leagueId);
+            if (league.isOwner(player.id)) {
+                myManagedLeagues.add(leagueId);
+            }
+        }
+
+        final CountDownLatch counter = new CountDownLatch(1 + myManagedLeagues.size());
         final List<JoinLeagueRequest> pendingRequests = new LinkedList<>();
 
-        getRef().child(playerId).addListenerForSingleValueEvent(new BaseValueEventListener() {
+        getRef().child(player.id).addListenerForSingleValueEvent(new BaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 LogUtils.d("My Requests: " + dataSnapshot);
@@ -77,7 +87,7 @@ public class RequestsDbUtils {
             }
         });
 
-        for (final String leagueId : myLeagues) {
+        for (final String leagueId : myManagedLeagues) {
             getRef().child(leagueId).addListenerForSingleValueEvent(new BaseValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
