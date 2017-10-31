@@ -218,7 +218,7 @@ public class LeagueDetailsFragment extends BaseFragment {
     @OnClick(R.id.league_manage_owners)
     public void onSelectedOwners() {
         PlayerListFragment playerListFragment = PlayerListFragment.newInstance(mLeague.id);
-        HashMap<String, Boolean> ownersId = mLeague.ownersId;
+        HashMap<String, Boolean> ownersId = mLeague.managerIds;
         List<Player> players = new ArrayList<>();
         HashMap<String, Player> currentLeaguePlayers = PlayersCache.getCurrentLeaguePlayers();
         for (String playerId : ownersId.keySet()) {

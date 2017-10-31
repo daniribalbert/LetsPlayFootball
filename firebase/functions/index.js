@@ -18,11 +18,11 @@ exports.newPendingRequest = functions.database.ref('pending_requests/{playerId}/
 	let msg = `You gotta pending request from ${requestData.senderName}!`;
 
     // If the request ID == player ID then this request was made by the user and we have to send a
-    // notification to the league owners.
+    // notification to the league managers.
     defer = null;
     if (requestData.senderId == requestData.playerId) {
-        defer = loadLeagueOwners(requestData.league.league_id).then(userIds => {
-            console.log("Got owners should send notification to " + userIds.length + " users");
+        defer = loadLeagueManagers(requestData.league.league_id).then(userIds => {
+            console.log("Got managers should send notification to " + userIds.length + " users");
             for (var index in userIds) {
                 console.log("send notification to ID: " + userIds[index]);
                 loadUserForNotificationDebug(userIds[index]).then(user => {
@@ -81,16 +81,16 @@ function loadUserForNotificationDebug(userId) {
     return defer;
 }
 
-function loadLeagueOwners(leagueId) {
+function loadLeagueManagers(leagueId) {
     let dbRef = admin.database().ref('leagues/'+leagueId);
     let defer = new Promise((resolve, reject) => {
         dbRef.once('value', (snap) => {
             let data = snap.val();
             let ids = [];
-            map = data.ownersId
+            map = data.managerIds
             for (var key in map){
                 if (map[key] == true){
-                    console.log("League Owner ID: "+ key);
+                    console.log("League Manager ID: "+ key);
                     ids.push(key);
                 }
             }

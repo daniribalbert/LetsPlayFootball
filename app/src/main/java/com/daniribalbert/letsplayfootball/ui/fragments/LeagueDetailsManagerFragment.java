@@ -108,7 +108,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
             @Override
             public void onPlayerSelected(Player player) {
                 if (mLeague.isOwner(player.id)) {
-                    if (mLeague.ownersId.size() > 1) {
+                    if (mLeague.managerIds.size() > 1) {
                         promptRemoveAdmin(player);
                     } else {
                         ToastUtils.show(R.string.error_cannot_remove_last_league_admin,
@@ -137,7 +137,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mLeague.ownersId.put(player.id, true);
+                mLeague.managerIds.put(player.id, true);
                 LeagueDbUtils.updateLeagueOwners(mLeague);
                 dialogInterface.dismiss();
             }
@@ -154,7 +154,7 @@ public class LeagueDetailsManagerFragment extends LeagueDetailsFragment {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mLeague.ownersId.remove(player.id);
+                mLeague.managerIds.remove(player.id);
                 LeagueDbUtils.updateLeagueOwners(mLeague);
                 dialogInterface.dismiss();
             }

@@ -35,7 +35,7 @@ public class LeagueDbUtils {
     public static String createLeague(final League league, String ownerId) {
         final DatabaseReference dbRef = getRef();
         DatabaseReference pushRef = dbRef.push();
-        league.ownersId.put(ownerId, true);
+        league.managerIds.put(ownerId, true);
 
         String leagueId = pushRef.getKey();
         league.id = leagueId;
@@ -57,7 +57,7 @@ public class LeagueDbUtils {
     public static void updateLeagueOwners(League league) {
         DatabaseReference dbRef = getRef();
         Map<String, Object> updateMap = new HashMap<>();
-        updateMap.put("ownersId", league.ownersId);
+        updateMap.put("managerIds", league.managerIds);
         dbRef.child(league.id).updateChildren(updateMap);
     }
 

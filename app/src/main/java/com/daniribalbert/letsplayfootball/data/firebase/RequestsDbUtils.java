@@ -58,10 +58,13 @@ public class RequestsDbUtils {
 
     public static void loadMyRequests(Player player, final Listener listener) {
         List<String> myManagedLeagues = new LinkedList<>();
-        for (String leagueId : player.leagues.keySet()) {
-            League league = LeagueCache.getLeagueInfo(leagueId);
-            if (league.isOwner(player.id)) {
-                myManagedLeagues.add(leagueId);
+
+        if (player.leagues != null) {
+            for (String leagueId : player.leagues.keySet()) {
+                League league = LeagueCache.getLeagueInfo(leagueId);
+                if (league.isOwner(player.id)) {
+                    myManagedLeagues.add(leagueId);
+                }
             }
         }
 

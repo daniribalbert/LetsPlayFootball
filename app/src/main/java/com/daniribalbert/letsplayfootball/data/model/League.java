@@ -19,10 +19,10 @@ public class League {
     public String id;
 
     /**
-     * List with the Ids of owners.
-     * Using list just in case in the future we add leagues with multiple owners.
+     * List with the Ids of managers.
+     * Using list just in case in the future we add leagues with multiple managers.
      */
-    public HashMap<String, Boolean> ownersId = new HashMap<>();
+    public HashMap<String, Boolean> managerIds = new HashMap<>();
 
     /**
      * League title. Example: Premier League.
@@ -56,7 +56,7 @@ public class League {
 
     @Exclude
     public boolean isOwner(String userId){
-        return ownersId.containsKey(userId);
+        return managerIds.containsKey(userId);
     }
 
     @Override
@@ -79,6 +79,6 @@ public class League {
 
     @Override
     public int hashCode() {
-        return ownersId.size() + players.size(); // Java... -_-
+        return managerIds.size() + players.size(); // Java... -_-
     }
 }
