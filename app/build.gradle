@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName getVersionName("")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,6 +31,19 @@ android {
         prod {
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def formattedDate = getDate()
+            def buildTypeName = variant.buildType.name.equals("release") ? "" : "-" + variant.buildType.name.capitalize()
+            def flavorName = "-" + variant.productFlavors[0].name
+            def versionName = getVersionName(flavorName)
+            def versionCode = getVersionCode()
+            def versionStr = versionName + "("+ versionCode + ")"
+            def fileName = "LetsPlayFootball_${versionStr}${buildTypeName}${flavorName}${formattedDate}.apk";
+            outputFileName = fileName
+        }
+    }
 }
 
 dependencies {
@@ -45,13 +58,14 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // Google Play Services | ref: https://developers.google.com/android/guides/overview
-    compile 'com.google.android.gms:play-services-auth:11.2.2'
+    compile 'com.google.android.gms:play-services-auth:11.4.2' // Google Authentication
 
     // Firebase | ref: https://firebase.google.com/docs/android/setup
-    compile 'com.google.firebase:firebase-auth:11.2.2' // Authentication
-    compile 'com.google.firebase:firebase-database:11.2.2' // Database
-    compile 'com.google.firebase:firebase-storage:11.2.2' // Storage
-    compile 'com.google.firebase:firebase-messaging:11.2.2' // Push Notifications
+    compile 'com.google.firebase:firebase-auth:11.4.2' // Authentication
+    compile 'com.google.firebase:firebase-database:11.4.2' // Database
+    compile 'com.google.firebase:firebase-storage:11.4.2' // Storage
+    compile 'com.google.firebase:firebase-messaging:11.4.2' // Push Notifications
+    compile 'com.google.firebase:firebase-ads:11.4.2' // AdMob
 
     // EventBus | ref: https://github.com/greenrobot/EventBus
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -61,11 +75,11 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     // Glide | ref: https://github.com/bumptech/glide
-    compile 'com.github.bumptech.glide:glide:4.1.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
+    compile 'com.github.bumptech.glide:glide:4.3.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
 
     // Facebook SDK
-    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.facebook.android:facebook-login:4.27.0' // Facebook Login
 
     // Twitter Kit
     compile 'com.twitter.sdk.android:twitter-core:3.1.1'
@@ -78,5 +92,16 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+// FUNCTIONS
+
+static def getVersionName(suffix) {
+    return "1.0" + suffix
+}
+
+static def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMdd')
+    return formattedDate
+}
 
 apply plugin: 'com.google.gms.google-services'

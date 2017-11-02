@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,6 +38,9 @@ import com.daniribalbert.letsplayfootball.ui.fragments.MyLeaguesFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
@@ -80,6 +84,9 @@ public class HomeActivity extends BaseActivity
     @BindView(R.id.nav_view)
     NavigationView mNavigationDrawer;
 
+    @BindView(R.id.ad_frame)
+    FrameLayout mAdContainerLayout;
+
     private int mSelectedDrawerItemId;
 
     @Override
@@ -88,7 +95,8 @@ public class HomeActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
-
+        MobileAds.initialize(this, getString(R.string.ad_mob_app_id));
+        initAdView(mAdContainerLayout, AdSize.BANNER);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);

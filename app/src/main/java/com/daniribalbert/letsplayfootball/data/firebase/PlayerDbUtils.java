@@ -199,12 +199,14 @@ public class PlayerDbUtils {
         DatabaseReference ref = getRef();
 
         Player currentUser = PlayersCache.getCurrentPlayerInfo();
-        currentUser.pushToken = refreshedToken;
-        PlayersCache.saveCurrentPlayerInfo(currentUser);
+        if (currentUser != null) {
+            currentUser.pushToken = refreshedToken;
+            PlayersCache.saveCurrentPlayerInfo(currentUser);
 
-        Map<String, Object> updateMap = new HashMap<String, Object>();
-        updateMap.put("pushToken", refreshedToken);
-        ref.child(currentUser.id).updateChildren(updateMap);
+            Map<String, Object> updateMap = new HashMap<String, Object>();
+            updateMap.put("pushToken", refreshedToken);
+            ref.child(currentUser.id).updateChildren(updateMap);
+        }
     }
 
     public static void updatePlayerLeagueManager(String playerId, String leagueId,

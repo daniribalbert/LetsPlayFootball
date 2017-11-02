@@ -7,67 +7,89 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.HomeActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-    </android.support.design.widget.AppBarLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-    <include layout="@layout/content_main"/>
+        </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:gravity="center"
-        android:orientation="vertical">
+
+        <include
+            layout="@layout/content_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/app_bar"/>
 
         <LinearLayout
-            android:id="@+id/fab_menu_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:layout_above="@+id/ad_frame"
+            android:layout_alignParentEnd="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_menu_1"
+            <LinearLayout
+                android:id="@+id/fab_menu_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/hint_search_league"
-                app:backgroundTint="@color/colorPrimary"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_search"/>
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab_menu_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/hint_search_league"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/ic_search"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab_menu_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:contentDescription="@string/hint_add_player"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/ic_person_add"/>
+
+            </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_menu_2"
+                android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:contentDescription="@string/hint_add_player"
                 app:backgroundTint="@color/colorPrimary"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_person_add"/>
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_add"/>
 
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
+        <FrameLayout
+            android:id="@+id/ad_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            app:backgroundTint="@color/colorPrimary"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_add"/>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

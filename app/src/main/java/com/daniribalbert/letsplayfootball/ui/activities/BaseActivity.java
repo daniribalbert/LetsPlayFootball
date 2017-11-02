@@ -5,10 +5,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import com.daniribalbert.letsplayfootball.BuildConfig;
+import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -74,11 +81,28 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void checkPlayerPushToken(Player currentUser) {
-        if (TextUtils.isEmpty(currentUser.pushToken)){
+        if (TextUtils.isEmpty(currentUser.pushToken)) {
             String token = FirebaseInstanceId.getInstance().getToken();
-            if (!TextUtils.isEmpty(token)){
+            if (!TextUtils.isEmpty(token)) {
                 PlayerDbUtils.updateCurrentPlayerPushToken(token);
             }
         }
+    }
+
+    protected void initAdView(ViewGroup adContainerLayout, AdSize size) {
+        AdView adView = new AdView(this);
+        adView.setAdSize(size);
+        if (size == AdSize.BANNER) {
+            String adUnitId = BuildConfig.DEBUG
+                              ? getString(R.string.ad_mob_test_banner_id)
+                              : getString(R.string.ad_mob_main_banner_id);
+            adView.setAdUnitId(adUnitId);
+        }
+
+        adContainerLayout.addView(adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        LogUtils.i("Setup ad view");
     }
 }
