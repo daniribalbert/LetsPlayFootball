@@ -28,7 +28,6 @@ import com.daniribalbert.letsplayfootball.data.firebase.RequestsDbUtils;
 import com.daniribalbert.letsplayfootball.data.firebase.listeners.BaseValueEventListener;
 import com.daniribalbert.letsplayfootball.data.model.JoinLeagueRequest;
 import com.daniribalbert.letsplayfootball.data.model.Player;
-import com.daniribalbert.letsplayfootball.data.model.SimpleLeague;
 import com.daniribalbert.letsplayfootball.ui.events.FabClickedEvent;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueSearchFragment;
@@ -39,15 +38,12 @@ import com.daniribalbert.letsplayfootball.ui.fragments.PendingRequestsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.ProfileFragment;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -96,7 +92,7 @@ public class HomeActivity extends BaseActivity
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         MobileAds.initialize(this, getString(R.string.ad_mob_app_id));
-        initAdView(mAdContainerLayout, AdSize.BANNER);
+        initBannerAd(mAdContainerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);

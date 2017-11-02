@@ -14,6 +14,7 @@ import com.daniribalbert.letsplayfootball.ui.constants.IntentConstants;
 import com.daniribalbert.letsplayfootball.ui.fragments.BaseFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsFragment;
 import com.daniribalbert.letsplayfootball.ui.fragments.LeagueDetailsManagerFragment;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.database.DataSnapshot;
 
 import butterknife.BindView;
@@ -26,7 +27,6 @@ public class LeagueActivity extends BaseActivity {
 
     @BindView(R.id.app_progress)
     ProgressBar mProgressBar;
-
 
     private String mLeagueId;
     private League mLeague;
@@ -42,6 +42,8 @@ public class LeagueActivity extends BaseActivity {
         if (savedInstanceState == null) {
             loadLeague();
         }
+
+        loadInterstitialAd();
     }
 
     private void loadArgs(final Intent intent) {
@@ -77,4 +79,5 @@ public class LeagueActivity extends BaseActivity {
             }
         });
     }
+
 }

@@ -47,7 +47,7 @@
     </style>
 
     <style name="MenuButtonStyle" parent="Base.Widget.AppCompat.Button">
-        <item name="background">@android:color/white</item>
+        <item name="android:background">@android:color/white</item>
         <item name="android:gravity">center|start</item>
         <item name="android:padding">@dimen/padding_small</item>
         <item name="android:paddingStart">@dimen/padding_large</item>

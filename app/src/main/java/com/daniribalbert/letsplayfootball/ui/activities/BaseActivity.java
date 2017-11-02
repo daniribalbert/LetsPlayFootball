@@ -13,9 +13,11 @@ import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.firebase.PlayerDbUtils;
 import com.daniribalbert.letsplayfootball.data.model.Player;
 import com.daniribalbert.letsplayfootball.utils.LogUtils;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -28,6 +30,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected FirebaseAuth mAuth;
 
     protected FirebaseAuth.AuthStateListener mAuthListener;
+
+    /**
+     * AdMove Interstitial Ad.
+     */
+    protected InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,20 +96,34 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected void initAdView(ViewGroup adContainerLayout, AdSize size) {
+    protected void initBannerAd(ViewGroup adContainerLayout) {
         AdView adView = new AdView(this);
-        adView.setAdSize(size);
-        if (size == AdSize.BANNER) {
-            String adUnitId = BuildConfig.DEBUG
-                              ? getString(R.string.ad_mob_test_banner_id)
-                              : getString(R.string.ad_mob_main_banner_id);
-            adView.setAdUnitId(adUnitId);
-        }
+        adView.setAdSize(AdSize.BANNER);
+        String adUnitId = BuildConfig.DEBUG
+                          ? getString(R.string.ad_mob_test_banner_id)
+                          : getString(R.string.ad_mob_main_banner_id);
+        adView.setAdUnitId(adUnitId);
 
         adContainerLayout.addView(adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
         LogUtils.i("Setup ad view");
+    }
+
+    protected void loadInterstitialAd() {
+        mInterstitialAd = new InterstitialAd(this);
+        String id = BuildConfig.DEBUG
+                    ? getString(R.string.ad_mob_test_interstitial_id)
+                    : getString(R.string.ad_mob_main_interstitial_id);
+        mInterstitialAd.setAdUnitId(id);
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mInterstitialAd.show();
+            }
+        });
     }
 }
