@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
-    android:id="@+id/my_league_recyclerview"
-    android:name="com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment"
+
+<RelativeLayout
+    android:id="@+id/switcher"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
-    android:layout_marginStart="@dimen/recycler_view_horizontal_margin"
-    android:paddingBottom="@dimen/padding_medium"
-    android:paddingTop="@dimen/padding_small"
-    app:layoutManager="LinearLayoutManager"
-    tools:context=".ui.fragments.MyLeaguesFragment"
-    tools:listitem="@layout/card_league"/>
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_league_recyclerview"
+        android:name="com.daniribalbert.letsplayfootball.fragments.MyLeaguesFragment"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/recycler_view_horizontal_margin"
+        android:layout_marginStart="@dimen/recycler_view_horizontal_margin"
+        android:paddingBottom="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_small"
+        android:visibility="gone"
+        app:layoutManager="LinearLayoutManager"
+        tools:context=".ui.fragments.MyLeaguesFragment"
+        tools:listitem="@layout/card_league"/>
+
+    <TextView
+        android:id="@+id/my_league_empty_msg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:padding="@dimen/padding_large"
+        android:text="@string/empty_league_msg"
+        android:visibility="visible"/>
+
+</RelativeLayout>

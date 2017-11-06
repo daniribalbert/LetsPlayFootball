@@ -9,6 +9,15 @@
     tools:context=".ui.activities.HomeActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <ProgressBar
+        android:id="@+id/app_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="0dp"
@@ -18,14 +27,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ProgressBar
-            android:id="@+id/app_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible"/>
 
     </FrameLayout>
 

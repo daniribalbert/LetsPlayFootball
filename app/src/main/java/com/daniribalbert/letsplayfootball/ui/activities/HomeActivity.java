@@ -106,7 +106,6 @@ public class HomeActivity extends BaseActivity
         // Add first fragment.
         if (savedInstanceState == null) {
             MyLeaguesFragment frag = MyLeaguesFragment.newInstance();
-            frag.setProgress(mProgressBar);
             getSupportFragmentManager().beginTransaction()
                                        .add(R.id.fragment_container, frag, MyLeaguesFragment.TAG)
                                        .commit();
@@ -199,7 +198,12 @@ public class HomeActivity extends BaseActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        mSelectedDrawerItemId = item.getItemId();
+        int nextSelection = item.getItemId();
+        if (nextSelection == mSelectedDrawerItemId){
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        }
+        mSelectedDrawerItemId = nextSelection;
 
         BaseFragment frag = null;
         String tag = "";
@@ -207,7 +211,6 @@ public class HomeActivity extends BaseActivity
         switch (mSelectedDrawerItemId) {
             case R.id.nav_home:
                 frag = MyLeaguesFragment.newInstance();
-                ((BaseFragment) frag).setProgress(mProgressBar);
                 tag = MyLeaguesFragment.TAG;
                 mFab.setImageResource(R.drawable.ic_add);
                 mFab.setVisibility(View.VISIBLE);

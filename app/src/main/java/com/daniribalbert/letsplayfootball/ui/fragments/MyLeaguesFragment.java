@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ViewSwitcher;
 
 import com.daniribalbert.letsplayfootball.R;
 import com.daniribalbert.letsplayfootball.data.cache.PlayersCache;
@@ -46,6 +47,9 @@ public class MyLeaguesFragment extends BaseFragment {
 
     public static final String TAG = MyLeaguesFragment.class.getSimpleName();
 
+    @BindView(R.id.my_league_empty_msg)
+    View mEmptyView;
+
     @BindView(R.id.my_league_recyclerview)
     RecyclerView mRecyclerView;
     protected MyLeagueAdapter mAdapter;
@@ -62,6 +66,12 @@ public class MyLeaguesFragment extends BaseFragment {
         MyLeaguesFragment fragment = new MyLeaguesFragment();
         fragment.setRetainInstance(true);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new MyLeagueAdapter();
     }
 
     @Override
@@ -96,13 +106,8 @@ public class MyLeaguesFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mAdapter == null) {
-            mAdapter = new MyLeagueAdapter();
-            mRecyclerView.setAdapter(mAdapter);
-            loadData();
-        } else {
-            mRecyclerView.setAdapter(mAdapter);
-        }
+        mRecyclerView.setAdapter(mAdapter);
+        loadData();
     }
 
     protected void loadData() {
@@ -156,7 +161,7 @@ public class MyLeaguesFragment extends BaseFragment {
         showProgress(false);
     }
 
-    private void updateAdapter(@NonNull Player player){
+    private void updateAdapter(@NonNull Player player) {
         mAdapter.clear();
         ArrayList<SimpleLeague> myLeagues = new ArrayList<>();
         HashMap<String, SimpleLeague> leagues = player.leagues;
@@ -165,6 +170,18 @@ public class MyLeaguesFragment extends BaseFragment {
             myLeagues.addAll(leagues.values());
         }
         mAdapter.addItems(myLeagues);
+
+        updateAdapterView(mAdapter.getItemCount() == 0);
+    }
+
+    private void updateAdapterView(boolean isEmpty) {
+        if (isEmpty) {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
     }
 
     private void loadPlayerLeagues() {

@@ -70,6 +70,10 @@
     <string name="settings_social_connected">Connected</string>
     <string name="settings_social_not_connected">Not connected</string>
 
+    <!-- Empty lists text Strings -->
+    <string name="empty_league_msg">You don\'t have any leagues yet.\nSearch or create one</string>
+
+
     <!-- Input hint text Strings -->
     <string name="hint_search_players">Search Players</string>
     <string name="hint_search_league">Search Leagues</string>
